@@ -20,9 +20,8 @@ readonly DOTFILES_DIR
 # Configuration
 readonly PACKAGES_DIR="${DOTFILES_DIR}/packages"
 readonly HOME_DIR="${DOTFILES_DIR}/home"
-readonly GITHUB_EMAIL="dillon.mulroy@gmail.com"
+readonly GITHUB_EMAIL="raimonds.korzenevskis@gmail.com"
 readonly GITHUB_KEY_PATH="${HOME}/.ssh/key.pub"
-readonly FONT_REPO_URL="git@github.com:dmmulroy/mono-lisa.git"
 
 # Progress indicators
 CURRENT_STEP=0
@@ -296,8 +295,13 @@ stow_dotfiles() {
             done
             print_success "Backups created in ${backup_dir}"
         fi
+
+        # remove conflicting files so stow can create symlinks
+        for file in "${files_to_backup[@]}"; do
+            rm -f "${HOME}/${file}"
+        done
     fi
-    
+
     if stow -R -v -d "${DOTFILES_DIR}" -t "${HOME}" home; then
         print_success "Dotfiles stowed successfully"
     else
@@ -534,47 +538,6 @@ generate_ssh_key() {
     fi
 }
 
-install_font() {
-    print_step "Installing MonoLisa font"
-
-    if [[ ! -f "$GITHUB_KEY_PATH" ]]; then
-        print_warning "GitHub SSH key not found. Skipping font installation"
-        return 0
-    fi
-
-    if ! confirm "Have you added the SSH key to your GitHub account?" "n"; then
-        print_warning "Skipping font installation"
-        return 0
-    fi
-
-    local font_temp_dir
-    font_temp_dir=$(mktemp -d)
-    local font_install_dir="${HOME}/Library/Fonts"
-
-    print_info "Cloning font repository..."
-    if GIT_SSH_COMMAND="ssh -i '$GITHUB_KEY_PATH' -o IdentitiesOnly=yes" git clone "$FONT_REPO_URL" "$font_temp_dir"; then
-        print_success "Repository cloned successfully"
-
-        mkdir -p "$font_install_dir"
-        print_info "Installing font files..."
-
-        local font_count=0
-        while IFS= read -r -d '' font_file; do
-            cp "$font_file" "$font_install_dir/"
-            ((++font_count))
-        done < <(find "$font_temp_dir" -type f \( -name '*.otf' -o -name '*.ttf' \) -print0)
-
-        if [[ $font_count -gt 0 ]]; then
-            print_success "Installed $font_count font files"
-        else
-            print_warning "No font files found in repository"
-        fi
-    else
-        print_error "Failed to clone font repository"
-    fi
-
-    rm -rf "$font_temp_dir"
-}
 
 cmd_gen_ssh_key() {
     print_header "Generating SSH key for GitHub"
@@ -785,9 +748,6 @@ cmd_init() {
         generate_ssh_key || print_warning "SSH key generation failed (continuing)"
     fi
     
-    if [[ "${SKIP_FONT:-}" != "true" ]]; then
-        install_font || print_warning "Font installation failed (continuing)"
-    fi
     
     setup_fish_shell || print_warning "Fish shell setup failed (continuing)"
     
@@ -1160,7 +1120,6 @@ complete -c dot -n "__fish_use_subcommand" -a "help" -d "Show help message"
 
 # Global options
 complete -c dot -n "__fish_use_subcommand" -l "skip-ssh" -d "Skip SSH key generation"
-complete -c dot -n "__fish_use_subcommand" -l "skip-font" -d "Skip font installation"
 complete -c dot -n "__fish_use_subcommand" -l "version" -d "Show version information"
 complete -c dot -n "__fish_use_subcommand" -s "h" -l "help" -d "Show help message"
 
@@ -2349,7 +2308,6 @@ cmd_help() {
     
     echo -e "${BOLD}OPTIONS:${RESET}"
     echo "    --skip-ssh      Skip SSH key generation"
-    echo "    --skip-font     Skip font installation"
     echo "    --version       Show version information"
     echo "    -h, --help      Show this help message"
     echo ""
@@ -2399,10 +2357,6 @@ main() {
         case "$1" in
             --skip-ssh)
                 export SKIP_SSH=true
-                shift
-                ;;
-            --skip-font)
-                export SKIP_FONT=true
                 shift
                 ;;
             --version)
