@@ -1,3 +1,4 @@
+.DS_Store
 ~/.config/fish/conf.d/rustup.fish
 **/.claude/settings.local.json
 

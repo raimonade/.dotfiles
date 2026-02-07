@@ -30,7 +30,7 @@ disabled = true
 
 [custom.scm]
 when = "jj-starship detect"
-shell = ["jj-starship", "--strip-bookmark-prefix", "dmmulroy/", "--truncate-name", "20", "--bookmarks-display-limit", "1"]
+shell = ["jj-starship", "--strip-bookmark-prefix", "rk/", "--truncate-name", "20", "--bookmarks-display-limit", "1"]
 format = "$output "
 
 [golang]
@@ -41,6 +41,17 @@ symbol = " "
 
 [nix_shell]
 symbol = " "
+
+[gcloud]
+disabled = true
+
+[cmd_duration]
+min_time = 2_000
+format = "[$duration]($style) "
+style = "bold yellow"
+
+[nodejs]
+format = "[$symbol($version)]($style) "
 
 [package]
 disabled = true

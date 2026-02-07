@@ -33,10 +33,10 @@ macOS dev env via GNU Stow. Fish + Neovim + Tmux + Git + jj.
 | Shell function | `home/.config/fish/functions/` |
 | Git alias | `home/.config/git/config` [alias] section |
 | Neovim plugin | `home/.config/nvim/lua/plugins/<name>.lua` |
-| Neovim keymap | `home/.config/nvim/lua/dmmulroy/keymaps.lua` |
+| Neovim keymap | `home/.config/nvim/lua/rk/keymaps.lua` |
 | Tmux binding | `home/.config/tmux/tmux.conf` |
 | jj alias | `home/.config/jj/config.toml` [aliases] |
-| Work git identity | Auto via `home/.config/git/work_config` for `~/Code/work/` |
+| Git config | `home/.config/git/config` |
 
 ## CONVENTIONS
 
@@ -73,7 +73,7 @@ dot gen-ssh-key       # Generate ed25519 key by email domain
 | Tool | Entry | Notes |
 |------|-------|-------|
 | Fish | `config.fish` | Sources `conf.d/`, sets EDITOR/MANPAGER |
-| Neovim | `init.lua` | 1 line: `require("dmmulroy")` |
+| Neovim | `init.lua` | 1 line: `require("rk")` |
 | Tmux | `tmux.conf` | Prefix `C-;`, auto-installs TPM |
 | Git | `config` | SSH signing, `pull.rebase`, conditional include |
 | jj | `config.toml` | SSH signing, private commits blocked, intent-check hook |
