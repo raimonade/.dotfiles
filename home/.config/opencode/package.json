@@ -1,7 +1,5 @@
 {
   "dependencies": {
-    "@opencode-ai/plugin": "1.2.6",
-    "opencode-anthropic-auth": "^0.0.13",
-    "opencode-gemini-auth": "^1.3.10"
+    "@opencode-ai/plugin": "1.2.6"
   }
 }
