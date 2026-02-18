@@ -17,7 +17,12 @@ macOS dev env via GNU Stow. Fish + Neovim + Tmux + Git + jj.
 │   ├── git/            # Conditional work config
 │   ├── jj/             # Jujutsu VCS + intent-check hook
 │   ├── opencode/       # AI agent config (AGENTS.md)
+│   │   ├── agent/      # Subagents: oracle, librarian, code-reviewer
+│   │   ├── command/    # Slash commands: code-review, complete-next-task, ...
+│   │   └── skill/      # Skills: feedback-loop, vcs-detect, spec-planner, ...
 │   └── ghostty/        # Terminal
+├── home/.local/bin/    # Scripts stowed to ~/.local/bin (on PATH)
+│   └── task-loop       # Autonomous PRD impl loop
 ├── packages/
 │   ├── bundle          # Base Brewfile (29 formulas, 12 casks)
 │   └── bundle.work     # Work additions (formulas only)
@@ -37,6 +42,9 @@ macOS dev env via GNU Stow. Fish + Neovim + Tmux + Git + jj.
 | Tmux binding | `home/.config/tmux/tmux.conf` |
 | jj alias | `home/.config/jj/config.toml` [aliases] |
 | Git config | `home/.config/git/config` |
+| OpenCode skill | `home/.config/opencode/skill/<name>/SKILL.md` |
+| OpenCode command | `home/.config/opencode/command/<name>.md` |
+| OpenCode agent | `home/.config/opencode/agent/<name>.md` |
 
 ## CONVENTIONS
 
