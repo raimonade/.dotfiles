@@ -37,7 +37,7 @@ function timer -d "Countdown timer with notification"
   
   # Try to make a sound
   if command -v afplay &>/dev/null
-    afplay /System/Library/Sounds/Glass.aiff &>/dev/null &
+    afplay /System/Library/Sounds/Chime.aiff &>/dev/null &
   else if command -v tput &>/dev/null
     tput bel
   end
