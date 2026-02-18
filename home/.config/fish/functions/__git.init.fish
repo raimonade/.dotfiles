@@ -45,6 +45,8 @@ function __git.init
   __git.create_abbr gcav!      git commit -a -v --no-verify --amend
   __git.create_abbr gcm        git commit -m
   __git.create_abbr gcam       git commit -a -m
+  __git.create_abbr gcs        git commit -S
+  __git.create_abbr gscam      git commit -S -a -m
   __git.create_abbr gcfx       git commit --fixup
   __git.create_abbr gcf        git config --list
   __git.create_abbr gcl        git clone
@@ -80,6 +82,7 @@ function __git.init
   __git.create_abbr glog       git log --oneline --decorate --color --graph
   __git.create_abbr gloga      git log --oneline --decorate --color --graph --all
   __git.create_abbr glom       git log --oneline --decorate --color \(__git.default_branch\)..
+  __git.create_abbr glod       git log --oneline --decorate --color develop..
   __git.create_abbr gloo       "git log --pretty=format:'%C(yellow)%h %Cred%ad %Cblue%an%Cgreen%d %Creset%s' --date=short"
   __git.create_abbr gm         git merge
   __git.create_abbr gmt        git mergetool --no-prompt
@@ -108,6 +111,9 @@ function __git.init
   __git.create_abbr grbom      "git fetch origin (__git.default_branch); and git rebase FETCH_HEAD"
   __git.create_abbr grbomi     "git fetch origin (__git.default_branch); and git rebase FETCH_HEAD --interactive"
   __git.create_abbr grbomia    "git fetch origin (__git.default_branch); and git rebase FETCH_HEAD --interactive --autosquash"
+  __git.create_abbr grbd       git rebase develop
+  __git.create_abbr grbdi      git rebase develop --interactive
+  __git.create_abbr grbdia     git rebase develop --interactive --autosquash
   __git.create_abbr grbs       git rebase --skip
   __git.create_abbr ggu        git pull --rebase origin \(__git.current_branch\)
   __git.create_abbr grev       git revert
@@ -126,6 +132,8 @@ function __git.init
   __git.create_abbr grup       git remote update
   __git.create_abbr grv        git remote -v
   __git.create_abbr gsh        git show
+  __git.create_abbr gsd        git svn dcommit
+  __git.create_abbr gsr        git svn rebase
   __git.create_abbr gsb        git status -sb
   __git.create_abbr gss        git status -s
   __git.create_abbr gst        git status
@@ -151,7 +159,29 @@ function __git.init
   # git checkout abbreviations
   __git.create_abbr gco        git checkout
   __git.create_abbr gcb        git checkout -b
+  __git.create_abbr gcod       git checkout develop
   __git.create_abbr gcom       git checkout \(__git.default_branch\)
+
+  # git flow abbreviations
+  __git.create_abbr gfb        git flow bugfix
+  __git.create_abbr gff        git flow feature
+  __git.create_abbr gfr        git flow release
+  __git.create_abbr gfh        git flow hotfix
+  __git.create_abbr gfs        git flow support
+
+  __git.create_abbr gfbs       git flow bugfix start
+  __git.create_abbr gffs       git flow feature start
+  __git.create_abbr gfrs       git flow release start
+  __git.create_abbr gfhs       git flow hotfix start
+  __git.create_abbr gfss       git flow support start
+
+  __git.create_abbr gfbt       git flow bugfix track
+  __git.create_abbr gfft       git flow feature track
+  __git.create_abbr gfrt       git flow release track
+  __git.create_abbr gfht       git flow hotfix track
+  __git.create_abbr gfst       git flow support track
+
+  __git.create_abbr gfp        git flow publish
 
   # git worktree abbreviations
   __git.create_abbr gwt        git worktree
@@ -162,6 +192,10 @@ function __git.init
   __git.create_abbr gwtpr      git worktree prune
   __git.create_abbr gwtrm      git worktree remove
   __git.create_abbr gwtulo     git worktree unlock
+
+  # GitLab push options
+  __git.create_abbr gmr        git push origin \(__git.current_branch\) --set-upstream -o merge_request.create
+  __git.create_abbr gmwps      git push origin \(__git.current_branch\) --set-upstream -o merge_request.create -o merge_request.merge_when_pipeline_succeeds
 
   # Cleanup declared functions
   functions -e __git.create_abbr

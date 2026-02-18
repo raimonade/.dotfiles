@@ -89,4 +89,3 @@ stack = ["log", "-r", "stack()"]
 # reachable() finds commits reachable in any direction (ancestors + descendants)
 # within the mutable() set (excludes immutable trunk/tags)
 'stack()' = 'reachable(@, mutable())'
-
