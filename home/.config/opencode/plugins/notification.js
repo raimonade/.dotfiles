@@ -1,31 +1,53 @@
-export const NotificationPlugin = async ({ $, client }) => {
-  const soundPath = "/System/Library/Sounds/Chime.aiff";
+const SOUNDS = {
+  success: "/System/Library/Sounds/Glass.aiff",
+  error: "/System/Library/Sounds/Basso.aiff",
+  complete: "/System/Library/Sounds/Ping.aiff",
+  permission: "/System/Library/Sounds/Bottle.aiff",
+};
 
-  // Check if a session is a main (non-subagent) session
+export const NotificationPlugin = async ({ $, client }) => {
+  const playSound = async (sound) => {
+    try {
+      await $`afplay ${SOUNDS[sound]}`;
+    } catch {}
+  };
+
   const isMainSession = async (sessionID) => {
     try {
       const result = await client.session.get({ path: { id: sessionID } });
       const session = result.data ?? result;
       return !session.parentID;
     } catch {
-      // If we can't fetch the session, assume it's main to avoid missing notifications
       return true;
     }
   };
 
   return {
     event: async ({ event }) => {
-      // Only notify for main session events, not background subagents
       if (event.type === "session.idle") {
         const sessionID = event.properties.sessionID;
         if (await isMainSession(sessionID)) {
-          await $`afplay ${soundPath}`;
+          await playSound("complete");
         }
       }
 
-      // Permission prompt created
       if (event.type === "permission.asked") {
-        await $`afplay ${soundPath}`;
+        await playSound("permission");
+      }
+    },
+
+    "tool.execute.after": async (toolInput, output) => {
+      if (toolInput.tool === "swarm_finalize") {
+        try {
+          const result = JSON.parse(output.output ?? "{}");
+          if (result.success) {
+            await playSound("success");
+          }
+        } catch {}
+      }
+
+      if (toolInput.tool === "swarm_abort") {
+        await playSound("error");
       }
     },
   };
