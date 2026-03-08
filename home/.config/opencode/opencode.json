@@ -203,7 +203,7 @@
     "overseer": {
       "type": "local",
       "command": ["npx", "-y", "@dmmulroy/overseer", "mcp"],
-      "enabled": true
+      "enabled": false
     },
     "excalidraw": {
       "type": "remote",

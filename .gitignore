@@ -23,6 +23,9 @@ __pycache__/
 home/.config/opencode/node_modules/
 .opencode/plans/
 
+# overseer
+.overseer/
+
 # jj per-repo configs
 home/.config/jj/repos/
 
