@@ -9,7 +9,7 @@ This repository contains my personal development environment configuration, mana
 ### Key Features
 
 - 🚀 **One-command setup** - Complete development environment in minutes
-- 🤖 **AI Integration** - OpenCode for commit summaries and assistance
+- 🤖 **AI Integration** - Claude Code and OpenCode with full config management
 - 📦 **Resilient Package Management** - Continues installation even if packages fail
 - 🔍 **Health Monitoring** - Comprehensive environment diagnostics
 - 🛠️ **Modular Design** - Separate work and personal configurations
@@ -78,10 +78,11 @@ dot init --skip-ssh --skip-font
 2. Installs packages from Brewfiles
 3. Creates symlinks with GNU Stow
 4. Installs Bun runtime
-5. Installs OpenCode CLI via Homebrew (with native installer/bun/npm fallback)
-6. Generates SSH key for GitHub (optional)
-7. Installs MonoLisa font (optional)
-8. Sets up Fish shell with plugins
+5. Installs Claude Code CLI via npm (with bun fallback)
+6. Installs OpenCode CLI via native installer (with brew/bun/npm fallback)
+7. Generates SSH key for GitHub (optional)
+8. Installs MonoLisa font (optional)
+9. Sets up Fish shell with plugins
 
 ### Maintenance Commands
 
@@ -100,6 +101,7 @@ dot doctor
 Comprehensive diagnostics including:
 - ✅ Homebrew installation
 - ✅ Essential tools (git, nvim, tmux, node, etc.)
+- ✅ Claude Code installation and functionality
 - ✅ OpenCode installation method and functionality
 - ✅ Fish shell configuration
 - ✅ PATH configuration
@@ -393,6 +395,15 @@ dot doctor
 dot stow
 ```
 
+**Claude Code installation:**
+```bash
+# Install via npm
+npm install -g @anthropic-ai/claude-code
+
+# Config is stowed to ~/.claude/ (CLAUDE.md, settings, agents, commands, skills)
+# Marketplace skills reinstall automatically
+```
+
 **OpenCode configuration:**
 ```bash
 # If summary command fails, configure a provider
@@ -402,13 +413,13 @@ opencode
 
 **OpenCode installation issues:**
 ```bash
-# Install via Homebrew (recommended)
-brew install opencode
-
-# Or via native installer
+# Install via native installer (recommended)
 curl -fsSL https://opencode.ai/install | bash
 
-# Or reinstall via Bun
+# Or via Homebrew
+brew install opencode
+
+# Or via Bun
 bun install -g opencode-ai
 
 # Or via npm
@@ -492,5 +503,6 @@ This repository is for personal use. Feel free to fork and adapt for your own ne
 
 - [GNU Stow](https://www.gnu.org/software/stow/) for symlink management
 - [Homebrew](https://brew.sh/) for package management
+- [Claude Code](https://docs.anthropic.com/en/docs/claude-code) for AI-powered development
 - [OpenCode](https://opencode.ai) for AI assistance
 - The dotfiles community for inspiration and best practices

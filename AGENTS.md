@@ -10,6 +10,10 @@ macOS dev env via GNU Stow. Fish + Neovim + Tmux + Git + jj.
 ```
 .dotfiles/
 ├── dot                 # CLI: init/update/doctor/stow/package (2500 lines bash)
+├── home/.claude/       # Stowed to ~/.claude/
+│   ├── agents/         # Subagents: oracle, librarian, reviewer, planner, security
+│   ├── commands/       # Slash commands: code-review, clean, overseer, ...
+│   └── skills/         # Custom skills: elysia, overseer, react-best-practices, vcs-detect
 ├── home/.config/       # Stowed to ~/.config/
 │   ├── fish/           # Shell (AGENTS.md)
 │   ├── nvim/           # Editor (AGENTS.md)
@@ -42,6 +46,11 @@ macOS dev env via GNU Stow. Fish + Neovim + Tmux + Git + jj.
 | Tmux binding | `home/.config/tmux/tmux.conf` |
 | jj alias | `home/.config/jj/config.toml` [aliases] |
 | Git config | `home/.config/git/config` |
+| Claude skill | `home/.claude/skills/<name>/` |
+| Claude command | `home/.claude/commands/<name>.md` |
+| Claude agent | `home/.claude/agents/<name>.md` |
+| Claude settings | `home/.claude/settings.json` |
+| Claude MCP | `home/.claude/mcp.json` |
 | OpenCode skill | `home/.config/opencode/skill/<name>/SKILL.md` |
 | OpenCode command | `home/.config/opencode/command/<name>.md` |
 | OpenCode agent | `home/.config/opencode/agent/<name>.md` |
@@ -66,7 +75,7 @@ macOS dev env via GNU Stow. Fish + Neovim + Tmux + Git + jj.
 ## COMMANDS
 
 ```bash
-dot init              # Full setup (brew, stow, bun, ssh, font, fish)
+dot init              # Full setup (brew, stow, bun, claude, opencode, ssh, font, fish)
 dot update            # Pull (jj-aware) + brew upgrade + restow
 dot doctor            # Health check
 dot stow              # Resymlink only

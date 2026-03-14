@@ -1,0 +1,216 @@
+{
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "permissions": {
+    "allow": [
+      "Edit",
+      "Write",
+      "Read",
+      "Grep",
+      "Glob",
+      "WebFetch",
+      "WebSearch",
+      "Bash(ast-grep:*)",
+      "Bash(awk:*)",
+      "Bash(basename:*)",
+      "Bash(biome:*)",
+      "Bash(bun:*)",
+      "Bash(cargo:*)",
+      "Bash(cat:*)",
+      "Bash(cloc:*)",
+      "Bash(cp:*)",
+      "Bash(date:*)",
+      "Bash(diff:*)",
+      "Bash(dirname:*)",
+      "Bash(doggo:*)",
+      "Bash(dot:*)",
+      "Bash(du:*)",
+      "Bash(echo:*)",
+      "Bash(fd:*)",
+      "Bash(file:*)",
+      "Bash(find:*)",
+      "Bash(fnm:*)",
+      "Bash(fzf:*)",
+      "Bash(gh:*)",
+      "Bash(gh repo clone:*)",
+      "Bash(git:*)",
+      "Bash(glab:*)",
+      "Bash(glab repo clone:*)",
+      "Bash(go:*)",
+      "Bash(grep:*)",
+      "Bash(gsed:*)",
+      "Bash(gunzip:*)",
+      "Bash(gzip:*)",
+      "Bash(head:*)",
+      "Bash(hostname)",
+      "Bash(id)",
+      "Bash(jj:*)",
+      "Bash(jq:*)",
+      "Bash(ls:*)",
+      "Bash(make:*)",
+      "Bash(mkdir:*)",
+      "Bash(mv:*)",
+      "Bash(npm:*)",
+      "Bash(open:*)",
+      "Bash(pbcopy)",
+      "Bash(pbpaste)",
+      "Bash(pnpm:*)",
+      "Bash(prettier:*)",
+      "Bash(printf:*)",
+      "Bash(pwd)",
+      "Bash(readlink:*)",
+      "Bash(realpath:*)",
+      "Bash(rg:*)",
+      "Bash(sed:*)",
+      "Bash(sg:*)",
+      "Bash(shellcheck:*)",
+      "Bash(sort:*)",
+      "Bash(stat:*)",
+      "Bash(stow:*)",
+      "Bash(stylua:*)",
+      "Bash(tail:*)",
+      "Bash(tar:*)",
+      "Bash(tee:*)",
+      "Bash(touch:*)",
+      "Bash(tr:*)",
+      "Bash(tree:*)",
+      "Bash(true)",
+      "Bash(tsc:*)",
+      "Bash(turbo:*)",
+      "Bash(uname:*)",
+      "Bash(uniq:*)",
+      "Bash(unzip:*)",
+      "Bash(vite:*)",
+      "Bash(vitest:*)",
+      "Bash(wc:*)",
+      "Bash(which:*)",
+      "Bash(whoami)",
+      "Bash(yarn:*)",
+      "Bash(z:*)",
+      "Bash(zip:*)",
+      "Bash(zoxide:*)"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./.dev.vars)",
+      "Read(secrets/*)"
+    ],
+    "ask": [
+      "Bash(git push:*)",
+      "Bash(jj git push:*)",
+      "Bash(jj gp:*)",
+      "Bash(gh * approve:*)",
+      "Bash(gh * close:*)",
+      "Bash(gh * comment:*)",
+      "Bash(gh * create:*)",
+      "Bash(gh * delete:*)",
+      "Bash(gh * edit:*)",
+      "Bash(gh * merge:*)",
+      "Bash(gh * reopen:*)",
+      "Bash(gh * review:*)",
+      "Bash(glab * approve:*)",
+      "Bash(glab * close:*)",
+      "Bash(glab * comment:*)",
+      "Bash(glab * create:*)",
+      "Bash(glab * delete:*)",
+      "Bash(glab * edit:*)",
+      "Bash(glab * merge:*)",
+      "Bash(glab * reopen:*)",
+      "Bash(glab * review:*)",
+      "Bash(xargs:*)"
+    ]
+  },
+  "model": "opus",
+  "enabledMcpjsonServers": [
+    "context7",
+    "grep-app",
+    "excalidraw",
+    "Sanity"
+  ],
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "tool == \"Bash\" && (tool_input.command matches \"(npm|pnpm|yarn|bun|cargo|pytest|vitest)\")",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -z \"$TMUX\" ]; then echo '[Hook] Consider using tmux for session persistence with long-running commands' >&2; fi"
+          }
+        ]
+      },
+      {
+        "matcher": "tool == \"Write\" && tool_input.file_path matches \"\\.md$\" && !(tool_input.file_path matches \"(README|CLAUDE)\\.md$\")",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[Hook] Warning: Creating .md file. Are you sure this is necessary?' >&2"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "tool == \"Edit\" && tool_input.file_path matches \"\\.(ts|tsx|js|jsx)$\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if command -v prettier >/dev/null 2>&1 && [ -f \"$PWD/$(echo '{{tool_input.file_path}}' | sed 's|^./||')\" ]; then prettier --write \"$PWD/$(echo '{{tool_input.file_path}}' | sed 's|^./||')\" 2>/dev/null || true; fi"
+          }
+        ]
+      },
+      {
+        "matcher": "tool == \"Edit\" || tool == \"Write\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ -f \"{{tool_input.file_path}}\" ] && grep -q 'console\\.log' \"{{tool_input.file_path}}\" 2>/dev/null; then echo '[Hook] Warning: File contains console.log statements' >&2; fi"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "afplay /System/Library/Sounds/Glass.aiff 2>/dev/null &"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "afplay /System/Library/Sounds/Ping.aiff 2>/dev/null &"
+          }
+        ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "osascript -e 'display notification \"Claude Code needs your attention\" with title \"Claude Code\"'"
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "input=$(cat); user=$(whoami); dir=$(basename \"$(echo \"$input\" | jq -r '.workspace.current_dir')\"); branch=$(cd \"$(echo \"$input\" | jq -r '.workspace.current_dir')\" 2>/dev/null && git -c core.useBuiltinFSMonitor=false rev-parse --abbrev-ref HEAD 2>/dev/null || echo ''); model=$(echo \"$input\" | jq -r '.model.display_name'); remaining=$(echo \"$input\" | jq -r '.context_window.remaining_percentage // empty'); status=\"$user in $dir\"; [ -n \"$branch\" ] && status=\"$status on $branch\"; status=\"$status | $model\"; [ -n \"$remaining\" ] && status=\"$status | context: ${remaining}% remaining\"; echo \"$status\""
+  },
+  "enabledPlugins": {
+    "coding-tutor@every-marketplace": false,
+    "compound-engineering@every-marketplace": false
+  },
+  "skipDangerousModePermissionPrompt": true,
+  "effortLevel": "high"
+}

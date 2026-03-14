@@ -128,27 +128,6 @@
     "edit": "allow",
     "webfetch": "allow"
   },
-  "theme": "catppuccin-macchiato",
-  "keybinds": {
-    "leader": "ctrl+o",
-    "messages_half_page_up": "ctrl+u",
-    "messages_half_page_down": "ctrl+d",
-    "input_delete_to_line_start": "none",
-    "input_delete": "delete,shift+delete"
-  },
-  "provider": {
-    "github-copilot": {
-      "models": {
-        "gpt-5.3-codex": {
-          "name": "GPT-5.3 Codex",
-          "limit": {
-            "context": 1047576,
-            "output": 65536
-          }
-        }
-      }
-    }
-  },
   "mcp": {
     "backstage": {
       "type": "remote",

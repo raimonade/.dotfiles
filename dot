@@ -384,6 +384,40 @@ check_opencode_conflicts() {
     return 1
 }
 
+install_claude() {
+    print_step "Installing Claude Code CLI"
+
+    if command_exists claude; then
+        print_success "Claude Code is already installed"
+        return 0
+    fi
+
+    print_info "Installing Claude Code via npm..."
+
+    if command_exists npm; then
+        if npm install -g @anthropic-ai/claude-code; then
+            print_success "Claude Code installed successfully"
+            return 0
+        else
+            print_warning "npm install failed, trying bun..."
+        fi
+    fi
+
+    if command_exists bun; then
+        if bun install -g @anthropic-ai/claude-code; then
+            print_success "Claude Code installed successfully via Bun"
+            return 0
+        else
+            print_error "Failed to install Claude Code"
+            return 1
+        fi
+    fi
+
+    print_error "npm and bun not available, cannot install Claude Code"
+    print_info "Try manually: npm install -g @anthropic-ai/claude-code"
+    return 1
+}
+
 install_opencode() {
     print_step "Installing OpenCode CLI"
     
@@ -734,14 +768,15 @@ setup_fish_shell() {
 cmd_init() {
     print_header "Initializing dotfiles"
     
-    TOTAL_STEPS=8
+    TOTAL_STEPS=9
     CURRENT_STEP=0
-    
+
     # Run all installation steps
     install_homebrew || return 1
     install_packages || return 1
     stow_dotfiles || return 1
     install_bun || return 1
+    install_claude || print_warning "Claude Code installation failed (continuing)"
     install_opencode || print_warning "OpenCode installation failed (continuing)"
     
     if [[ "${SKIP_SSH:-}" != "true" ]]; then
@@ -849,6 +884,20 @@ cmd_doctor() {
         print_info "Install with: brew install jj"
     fi
     
+    # Check Claude Code
+    if command_exists claude; then
+        print_success "Claude Code installed"
+        if claude --version >/dev/null 2>&1; then
+            print_success "Claude Code is functional"
+        else
+            print_warning "Claude Code may need configuration"
+        fi
+    else
+        print_warning "Claude Code not installed"
+        print_info "Install with: npm install -g @anthropic-ai/claude-code"
+        print_info "Or run 'dot init' to install automatically"
+    fi
+
     # Check OpenCode
     if command_exists opencode; then
         print_success "OpenCode installed"

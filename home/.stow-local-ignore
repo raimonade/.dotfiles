@@ -1,2 +1,52 @@
 node_modules
 bun\.lock
+
+# Claude Code runtime (not config)
+\.claude/backups
+\.claude/cache
+\.claude/chrome
+\.claude/debug
+\.claude/downloads
+\.claude/file-history
+\.claude/history\.jsonl
+\.claude/mcp-needs-auth-cache\.json
+\.claude/paste-cache
+\.claude/plans
+\.claude/plugins
+\.claude/projects
+\.claude/session-env
+\.claude/shell-snapshots
+\.claude/stats-cache\.json
+\.claude/statsig
+\.claude/tasks
+\.claude/telemetry
+\.claude/todos
+\.claude/transcripts
+\.claude/\.DS_Store
+
+# Claude marketplace skills (reinstallable via skill marketplace)
+\.claude/skills/ast-grep
+\.claude/skills/baseline-ui
+\.claude/skills/better-auth-best-practices
+\.claude/skills/better-auth-security-best-practices
+\.claude/skills/create-auth-skill
+\.claude/skills/deploy-to-vercel
+\.claude/skills/email-and-password-best-practices
+\.claude/skills/find-skills
+\.claude/skills/fixing-accessibility
+\.claude/skills/fixing-metadata
+\.claude/skills/fixing-motion-performance
+\.claude/skills/frontend-design
+\.claude/skills/opentui
+\.claude/skills/organization-best-practices
+\.claude/skills/TanStack Start
+\.claude/skills/two-factor-authentication-best-practices
+\.claude/skills/vercel-composition-patterns
+\.claude/skills/vercel-react-best-practices
+\.claude/skills/vercel-react-native-skills
+\.claude/skills/web-design-guidelines
+\.claude/skills/\.DS_Store
+
+# OpenCode runtime
+\.config/opencode/state
+\.config/opencode/\.work
