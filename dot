@@ -252,36 +252,82 @@ install_packages() {
     fi
 }
 
+_remove_stale_symlinks() {
+    # Remove symlinks in $HOME that point outside DOTFILES_DIR (e.g. from a previous repo location).
+    # Checks both files and directories so stow can fold/unfold trees properly.
+    local stale_symlinks=()
+
+    # Check files
+    while IFS= read -r -d '' file; do
+        local relative_path="${file#"${HOME_DIR}"/}"
+        local target_path="${HOME}/${relative_path}"
+
+        if [[ -L "$target_path" ]]; then
+            local abs_dest
+            abs_dest="$(cd "$(dirname "$target_path")" && realpath -q "$(readlink "$target_path")" 2>/dev/null || echo "")"
+            if [[ -n "$abs_dest" && "$abs_dest" == "${DOTFILES_DIR}/"* ]]; then
+                continue
+            fi
+            stale_symlinks+=("$relative_path")
+        fi
+    done < <(find "${HOME_DIR}" -type f -print0)
+
+    # Check directories (stow may need to replace a dir-level symlink with a real directory)
+    while IFS= read -r -d '' dir; do
+        local relative_path="${dir#"${HOME_DIR}"/}"
+        local target_path="${HOME}/${relative_path}"
+
+        if [[ -L "$target_path" ]]; then
+            local abs_dest
+            abs_dest="$(cd "$(dirname "$target_path")" && realpath -q "$(readlink "$target_path")" 2>/dev/null || echo "")"
+            if [[ -n "$abs_dest" && "$abs_dest" == "${DOTFILES_DIR}/"* ]]; then
+                continue
+            fi
+            stale_symlinks+=("$relative_path")
+        fi
+    done < <(find "${HOME_DIR}" -mindepth 1 -type d -print0)
+
+    if [[ ${#stale_symlinks[@]} -gt 0 ]]; then
+        print_warning "Removing stale symlinks from a previous dotfiles location:"
+        printf "  %s\n" "${stale_symlinks[@]}"
+        for sl in "${stale_symlinks[@]}"; do
+            rm -f "${HOME}/${sl}"
+        done
+    fi
+}
+
 stow_dotfiles() {
     print_step "Stowing configuration files"
-    
+
     if ! command_exists stow; then
         print_error "GNU Stow is not installed"
         print_info "Please install stow via Homebrew: brew install stow"
         return 1
     fi
-    
+
     print_info "Stowing files from ${HOME_DIR} to ${HOME}..."
-    
+
+    _remove_stale_symlinks
+
     # Create backup directory for existing configs
     local backup_dir
     backup_dir="${DOTFILES_DIR}/backups/$(date +%Y%m%d_%H%M%S)"
     local files_to_backup=()
-    
-    # Check for existing files that would be overwritten
+
+    # Check for existing regular files that would be overwritten
     while IFS= read -r -d '' file; do
         local relative_path="${file#"${HOME_DIR}"/}"
         local target_path="${HOME}/${relative_path}"
-        
+
         if [[ -e "$target_path" && ! -L "$target_path" ]]; then
             files_to_backup+=("$relative_path")
         fi
     done < <(find "${HOME_DIR}" -type f -print0)
-    
+
     if [[ ${#files_to_backup[@]} -gt 0 ]]; then
         print_warning "The following files will be replaced:"
         printf "  %s\n" "${files_to_backup[@]}"
-        
+
         if confirm "Create backups of existing files?" "y"; then
             mkdir -p "$backup_dir"
             for file in "${files_to_backup[@]}"; do
@@ -1087,7 +1133,9 @@ cmd_stow() {
     fi
     
     print_info "Creating symlinks for dotfiles..."
-    
+
+    _remove_stale_symlinks
+
     if stow -R -v -d "${DOTFILES_DIR}" -t "${HOME}" home; then
         print_success "Dotfiles stowed successfully"
         print_info "Configuration files are now symlinked to your home directory"

@@ -29,6 +29,10 @@ home/.config/opencode/node_modules/
 # jj per-repo configs
 home/.config/jj/repos/
 
+# local state / runtime (not config)
+home/.local/
+home/.config/zed/prompts/
+
 # pi agent runtime/state (keep settings + customization resources tracked)
 home/.pi/agent/*
 
