@@ -47,6 +47,12 @@ bun\.lock
 \.claude/skills/web-design-guidelines
 \.claude/skills/\.DS_Store
 
+# Local runtime state
+\.local
+
+# Zed runtime (not config)
+\.config/zed/prompts
+
 # OpenCode runtime
 \.config/opencode/state
 \.config/opencode/\.work
