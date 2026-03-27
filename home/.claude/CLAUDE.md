@@ -166,6 +166,3 @@ Invoke for: understanding 3rd party libraries/packages, exploring remote reposit
 - WebSearch — current docs, blog posts, discussions
 
 **Output**: direct answer + source links + diagrams if architecture involved. Link to GitHub source with fluent markdown links.
-
-### Overseer
-Invoke for: task orchestration, milestone/task/subtask management, finding next ready work, recording learnings, tracking multi-session work.

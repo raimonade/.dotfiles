@@ -23,9 +23,6 @@ __pycache__/
 home/.config/opencode/node_modules/
 .opencode/plans/
 
-# overseer
-.overseer/
-
 # jj per-repo configs
 home/.config/jj/repos/
 
@@ -33,9 +30,16 @@ home/.config/jj/repos/
 home/.local/
 home/.config/zed/prompts/
 
+# pi runtime
+home/.pi/todos/*
+.pi/todos/*
+home/.pi/agent/extensions/**/node_modules/
+
 # pi agent runtime/state (keep settings + customization resources tracked)
 home/.pi/agent/*
 
+!home/.pi/agent/cloak.json
+!home/.pi/agent/mcp.json
 !home/.pi/agent/settings.json
 !home/.pi/agent/tsconfig.json
 !home/.pi/agent/package.json

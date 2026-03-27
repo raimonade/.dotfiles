@@ -7,6 +7,14 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "agent_servers": {
+    "opencode": {
+      "type": "registry"
+    },
+    "claude-acp": {
+      "type": "registry"
+    }
+  },
   "redact_private_values": false,
   "auto_update": false,
   "telemetry": {
@@ -19,7 +27,7 @@
   "icon_theme": {
     "mode": "system",
     "light": "JetBrains New UI Icons (Dark)",
-    "dark": "Zed (Default)"
+    "dark": "JetBrains New UI Icons (Dark)"
   },
   "ui_font_size": 16,
   "buffer_font_size": 15,

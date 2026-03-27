@@ -47,5 +47,5 @@
 [user]
 	email = "raimonds.korzenevskis@gmail.com"
 	name = "Raimonds Korzenevskis"
-	signingKey = "~/.ssh/key.pub"
+	signingkey = /Users/rkorzenevskis/.ssh/key.pub
 

@@ -595,6 +595,46 @@ install_opencode() {
     fi
 }
 
+install_vite_plus() {
+    print_step "Installing Vite+"
+
+    if command_exists vp; then
+        print_success "Vite+ is already installed"
+        return 0
+    fi
+
+    print_info "Installing Vite+..."
+    if curl -fsSL https://vite.plus | bash; then
+        print_success "Vite+ installed successfully"
+    else
+        print_error "Failed to install Vite+"
+        return 1
+    fi
+}
+
+install_pi() {
+    print_step "Installing pi"
+
+    if command_exists pi; then
+        print_success "pi is already installed"
+        return 0
+    fi
+
+    if ! command_exists vp; then
+        print_error "Vite+ (vp) is required to install pi"
+        print_info "Run 'dot init' or install Vite+ first"
+        return 1
+    fi
+
+    print_info "Installing pi..."
+    if vp install -g @mariozechner/pi-coding-agent; then
+        print_success "pi installed successfully"
+    else
+        print_error "Failed to install pi"
+        return 1
+    fi
+}
+
 generate_ssh_key() {
     print_step "Generating SSH key for GitHub"
     
@@ -814,7 +854,7 @@ setup_fish_shell() {
 cmd_init() {
     print_header "Initializing dotfiles"
     
-    TOTAL_STEPS=9
+    TOTAL_STEPS=11
     CURRENT_STEP=0
 
     # Run all installation steps
@@ -824,7 +864,9 @@ cmd_init() {
     install_bun || return 1
     install_claude || print_warning "Claude Code installation failed (continuing)"
     install_opencode || print_warning "OpenCode installation failed (continuing)"
-    
+    install_vite_plus || return 1
+    install_pi || print_warning "pi installation failed (continuing)"
+
     if [[ "${SKIP_SSH:-}" != "true" ]]; then
         generate_ssh_key || print_warning "SSH key generation failed (continuing)"
     fi
@@ -1022,7 +1064,7 @@ cmd_doctor() {
     fi
     
     # Check key development tools
-    local dev_tools=("git" "nvim" "tmux" "node" "npm" "bun" "jq" "fd" "rg" "fzf" "starship")
+    local dev_tools=("git" "nvim" "tmux" "node" "npm" "bun" "vp" "pi" "jq" "fd" "rg" "fzf" "starship")
     local missing_tools=()
     
     for tool in "${dev_tools[@]}"; do

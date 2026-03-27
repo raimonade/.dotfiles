@@ -12,8 +12,8 @@ macOS dev env via GNU Stow. Fish + Neovim + Tmux + Git + jj.
 ├── dot                 # CLI: init/update/doctor/stow/package (2500 lines bash)
 ├── home/.claude/       # Stowed to ~/.claude/
 │   ├── agents/         # Subagents: oracle, librarian, reviewer, planner, security
-│   ├── commands/       # Slash commands: code-review, clean, overseer, ...
-│   └── skills/         # Custom skills: elysia, overseer, react-best-practices, vcs-detect
+│   ├── commands/       # Slash commands: code-review, clean, ...
+│   └── skills/         # Custom skills: elysia, react-best-practices, vcs-detect
 ├── home/.config/       # Stowed to ~/.config/
 │   ├── fish/           # Shell (AGENTS.md)
 │   ├── nvim/           # Editor (AGENTS.md)

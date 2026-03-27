@@ -26,6 +26,7 @@ return {
 			-- List your LSP servers here.
 			local servers = {
 				bashls = {},
+				biome = {},
 				cssls = {},
 				html = {},
 				jsonls = {},
@@ -50,6 +51,13 @@ return {
 				},
 				yamlls = {},
 				svelte = {},
+				rust_analyzer = {
+					settings = {
+						["rust-analyzer"] = {
+							check = { command = "clippy", features = "all" },
+						},
+					},
+				},
 			}
 
 			local formatters = {

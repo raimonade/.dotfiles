@@ -53,6 +53,7 @@ you cut will be cut again.
 ## Error Handling
 
 - Prefer errors as values over throwing exceptions for expected failure paths
+- In TypeScript, prefer `better-result` (`dmmulroy/better-result`) for fallible operations when it fits the project and can be adopted without disproportionate churn
 - Prefer tagged/structured error types over untyped error strings
 - Reserve thrown exceptions for truly exceptional, unrecoverable, or framework-boundary cases
 - Propagate errors explicitly; do not swallow them or replace them with success-shaped fallbacks
@@ -65,6 +66,7 @@ you cut will be cut again.
 - State what is still true or preserved, especially whether data, prior work, or system state remain intact
 - Include the most useful recovery action or next diagnostic step
 - Match detail to audience: user-facing errors should be plain and actionable; internal errors should include precise operational context needed for debugging
+- Internal errors should name the failing operation, relevant identifiers, expected vs actual state when useful, and the most likely remediation path
 
 ## Module and API Design
 
@@ -96,6 +98,7 @@ you cut will be cut again.
 
 - Prefer `vitest` for tests when working in TypeScript/JavaScript projects
 - Prefer `fast-check` for property testing when it is a good fit, especially for parsers, validators, transformations, state transitions, and combinator-heavy logic
+- Prefer `fast-check` arbitraries as the source for mock data utilities when practical
 - Prefer Standard Schema-compatible validation for input parsing and boundary validation when introducing or revising schema-based validation
 
 ## Tooling
@@ -146,5 +149,3 @@ Invoke for: code review, architecture decisions, debugging analysis, refactor pl
 ### Librarian
 Invoke for: understanding 3rd party libraries/packages, exploring remote repositories, discovering open source patterns.
 
-### Overseer
-Invoke for: task orchestration, milestone/task/subtask management, finding next ready work, recording learnings, tracking multi-session work.

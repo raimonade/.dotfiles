@@ -211,6 +211,5 @@
     "compound-engineering@every-marketplace": false
   },
   "effortLevel": "high",
-  "skipDangerousModePermissionPrompt": true,
-  "model": "sonnet"
+  "skipDangerousModePermissionPrompt": true
 }
