@@ -54,10 +54,6 @@ brew bundle --file=./packages/bundle.work
 ### Utilities
 
 ```bash
-# Summarize recent commits with AI
-./dot summary
-./dot summary -n 5 -d
-
 # Benchmark Fish shell startup performance
 ./dot benchmark-shell
 ./dot benchmark-shell -r 20 -v

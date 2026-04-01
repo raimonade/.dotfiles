@@ -1,6 +1,6 @@
 # Dotfiles
 
-A comprehensive, automated dotfiles management system for macOS development environments. Features a powerful CLI tool for setup, maintenance, and AI-powered development insights.
+A comprehensive, automated dotfiles management system for macOS development environments. Features a powerful CLI tool for setup, maintenance, and environment management.
 
 ## Overview
 
@@ -9,7 +9,7 @@ This repository contains my personal development environment configuration, mana
 ### Key Features
 
 - 🚀 **One-command setup** - Complete development environment in minutes
-- 🤖 **AI Integration** - Claude Code and OpenCode with full config management
+- 🤖 **AI Integration** - Claude Code and Pi with full config management
 - 📦 **Resilient Package Management** - Continues installation even if packages fail
 - 🔍 **Health Monitoring** - Comprehensive environment diagnostics
 - 🛠️ **Modular Design** - Separate work and personal configurations
@@ -25,7 +25,7 @@ cd ~/.dotfiles
 ./dot init
 
 # Or customize the installation
-./dot init --skip-ssh --skip-font
+./dot init --skip-ssh
 ```
 
 After installation, the `dot` command will be available globally for ongoing management. Running `dot` without arguments shows help.
@@ -66,11 +66,6 @@ dot init
 # Skip SSH key generation
 dot init --skip-ssh
 
-# Skip font installation  
-dot init --skip-font
-
-# Skip both SSH and font setup
-dot init --skip-ssh --skip-font
 ```
 
 **What it does:**
@@ -79,9 +74,9 @@ dot init --skip-ssh --skip-font
 3. Creates symlinks with GNU Stow
 4. Installs Bun runtime
 5. Installs Claude Code CLI via npm (with bun fallback)
-6. Installs OpenCode CLI via native installer (with brew/bun/npm fallback)
-7. Generates SSH key for GitHub (optional)
-8. Installs MonoLisa font (optional)
+6. Installs Vite+ (required for Pi installation)
+7. Installs Pi
+8. Generates SSH key for GitHub (optional)
 9. Sets up Fish shell with plugins
 
 ### Maintenance Commands
@@ -102,7 +97,7 @@ Comprehensive diagnostics including:
 - ✅ Homebrew installation
 - ✅ Essential tools (git, nvim, tmux, node, etc.)
 - ✅ Claude Code installation and functionality
-- ✅ OpenCode installation method and functionality
+- ✅ Pi installation and functionality
 - ✅ Fish shell configuration
 - ✅ PATH configuration
 - ⚠️ Broken symlinks detection
@@ -119,40 +114,6 @@ Shows which packages are installed vs. missing from your Brewfiles.
 dot retry-failed
 ```
 Attempts to reinstall packages that failed during initial setup.
-
-### AI-Powered Features
-
-#### `dot summary` - Commit Analysis
-Uses OpenCode to generate intelligent summaries of recent git commits.
-
-```bash
-# Summarize last 3 commits (default)
-dot summary
-
-# Summarize specific number of commits
-dot summary -n 5
-
-# Include file diffs for detailed analysis
-dot summary -d
-
-# Verbose mode with commit details
-dot summary -v
-
-# Combine options
-dot summary -n 10 -d -v
-```
-
-**Example Output:**
-```
-=> Summary of Recent Changes
-
-Development Focus: Recent work centers on improving the diagnostic navigation
-system in Neovim, updating deprecated API calls to use modern vim.diagnostic.jump()
-functions. This includes better error handling and user experience improvements.
-
-Technical Patterns: The commits show incremental configuration refinements
-with a focus on tooling updates and environment optimization...
-```
 
 ### Performance & Development Tools
 
@@ -404,26 +365,10 @@ npm install -g @anthropic-ai/claude-code
 # Marketplace skills reinstall automatically
 ```
 
-**OpenCode configuration:**
+**Pi configuration:**
 ```bash
-# If summary command fails, configure a provider
-opencode
-# Then use /connect to set up a provider
-```
-
-**OpenCode installation issues:**
-```bash
-# Install via native installer (recommended)
-curl -fsSL https://opencode.ai/install | bash
-
-# Or via Homebrew
-brew install opencode
-
-# Or via Bun
-bun install -g opencode-ai
-
-# Or via npm
-npm install -g opencode-ai
+# Start Pi and configure providers/models from the built-in UI or settings
+pi
 ```
 
 ### Getting Help
@@ -461,8 +406,8 @@ dot stow
 ### Selective Installation
 
 ```bash
-# Install only base packages, skip optional components
-dot init --skip-ssh --skip-font
+# Install only base packages, skip optional SSH setup
+dot init --skip-ssh
 
 # Check what's missing
 dot check-packages
@@ -482,19 +427,6 @@ dot completions
 # - All commands, subcommands, and options
 ```
 
-### AI-Powered Workflows
-
-```bash
-# Review recent work
-dot summary -v
-
-# Detailed analysis for release notes
-dot summary -n 10 -d
-
-# Quick daily standup summary
-dot summary -n 5
-```
-
 ## License
 
 This repository is for personal use. Feel free to fork and adapt for your own needs.
@@ -504,5 +436,5 @@ This repository is for personal use. Feel free to fork and adapt for your own ne
 - [GNU Stow](https://www.gnu.org/software/stow/) for symlink management
 - [Homebrew](https://brew.sh/) for package management
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code) for AI-powered development
-- [OpenCode](https://opencode.ai) for AI assistance
+- [Pi](https://github.com/badlogic/pi-mono) for terminal AI workflows
 - The dotfiles community for inspiration and best practices

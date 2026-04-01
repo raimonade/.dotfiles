@@ -20,10 +20,6 @@ macOS dev env via GNU Stow. Fish + Neovim + Tmux + Git + jj.
 │   ├── tmux/           # Multiplexer + TPM plugins
 │   ├── git/            # Conditional work config
 │   ├── jj/             # Jujutsu VCS + intent-check hook
-│   ├── opencode/       # AI agent config (AGENTS.md)
-│   │   ├── agent/      # Subagents: oracle, librarian, code-reviewer
-│   │   ├── command/    # Slash commands: code-review, complete-next-task, ...
-│   │   └── skill/      # Skills: feedback-loop, vcs-detect, spec-planner, ...
 │   └── ghostty/        # Terminal
 ├── home/.local/bin/    # Scripts stowed to ~/.local/bin (on PATH)
 │   └── task-loop       # Autonomous PRD impl loop
@@ -51,9 +47,6 @@ macOS dev env via GNU Stow. Fish + Neovim + Tmux + Git + jj.
 | Claude agent | `home/.claude/agents/<name>.md` |
 | Claude settings | `home/.claude/settings.json` |
 | Claude MCP | `home/.claude/mcp.json` |
-| OpenCode skill | `home/.config/opencode/skill/<name>/SKILL.md` |
-| OpenCode command | `home/.config/opencode/command/<name>.md` |
-| OpenCode agent | `home/.config/opencode/agent/<name>.md` |
 
 ## CONVENTIONS
 
@@ -70,17 +63,16 @@ macOS dev env via GNU Stow. Fish + Neovim + Tmux + Git + jj.
 - Casks in `bundle.work` (use base bundle)
 - Hardcode paths (use `$DOTFILES_DIR`, `$HOME`)
 - Nested git repos in stowed dirs (creates symlink issues)
-- node_modules in stowed dirs (opencode exception)
+- node_modules in stowed dirs
 
 ## COMMANDS
 
 ```bash
-dot init              # Full setup (brew, stow, bun, claude, opencode, ssh, font, fish)
+dot init              # Full setup (brew, stow, bun, claude, vite+, pi, ssh, fish)
 dot update            # Pull (jj-aware) + brew upgrade + restow
 dot doctor            # Health check
 dot stow              # Resymlink only
 dot package add X     # Add + install package
-dot summary           # AI commit summary (opencode)
 dot benchmark-shell   # Fish startup perf
 dot gen-ssh-key       # Generate ed25519 key by email domain
 ```
@@ -108,4 +100,3 @@ dot gen-ssh-key       # Generate ed25519 key by email domain
 - jj hook warns on push if AGENTS.md stale
 - `dot update` handles WARP VPN brew API issues automatically
 - Tmux theme must load BEFORE continuum (status-right conflict)
-- opencode/ has node_modules (exception to stow anti-pattern)
