@@ -308,12 +308,34 @@ function findLastCompletedAssistantMessage(ctx: ExtensionContext): {
   return { skippedIncomplete };
 }
 
+type ModelAuthResult =
+  | { ok: true; apiKey?: string; headers?: Record<string, string> }
+  | { ok: false; error: string };
+
+type AnswerModelRegistry = {
+  find: (provider: string, modelId: string) => Model<Api> | undefined;
+  getAvailable: () => Model<Api>[];
+  getApiKey?: (model: Model<Api>) => Promise<string | undefined>;
+  getApiKeyAndHeaders?: (model: Model<Api>) => Promise<ModelAuthResult>;
+};
+
+async function getModelAuth(modelRegistry: AnswerModelRegistry, model: Model<Api>): Promise<ModelAuthResult> {
+  if (typeof modelRegistry.getApiKeyAndHeaders === "function") {
+    return modelRegistry.getApiKeyAndHeaders(model);
+  }
+
+  if (typeof modelRegistry.getApiKey === "function") {
+    const apiKey = await modelRegistry.getApiKey(model);
+    if (apiKey) {
+      return { ok: true, apiKey };
+    }
+  }
+
+  return { ok: false, error: "No API key available" };
+}
+
 async function selectExtractionModel(
-  modelRegistry: {
-    find: (provider: string, modelId: string) => Model<Api> | undefined;
-    getApiKey: (model: Model<Api>) => Promise<string | undefined>;
-    getAvailable: () => Model<Api>[];
-  },
+  modelRegistry: AnswerModelRegistry,
   preferences: ExtractionModelPreference[],
 ): Promise<Model<Api> | undefined> {
   for (const candidate of preferences) {
@@ -322,8 +344,8 @@ async function selectExtractionModel(
       : modelRegistry.getAvailable().filter((model) => model.id === candidate.modelId && model.input.includes("text"));
 
     for (const model of models) {
-      const apiKey = await modelRegistry.getApiKey(model);
-      if (apiKey) {
+      const auth = await getModelAuth(modelRegistry, model);
+      if (auth.ok) {
         return model;
       }
     }
@@ -633,11 +655,12 @@ export default function (pi: ExtensionAPI) {
       loader.onAbort = () => done({ type: "cancelled" });
 
       const doExtract = async () => {
-        const apiKey = await ctx.modelRegistry.getApiKey(extractionModel);
-        if (!apiKey) {
+        const auth = await getModelAuth(ctx.modelRegistry, extractionModel);
+        if (!auth.ok) {
+          const authError = "error" in auth ? auth.error : "Unknown auth error";
           return {
             type: "error",
-            message: `No API key available for ${extractionModel.provider}/${extractionModel.id}`,
+            message: `No auth available for ${extractionModel.provider}/${extractionModel.id}: ${authError}`,
           } as ExtractionOutcome;
         }
 
@@ -650,7 +673,7 @@ export default function (pi: ExtensionAPI) {
         const response = await complete(
           extractionModel,
           { systemPrompt: SYSTEM_PROMPT, messages: [userMessage] },
-          { apiKey, signal: loader.signal },
+          { apiKey: auth.apiKey, headers: auth.headers, signal: loader.signal },
         );
 
         if (response.stopReason === "aborted") {
