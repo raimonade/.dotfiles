@@ -208,7 +208,16 @@
   },
   "enabledPlugins": {
     "coding-tutor@every-marketplace": false,
-    "compound-engineering@every-marketplace": false
+    "compound-engineering@every-marketplace": false,
+    "plannotator@plannotator": true
+  },
+  "extraKnownMarketplaces": {
+    "plannotator": {
+      "source": {
+        "source": "github",
+        "repo": "backnotprop/plannotator"
+      }
+    }
   },
   "effortLevel": "high",
   "skipDangerousModePermissionPrompt": true

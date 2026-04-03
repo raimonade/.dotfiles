@@ -104,6 +104,43 @@ you cut will be cut again.
 - Read enough context before editing; avoid thrashing
 - After edits, run a lightweight verification step when relevant
 
+## Verification & Completion
+
+- Do not treat a successful edit/tool call as proof the task is complete
+- Before reporting success, run the smallest relevant verification for the changed surface area and report the exact command and result
+- If verification could not be run, say that explicitly and say why
+- Prefer targeted verification during iteration; run broader checks before final handoff when the repo provides them
+
+## File Read & Edit Discipline
+
+- Re-read a file before editing when the task is long-running, the file may have changed, or prior context may be stale
+- After editing, inspect the changed region or diff to confirm the edit applied as intended
+- For files above ~500 LOC, read in chunks; do not assume one read captured the whole file
+- If a search/tool result looks suspiciously small, assume truncation is possible and re-run with narrower scope
+
+## Refactors & Large Changes
+
+- Break multi-file changes into small coherent phases
+- Prefer batches of ~3-5 files unless the work is clearly independent
+- Use parallel/subagents only when the client supports them and the work is truly independent
+- If dead code/noise is materially increasing confusion in a large file, do a cleanup-only pass first, then make the real change
+
+## Rename / API Change Safety
+
+- On renames or signature changes, search separately for:
+  - direct calls/usages
+  - type references
+  - string literals
+  - dynamic imports / require()
+  - re-exports / barrel files
+  - tests and mocks
+
+## Quality Bar
+
+- Prefer the simplest correct solution
+- Do not preserve obviously broken local patterns just to keep the diff small
+- If a broader structural fix is needed, say so explicitly and either include the minimal necessary fix or propose a follow-up
+
 ## Scope Control
 
 - Avoid over-engineering; do not add features, abstractions, configurability, or refactors beyond what the task requires
