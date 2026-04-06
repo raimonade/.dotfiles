@@ -1,12 +1,13 @@
 {
   "mcpServers": {
     "context7": {
-      "url": "https://m.mulroy.dev/m/c7",
-      "lifecycle": "eager"
+      "url": "https://mcp.context7.com/mcp"
     },
     "grep_app": {
-      "url": "https://m.mulroy.dev/m/g",
-      "lifecycle": "eager"
+      "url": "https://mcp.grep.app"
+    },
+    "linear": {
+      "url": "https://mcp.linear.app/mcp"
     }
   }
 }

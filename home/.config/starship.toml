@@ -1,3 +1,8 @@
+# Vite Plus node shims can occasionally take longer than Starship's default
+# 500ms timeout to resolve. Give language-version commands a bit more room and
+# avoid probing Node in repos that merely contain JS/TS files.
+command_timeout = 2000
+
 # Put custom.scm right after directory
 format = "$directory${custom.scm}$all"
 
@@ -15,32 +20,40 @@ truncate_to_repo = false
 detect_files = ["global.json", "Directory.Build.props", "Directory.Build.targets", "Packages.props"]
 
 [git_branch]
-disabled = true
-symbol = " "
+# disabled = true
+symbol = " "
 truncation_length = 18
 
 [git_status]
-disabled = true
+# disabled = true
 
 [git_commit]
-disabled = true
+# disabled = true
 
 [git_state]
-disabled = true
+# disabled = true
 
-[custom.scm]
-when = "jj-starship detect"
-shell = ["jj-starship", "--strip-bookmark-prefix", "rk/", "--truncate-name", "20", "--bookmarks-display-limit", "1"]
-format = "$output "
+# [custom.scm]
+# when = "jj-starship detect"
+# shell = ["jj-starship", "--strip-bookmark-prefix", "rk/", "--truncate-name", "20", "--bookmarks-display-limit", "1"]
+# format = "$output "
 
 [golang]
-symbol = " "
+symbol = " "
 
 [lua]
-symbol = " "
+symbol = " "
 
 [nix_shell]
-symbol = " "
+symbol = " "
+
+[nodejs]
+# Only show Node for actual Node projects. This avoids unnecessary `node
+# --version` calls in repos that just happen to contain JS/TS files.
+detect_extensions = []
+detect_files = ["package.json", ".node-version", ".nvmrc", ".tool-versions"]
+detect_folders = ["node_modules"]
+format = "[$symbol($version)]($style) "
 
 [gcloud]
 disabled = true
@@ -50,9 +63,5 @@ min_time = 2_000
 format = "[$duration]($style) "
 style = "bold yellow"
 
-[nodejs]
-format = "[$symbol($version)]($style) "
-
 [package]
 disabled = true
-

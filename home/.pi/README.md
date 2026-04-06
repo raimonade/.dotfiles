@@ -56,7 +56,6 @@ Global catalog sources live here:
 Current starter catalog in this dotfiles repo includes:
 
 - ephemeral skills: `grill-me`, `pr-walkthrough`, `prd-to-todos`, `tdd`, `write-a-prd`
-- ephemeral MCP config: `cloudflare-api`
 
 Typical flow:
 

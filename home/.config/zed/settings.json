@@ -15,6 +15,14 @@
       "type": "registry"
     }
   },
+  "context_servers": {
+    "linear": {
+      "source": "custom",
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://mcp.linear.app/mcp"],
+      "env": {}
+    }
+  },
   "redact_private_values": false,
   "auto_update": false,
   "telemetry": {

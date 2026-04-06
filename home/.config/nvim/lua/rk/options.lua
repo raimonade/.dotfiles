@@ -28,6 +28,9 @@ vim.opt.wrap = false
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
+-- Disable built-in ftplugin maps so our treesitter textobject motions are not shadowed.
+vim.g.no_plugin_maps = true
+
 -- Better splitting
 vim.opt.splitbelow = true
 vim.opt.splitright = true
@@ -92,3 +95,27 @@ vim.opt.guicursor = {
 -- 	-- virtual_text = { current_line = true },
 -- 	virtual_lines = false,
 -- })
+
+local treesitter_group = vim.api.nvim_create_augroup("rk-treesitter-main", { clear = true })
+
+vim.api.nvim_create_autocmd("FileType", {
+	group = treesitter_group,
+	callback = function(args)
+		pcall(vim.treesitter.start, args.buf)
+
+		if not vim.treesitter.get_parser(args.buf, nil, { error = false }) then
+			return
+		end
+
+		local filetype = vim.bo[args.buf].filetype
+		local language = vim.treesitter.language.get_lang(filetype)
+		if not language then
+			return
+		end
+
+		local has_indents, query = pcall(vim.treesitter.query.get, language, "indents")
+		if has_indents and query then
+			vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+		end
+	end,
+})
