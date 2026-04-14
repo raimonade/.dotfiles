@@ -15,6 +15,13 @@
     "Sanity": {
       "type": "http",
       "url": "https://mcp.sanity.io"
+    },
+    "css-studio": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "cssstudio"
+      ]
     }
   }
 }

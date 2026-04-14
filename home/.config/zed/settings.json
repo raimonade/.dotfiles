@@ -17,7 +17,6 @@
   },
   "context_servers": {
     "linear": {
-      "source": "custom",
       "command": "npx",
       "args": ["-y", "mcp-remote", "https://mcp.linear.app/mcp"],
       "env": {}
@@ -39,5 +38,5 @@
   },
   "ui_font_size": 16,
   "buffer_font_size": 15,
-  "theme": "Catppuccin Macchiato",
+  "theme": "Pierre Dark",
 }

@@ -32,7 +32,7 @@ function createReporter(ctx: Pick<ExtensionContext, "hasUI" | "ui">): Reporter {
 	return {
 		notify: (message, type = "info") => {
 			if (ctx.hasUI) {
-				ctx.ui.notify(message, type === "success" ? "info" : type);
+				ctx.ui.notify(message, type);
 			} else if (type === "error") {
 				console.error(message);
 			} else {

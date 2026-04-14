@@ -50,8 +50,14 @@ Return exactly one JSON object with this shape:
 Rules:
 - Extract only questions that require user input.
 - Keep questions in the original order.
-- Keep question text concise but faithful to the source.
-- Include context only when it materially helps answer the question.
+- Each extracted question must be understandable on its own without requiring the user to reread earlier messages.
+- Prefer preserving the original wording with light cleanup over aggressive paraphrasing.
+- Preserve all details that could affect the answer, including the subject, options, constraints, file/component names, and requested output format.
+- Resolve ambiguous references like "it", "that", "this", or "the above" when nearby text makes the referent clear.
+- Keep the question concise only if conciseness does not remove answer-relevant context.
+- Do not shorten a question if the shortened version would force the user to scroll up to understand what is being asked.
+- If important setup would make the question clearer, include a short context field.
+- When unsure, favor completeness and clarity over brevity.
 - Do not add commentary outside the JSON object.
 - If there are no user-answerable questions, return {"questions": []}.`;
 
@@ -308,34 +314,15 @@ function findLastCompletedAssistantMessage(ctx: ExtensionContext): {
   return { skippedIncomplete };
 }
 
-type ModelAuthResult =
-  | { ok: true; apiKey?: string; headers?: Record<string, string> }
-  | { ok: false; error: string };
-
-type AnswerModelRegistry = {
-  find: (provider: string, modelId: string) => Model<Api> | undefined;
-  getAvailable: () => Model<Api>[];
-  getApiKey?: (model: Model<Api>) => Promise<string | undefined>;
-  getApiKeyAndHeaders?: (model: Model<Api>) => Promise<ModelAuthResult>;
-};
-
-async function getModelAuth(modelRegistry: AnswerModelRegistry, model: Model<Api>): Promise<ModelAuthResult> {
-  if (typeof modelRegistry.getApiKeyAndHeaders === "function") {
-    return modelRegistry.getApiKeyAndHeaders(model);
-  }
-
-  if (typeof modelRegistry.getApiKey === "function") {
-    const apiKey = await modelRegistry.getApiKey(model);
-    if (apiKey) {
-      return { ok: true, apiKey };
-    }
-  }
-
-  return { ok: false, error: "No API key available" };
-}
-
 async function selectExtractionModel(
-  modelRegistry: AnswerModelRegistry,
+  modelRegistry: {
+    find: (provider: string, modelId: string) => Model<Api> | undefined;
+    getApiKeyAndHeaders: (model: Model<Api>) => Promise<
+      | { ok: true; apiKey?: string; headers?: Record<string, string> }
+      | { ok: false; error: string }
+    >;
+    getAvailable: () => Model<Api>[];
+  },
   preferences: ExtractionModelPreference[],
 ): Promise<Model<Api> | undefined> {
   for (const candidate of preferences) {
@@ -344,7 +331,7 @@ async function selectExtractionModel(
       : modelRegistry.getAvailable().filter((model) => model.id === candidate.modelId && model.input.includes("text"));
 
     for (const model of models) {
-      const auth = await getModelAuth(modelRegistry, model);
+      const auth = await modelRegistry.getApiKeyAndHeaders(model);
       if (auth.ok) {
         return model;
       }
@@ -655,7 +642,7 @@ export default function (pi: ExtensionAPI) {
       loader.onAbort = () => done({ type: "cancelled" });
 
       const doExtract = async () => {
-        const auth = await getModelAuth(ctx.modelRegistry, extractionModel);
+        const auth = await ctx.modelRegistry.getApiKeyAndHeaders(extractionModel);
         if (!auth.ok) {
           const authError = "error" in auth ? auth.error : "Unknown auth error";
           return {

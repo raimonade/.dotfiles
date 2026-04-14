@@ -52,3 +52,6 @@ window-padding-y = 0
 
 # Decrease scroll sensitivity
 mouse-scroll-multiplier = 0.4
+
+#Keybinds
+keybind = alt+backspace=text:\x1b\x7f

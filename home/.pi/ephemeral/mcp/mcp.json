@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "cloudflare-api": {
+      "url": "https://mcp.cloudflare.com/mcp",
+      "auth": "oauth"
+    },
+    "uidotsh": {
+      "url": "https://ui.sh/mcp?agent=opencode",
+      "auth": "bearer",
+      "bearerTokenEnv": "UIDOTSH_TOKEN"
+    }
+  }
+}
