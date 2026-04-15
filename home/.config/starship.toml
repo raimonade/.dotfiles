@@ -21,7 +21,7 @@ detect_files = ["global.json", "Directory.Build.props", "Directory.Build.targets
 
 [git_branch]
 # disabled = true
-symbol = " "
+symbol = " "
 truncation_length = 18
 
 [git_status]
@@ -39,13 +39,13 @@ truncation_length = 18
 # format = "$output "
 
 [golang]
-symbol = " "
+symbol = " "
 
 [lua]
-symbol = " "
+symbol = " "
 
 [nix_shell]
-symbol = " "
+symbol = " "
 
 [nodejs]
 # Only show Node for actual Node projects. This avoids unnecessary `node

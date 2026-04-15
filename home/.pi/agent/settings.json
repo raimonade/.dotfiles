@@ -1,8 +1,8 @@
 {
   "lastChangelogVersion": "0.65.2",
-  "defaultProvider": "anthropic",
-  "defaultModel": "claude-opus-4-6",
-  "defaultThinkingLevel": "xhigh",
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.4",
+  "defaultThinkingLevel": "high",
   "packages": [
     {
       "source": "npm:@plannotator/pi-extension",

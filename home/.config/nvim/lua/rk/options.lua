@@ -96,6 +96,11 @@ vim.opt.guicursor = {
 -- 	virtual_lines = false,
 -- })
 
+local treesitter_indent_disabled_filetypes = {
+	ocaml = true,
+	["ocaml.interface"] = true,
+}
+
 local treesitter_group = vim.api.nvim_create_augroup("rk-treesitter-main", { clear = true })
 
 vim.api.nvim_create_autocmd("FileType", {
@@ -103,11 +108,15 @@ vim.api.nvim_create_autocmd("FileType", {
 	callback = function(args)
 		pcall(vim.treesitter.start, args.buf)
 
+		local filetype = vim.bo[args.buf].filetype
+		if treesitter_indent_disabled_filetypes[filetype] then
+			return
+		end
+
 		if not vim.treesitter.get_parser(args.buf, nil, { error = false }) then
 			return
 		end
 
-		local filetype = vim.bo[args.buf].filetype
 		local language = vim.treesitter.language.get_lang(filetype)
 		if not language then
 			return

@@ -82,32 +82,6 @@
         "opensrc-mcp"
       ],
       "enabled": true
-    },
-    "uidotsh": {
-      "type": "remote",
-      "url": "https://ui.sh/mcp?agent=opencode",
-      "enabled": true,
-      "headers": {
-        "Authorization": "Bearer {env:UIDOTSH_TOKEN}"
-      }
-    },
-    "axiom": {
-      "type": "remote",
-      "url": "https://mcp.axiom.co/mcp",
-      "enabled": true,
-      "oauth": {}
-    },
-    "sanity": {
-      "type": "remote",
-      "url": "https://mcp.sanity.io",
-      "enabled": true,
-      "oauth": {}
-    },
-    "linear": {
-      "type": "remote",
-      "url": "https://mcp.linear.app/mcp",
-      "enabled": true,
-      "oauth": {}
     }
   }
 }

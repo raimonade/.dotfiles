@@ -1,6 +1,7 @@
 local parser_languages = {
 	"bash",
 	"css",
+	"gleam",
 	"go",
 	"html",
 	"javascript",
@@ -8,12 +9,16 @@ local parser_languages = {
 	"lua",
 	"markdown",
 	"markdown_inline",
+	"ocaml",
+	"ocaml_interface",
+	"rust",
 	"svelte",
 	"terraform",
 	"tsx",
 	"typescript",
 	"vimdoc",
 	"yaml",
+	"zig",
 }
 
 local function install_missing_parsers()

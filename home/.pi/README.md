@@ -2,17 +2,15 @@
 
 Global pi config, synced via dotfiles and stowed into `~/.pi`.
 
-## Extension workspace
+## Extension dependency workspace
 
-Package-style global extensions live in `agent/extensions/`.
-
-Pi auto-discovers global extensions from:
+Package-style global extensions stay in `agent/extensions/` so pi can auto-discover them from:
 
 - `~/.pi/agent/extensions/*.ts`
 - `~/.pi/agent/extensions/*/index.ts`
 - package-style extension directories under `~/.pi/agent/extensions/` that declare `pi.extensions` in `package.json`
 
-This repo also treats `home/.pi` as an npm workspace root for extension development.
+This directory is the shared npm workspace root for extension development.
 
 Install or refresh dependencies from here:
 
@@ -21,7 +19,7 @@ cd ~/.pi
 npm install
 ```
 
-Run targeted checks:
+Run workspace checks:
 
 ```bash
 npm run check
@@ -34,6 +32,9 @@ Current workspace-managed extensions:
 - `agent/extensions/web-tools`
 - `agent/extensions/pi-mcp`
 - `agent/extensions/pi-ephemeral`
+- `agent/extensions/opencode-cloudflare`
+
+After changing extension code, reload pi with `/reload`.
 
 ## Pi Ephemeral
 
