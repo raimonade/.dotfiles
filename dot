@@ -13,7 +13,7 @@ readonly BOLD='\033[1m'
 
 # Script metadata
 readonly SCRIPT_NAME="dot"
-readonly VERSION="1.0.0"
+readonly VERSION="1.0.1"
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly DOTFILES_DIR
 
