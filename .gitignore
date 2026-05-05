@@ -22,6 +22,7 @@ __pycache__/
 # opencode
 home/.config/opencode/node_modules/
 home/.config/opencode/node_modules
+home/.config/opencode/opencode.json.uidotsh.*
 .opencode/plans/
 
 # jj per-repo configs
@@ -34,6 +35,7 @@ home/.config/zed/prompts/
 # pi agent runtime/state (keep settings + customization resources tracked)
 home/.pi/agent/*
 home/.pi/todos/*
+home/.pi/pi-acp/
 .pi/todos/*
 
 # pi extensions node_modules

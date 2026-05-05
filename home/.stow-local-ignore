@@ -1,6 +1,9 @@
 node_modules
 bun\.lock
 
+# Agent skills installed globally/managed outside stow
+\.agents/skills
+
 # Claude Code runtime (not config)
 \.claude/backups
 \.claude/cache
@@ -49,6 +52,10 @@ bun\.lock
 
 # Local runtime state
 \.local
+\.pi/pi-acp
+
+# OpenCode runtime/migration backups
+\.config/opencode/opencode\.json\.uidotsh\..*
 
 # Zed runtime (not config)
 \.config/zed/prompts

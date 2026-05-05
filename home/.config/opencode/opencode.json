@@ -88,7 +88,7 @@
       "url": "https://ui.sh/mcp?agent=opencode",
       "enabled": true,
       "headers": {
-        "Authorization": "Bearer {env:UIDOTSH_TOKEN}"
+        "Authorization": "Bearer {env:UI_SH_TOKEN}"
       }
     },
     "axiom": {
