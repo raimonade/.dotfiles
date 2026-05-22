@@ -1,4 +1,4 @@
-import type { ExtensionAPI, ExtensionContext, ExtensionCommandContext } from "@mariozechner/pi-coding-agent";
+import type { ExtensionAPI, ExtensionContext, ExtensionCommandContext } from "@earendil-works/pi-coding-agent";
 
 type InstallMethod = "bun" | "npm" | "homebrew" | "vite-plus" | "native";
 type NotifyType = "info" | "error" | "success" | "warning";
@@ -22,7 +22,7 @@ type ExecResult = {
 	killed?: boolean;
 };
 
-const PACKAGE_NAME = "@mariozechner/pi-coding-agent";
+const PACKAGE_NAME = "@earendil-works/pi-coding-agent";
 const BREW_FORMULA_CANDIDATES = ["pi", "pi-coding-agent"] as const;
 const EXEC_TIMEOUT_MS = 60_000;
 const MAX_RETRIES = 2;
@@ -31,8 +31,9 @@ const RETRY_DELAY_MS = 5_000;
 function createReporter(ctx: Pick<ExtensionContext, "hasUI" | "ui">): Reporter {
 	return {
 		notify: (message, type = "info") => {
+			const uiType = type === "success" ? "info" : type;
 			if (ctx.hasUI) {
-				ctx.ui.notify(message, type);
+				ctx.ui.notify(message, uiType);
 			} else if (type === "error") {
 				console.error(message);
 			} else {

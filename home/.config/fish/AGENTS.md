@@ -11,11 +11,10 @@ Layered: `config.fish` -> `conf.d/*.fish` (auto) -> `functions/*.fish` (lazy)
 fish/
 ├── config.fish         # Core: greeting, EDITOR, PATH additions
 ├── conf.d/             # Auto-sourced config fragments
-│   ├── aliases.fish    # Shell aliases (c, code, pn, oc, wr)
+│   ├── aliases.fish    # Shell aliases (c, code, pn, wr)
 │   ├── paths.fish      # PATH modifications
 │   ├── git.fish        # Git abbreviations init
 │   ├── brew.fish       # Homebrew setup
-│   ├── opencode.fish   # Experimental feature flags
 │   └── ...             # Tool-specific (fnm, bun, zoxide, starship)
 ├── functions/          # Lazy-loaded functions
 │   ├── __git.*.fish    # Internal git helpers
@@ -59,9 +58,7 @@ fish/
 | `c` | clear |
 | `code`/`vim`/`vi` | nvim (with `.` default) |
 | `pn` | pnpm |
-| `oc` | opencode |
 | `wr` | wrangler |
-| `lc` | localcode (dev opencode) |
 | `ks` | tmux kill-server |
 | `pbc`/`pbp` | pbcopy/pbpaste |
 
@@ -94,12 +91,3 @@ fish/
 | `tempd` | cd into new temp directory |
 | `trash <file>` | Safe delete to ~/.Trash |
 | `httpstatus <code>` | HTTP status lookup (supports wildcards) |
-
-## OPENCODE FLAGS
-
-```fish
-# conf.d/opencode.fish
-OPENCODE_EXPERIMENTAL_LSP_TOOL=1
-OPENCODE_EXPERIMENTAL_PLAN_MODE=1
-OPENCODE_ENABLE_EXA=1
-```

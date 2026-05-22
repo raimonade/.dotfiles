@@ -1,12 +1,39 @@
 {
-  "lastChangelogVersion": "0.70.6",
+  "lastChangelogVersion": "0.74.0",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.5",
-  "defaultThinkingLevel": "medium",
+  "defaultThinkingLevel": "xhigh",
   "packages": [
     {
       "source": "npm:@plannotator/pi-extension",
       "skills": []
-    }
+    },
+    "npm:pi-mcp-adapter",
+    "npm:pi-subagents"
+  ],
+  "skills": [
+    "!adapt",
+    "!animate",
+    "!arrange",
+    "!audit",
+    "!bolder",
+    "!clarify",
+    "!colorize",
+    "!critique",
+    "!delight",
+    "!distill",
+    "!extract",
+    "!grill-me",
+    "!harden",
+    "!normalize",
+    "!onboard",
+    "!optimize",
+    "!overdrive",
+    "!polish",
+    "!quieter",
+    "!simple",
+    "!triage",
+    "!typeset",
+    "!write-a-skill"
   ]
 }

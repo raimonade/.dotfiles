@@ -18,11 +18,6 @@
       "url": "https://mcp.sanity.io",
       "auth": "oauth",
       "lifecycle": "lazy"
-    },
-    "linear": {
-      "url": "https://mcp.linear.app/mcp",
-      "auth": "oauth",
-      "lifecycle": "lazy"
     }
   }
 }

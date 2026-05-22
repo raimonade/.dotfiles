@@ -30,11 +30,11 @@ npm run typecheck:pi-ephemeral
 Current workspace-managed extensions:
 
 - `agent/extensions/web-tools`
-- `agent/extensions/pi-mcp`
 - `agent/extensions/pi-ephemeral`
-- `agent/extensions/opencode-cloudflare`
 
-After changing extension code, reload pi with `/reload`.
+MCP support is provided by the installed `npm:pi-mcp-adapter` package and configured in `agent/mcp.json`.
+
+After changing extension code or package settings, reload pi with `/reload`.
 
 ## Pi Ephemeral
 
@@ -56,7 +56,7 @@ Global catalog sources live here:
 
 Current starter catalog in this dotfiles repo includes:
 
-- ephemeral skills: `grill-me`, `pr-walkthrough`, `prd-to-todos`, `tdd`, `write-a-prd`
+- ephemeral skills: `emil-design-eng`, `pr-walkthrough`, `prd-to-todos`, `setup-matt-pocock-skills`, `ui`, `write-a-prd`
 
 Typical flow:
 

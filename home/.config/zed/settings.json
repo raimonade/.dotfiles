@@ -29,9 +29,6 @@
     "pi-acp": {
       "type": "registry"
     },
-    "opencode": {
-      "type": "registry"
-    },
     "claude-acp": {
       "type": "registry"
     }

@@ -54,8 +54,6 @@ bun\.lock
 \.local
 \.pi/pi-acp
 
-# OpenCode runtime/migration backups
-\.config/opencode/opencode\.json\.uidotsh\..*
 
 # Zed runtime (not config)
 \.config/zed/prompts

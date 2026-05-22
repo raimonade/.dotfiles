@@ -3,7 +3,6 @@ lazy-lock.json
 home/.config/fish/fish_variables
 home/.config/fish/conf.d/secrets.fish
 home/.config/fish/conf.d/vault-funcs.fish
-home/.config/opencode/amp_stuff/
 .envrc
 */**/tmux/plugins/*
 backups/
@@ -19,11 +18,6 @@ __pycache__/
 # jj
 .jj
 
-# opencode
-home/.config/opencode/node_modules/
-home/.config/opencode/node_modules
-home/.config/opencode/opencode.json.uidotsh.*
-.opencode/plans/
 
 # jj per-repo configs
 home/.config/jj/repos/
@@ -37,6 +31,13 @@ home/.pi/agent/*
 home/.pi/todos/*
 home/.pi/pi-acp/
 .pi/todos/*
+
+# pi MCP adapter runtime/secrets
+home/.pi/agent/mcp-oauth/
+home/.pi/agent/mcp-cache.json
+home/.pi/agent/mcp-npx-cache.json
+home/.pi/agent/mcp-auth.json
+home/.local/share/pi/mcp-auth.json
 
 # pi extensions node_modules
 home/.pi/agent/extensions/**/node_modules/
