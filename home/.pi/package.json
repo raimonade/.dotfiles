@@ -7,10 +7,11 @@
     "agent/extensions/*"
   ],
   "scripts": {
-    "check": "npm run check:web-tools && npm run typecheck:pi-ephemeral",
+    "check": "npm run check:web-tools && npm run typecheck:pi-ephemeral && npm run typecheck:pi-skill-toggle",
     "check:web-tools": "npm run check --workspace=pi-web-tools-extension",
     "test:web-tools": "npm run test --workspace=pi-web-tools-extension",
-    "typecheck:pi-ephemeral": "npm run typecheck --workspace=pi-extension-ephemeral"
+    "typecheck:pi-ephemeral": "npm run typecheck --workspace=pi-extension-ephemeral",
+    "typecheck:pi-skill-toggle": "npm run typecheck --workspace=pi-skill-toggle"
   },
   "dependencies": {
     "@earendil-works/pi-ai": "^0.74.0",

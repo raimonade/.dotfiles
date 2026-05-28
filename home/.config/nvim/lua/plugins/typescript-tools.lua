@@ -4,10 +4,14 @@ return {
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 			"neovim/nvim-lspconfig",
+			"marilari88/twoslash-queries.nvim",
 		},
 		ft = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
 		config = function()
 			require("typescript-tools").setup({
+				on_attach = function(client, buffer_number)
+					require("twoslash-queries").attach(client, buffer_number)
+				end,
 				settings = {
 					-- tsserver_path = "~/.bun/bin/tsgo",
 					-- Performance: separate diagnostic server for large projects

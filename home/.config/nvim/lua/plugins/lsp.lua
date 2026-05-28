@@ -17,6 +17,8 @@ return {
 			"williamboman/mason.nvim",
 			"williamboman/mason-lspconfig.nvim",
 			"WhoIsSethDaniel/mason-tool-installer.nvim",
+			-- Integrate completion capabilities with LSP when blink.cmp is unavailable
+			"hrsh7th/cmp-nvim-lsp",
 			-- Progress indicator for LSP
 			{ "j-hui/fidget.nvim" },
 		},
@@ -28,6 +30,11 @@ return {
 				bashls = {},
 				biome = {},
 				cssls = {},
+				eslint = {
+					autostart = false,
+					cmd = { "vscode-eslint-language-server", "--stdio", "--max-old-space-size=12288" },
+					settings = { format = false },
+				},
 				html = {},
 				jsonls = {},
 				lua_ls = {
@@ -44,6 +51,15 @@ return {
 				marksman = {},
 				oxlint = {
 					root_markers = { ".oxlintrc.json" },
+				},
+				ocamllsp = {
+					manual_install = true,
+					cmd = { "dune", "exec", "ocamllsp" },
+					settings = {
+						codelens = { enable = true },
+						inlayHints = { enable = true },
+						syntaxDocumentation = { enable = true },
+					},
 				},
 				sqls = {},
 				tailwindcss = {
@@ -73,7 +89,7 @@ return {
 				stylua = {},
 			}
 
-			local manually_installed_servers = {}
+			local manually_installed_servers = { "ocamllsp" }
 			local mason_tools_to_install = vim.tbl_keys(vim.tbl_deep_extend("force", {}, servers, formatters))
 			local ensure_installed = vim.tbl_filter(function(name)
 				return not vim.tbl_contains(manually_installed_servers, name)
@@ -91,6 +107,11 @@ return {
 			local has_blink, blink = pcall(require, "blink.cmp")
 			if has_blink then
 				capabilities = vim.tbl_deep_extend("force", capabilities, blink.get_lsp_capabilities())
+			else
+				local has_cmp, cmp_lsp = pcall(require, "cmp_nvim_lsp")
+				if has_cmp then
+					capabilities = vim.tbl_deep_extend("force", capabilities, cmp_lsp.default_capabilities())
+				end
 			end
 
 			-- Setup LspAttach autocmd for keybindings (replaces on_attach)
@@ -126,7 +147,8 @@ return {
 
 				-- Enable the server (with autostart setting if specified)
 				if config.autostart == false then
-					-- Don't auto-enable servers with autostart = false
+					-- Don't auto-enable servers with autostart = false.
+					-- Users can manually enable them with :lua vim.lsp.enable(name)
 				else
 					vim.lsp.enable(name)
 				end

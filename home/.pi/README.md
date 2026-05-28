@@ -25,18 +25,22 @@ Run workspace checks:
 npm run check
 npm run test:web-tools
 npm run typecheck:pi-ephemeral
+npm run typecheck:pi-skill-toggle
 ```
 
 Current workspace-managed extensions:
 
 - `agent/extensions/web-tools`
 - `agent/extensions/pi-ephemeral`
+- `agent/extensions/pi-skill-toggle`
 
 MCP support is provided by the installed `npm:pi-mcp-adapter` package and configured in `agent/mcp.json`.
 
 After changing extension code or package settings, reload pi with `/reload`.
 
-## Pi Ephemeral
+## Skill management
+
+`pi-skill-toggle` adds `/toggle-skills` for making installed skills agent-invocable or manual-only by editing skill frontmatter.
 
 `pi-ephemeral` adds the `/ephemeral` command for selecting project-local ephemeral resources.
 
@@ -56,7 +60,7 @@ Global catalog sources live here:
 
 Current starter catalog in this dotfiles repo includes:
 
-- ephemeral skills: `emil-design-eng`, `pr-walkthrough`, `prd-to-todos`, `setup-matt-pocock-skills`, `ui`, `write-a-prd`
+- ephemeral skills: `elysiajs`, `emil-design-eng`, `pr-walkthrough`, `prd-to-todos`, `setup-matt-pocock-skills`, `studio`, `ui`, `write-a-prd`
 
 Typical flow:
 
