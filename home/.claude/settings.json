@@ -123,6 +123,7 @@
       "Bash(xargs:*)"
     ]
   },
+  "model": "claude-opus-4-8",
   "enabledMcpjsonServers": [
     "context7",
     "grep-app",
@@ -207,9 +208,9 @@
     "command": "input=$(cat); user=$(whoami); dir=$(basename \"$(echo \"$input\" | jq -r '.workspace.current_dir')\"); branch=$(cd \"$(echo \"$input\" | jq -r '.workspace.current_dir')\" 2>/dev/null && git -c core.useBuiltinFSMonitor=false rev-parse --abbrev-ref HEAD 2>/dev/null || echo ''); model=$(echo \"$input\" | jq -r '.model.display_name'); remaining=$(echo \"$input\" | jq -r '.context_window.remaining_percentage // empty'); status=\"$user in $dir\"; [ -n \"$branch\" ] && status=\"$status on $branch\"; status=\"$status | $model\"; [ -n \"$remaining\" ] && status=\"$status | context: ${remaining}% remaining\"; echo \"$status\""
   },
   "enabledPlugins": {
-    "coding-tutor@every-marketplace": false,
-    "compound-engineering@every-marketplace": false,
-    "plannotator@plannotator": true
+    "plannotator@plannotator": true,
+    "codex@openai-codex": true,
+    "posthog@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "plannotator": {
@@ -217,9 +218,17 @@
         "source": "github",
         "repo": "backnotprop/plannotator"
       }
+    },
+    "openai-codex": {
+      "source": {
+        "source": "github",
+        "repo": "openai/codex-plugin-cc"
+      }
     }
   },
   "effortLevel": "high",
   "skipDangerousModePermissionPrompt": true,
+  "skipWorkflowUsageWarning": true,
+  "theme": "dark",
   "skipAutoPermissionPrompt": true
 }

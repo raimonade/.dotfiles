@@ -16,6 +16,10 @@
       "type": "http",
       "url": "https://mcp.sanity.io"
     },
+    "mobbin": {
+      "type": "http",
+      "url": "https://api.mobbin.com/mcp"
+    },
     "css-studio": {
       "command": "npx",
       "args": [

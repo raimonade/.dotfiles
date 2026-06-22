@@ -14,6 +14,7 @@ complete -c dot -n "__fish_use_subcommand" -a "retry-failed" -d "Retry failed pa
 complete -c dot -n "__fish_use_subcommand" -a "summary" -d "Summarize recent git commits using Pi"
 complete -c dot -n "__fish_use_subcommand" -a "benchmark-shell" -d "Benchmark Fish shell startup performance"
 complete -c dot -n "__fish_use_subcommand" -a "gen-ssh-key" -d "Generate SSH key for GitHub/GitLab with email"
+complete -c dot -n "__fish_use_subcommand" -a "sync-claude-skills" -d "Mirror Pi skills into Claude Code"
 complete -c dot -n "__fish_use_subcommand" -a "stow" -d "Create symlinks for dotfiles using GNU Stow"
 complete -c dot -n "__fish_use_subcommand" -a "completions" -d "Generate Fish shell completions"
 complete -c dot -n "__fish_use_subcommand" -a "link" -d "Install dot command globally (create symlink in PATH)"

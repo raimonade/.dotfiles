@@ -2,7 +2,8 @@
   "mcpServers": {
     "context7": {
       "url": "https://mcp.context7.com/mcp",
-      "lifecycle": "eager"
+      "lifecycle": "eager",
+      "directTools": true
     },
     "grep_app": {
       "url": "https://mcp.grep.app",
@@ -16,6 +17,27 @@
     },
     "sanity": {
       "url": "https://mcp.sanity.io",
+      "auth": "oauth",
+      "lifecycle": "lazy"
+    },
+    "posthog": {
+      "url": "https://mcp.posthog.com/mcp",
+      "auth": "oauth",
+      "lifecycle": "lazy"
+    },
+    "vercel": {
+      "url": "https://mcp.vercel.com",
+      "auth": "oauth",
+      "lifecycle": "lazy"
+    },
+    "webflow": {
+      "url": "https://mcp.webflow.com/mcp",
+      "auth": "oauth",
+      "lifecycle": "lazy",
+      "directTools": true
+    },
+    "cloudflare_api": {
+      "url": "https://mcp.cloudflare.com/mcp",
       "auth": "oauth",
       "lifecycle": "lazy"
     }

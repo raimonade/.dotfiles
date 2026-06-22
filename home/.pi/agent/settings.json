@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "0.74.0",
+  "lastChangelogVersion": "0.78.0",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.5",
   "defaultThinkingLevel": "xhigh",
@@ -9,7 +9,8 @@
       "skills": []
     },
     "npm:pi-mcp-adapter",
-    "npm:pi-subagents"
+    "npm:pi-subagents",
+    "npm:pi-context"
   ],
   "skills": [
     "!adapt",
@@ -35,5 +36,18 @@
     "!triage",
     "!typeset",
     "!write-a-skill"
-  ]
+  ],
+  "subagents": {
+    "agentOverrides": {
+      "simple": {
+        "disabled": true
+      },
+      "triage": {
+        "disabled": true
+      },
+      "write-a-skill": {
+        "disabled": true
+      }
+    }
+  }
 }

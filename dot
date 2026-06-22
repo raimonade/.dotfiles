@@ -352,10 +352,72 @@ _stow_dotfiles() {
 
     if stow -R -v -d "${DOTFILES_DIR}" -t "${HOME}" home; then
         print_success "Dotfiles stowed successfully"
+        _sync_claude_skills_from_pi
     else
         print_error "Failed to stow dotfiles"
         return 1
     fi
+}
+
+_sync_claude_skills_from_pi() {
+    local pi_skills_dir="${HOME}/.pi/agent/skills"
+    local claude_skills_dir="${HOME}/.claude/skills"
+
+    if [[ ! -d "$pi_skills_dir" ]]; then
+        print_warning "Pi skills directory not found at ${pi_skills_dir}; skipping Claude skill sync"
+        return 0
+    fi
+
+    mkdir -p "$claude_skills_dir"
+
+    local synced=0
+    local unchanged=0
+    local skipped=0
+    local stale_removed=0
+    local skill_path name link_path target current
+
+    while IFS= read -r -d '' skill_path; do
+        name="$(basename "$skill_path")"
+        [[ "$name" == .* ]] && continue
+
+        if [[ ! -f "${skill_path}/SKILL.md" && ! -f "${skill_path}/skill.md" ]]; then
+            continue
+        fi
+
+        link_path="${claude_skills_dir}/${name}"
+        target="../../.pi/agent/skills/${name}"
+
+        if [[ -L "$link_path" ]]; then
+            current="$(readlink "$link_path")"
+            if [[ "$current" == "$target" ]]; then
+                ((++unchanged))
+            else
+                ln -sfn "$target" "$link_path"
+                ((++synced))
+            fi
+        elif [[ -e "$link_path" ]]; then
+            print_warning "Claude skill '${name}' already exists and is not a symlink; leaving it unchanged"
+            ((++skipped))
+        else
+            ln -s "$target" "$link_path"
+            ((++synced))
+        fi
+    done < <(find "$pi_skills_dir" -mindepth 1 -maxdepth 1 \( -type d -o -type l \) -print0 2>/dev/null)
+
+    while IFS= read -r -d '' link_path; do
+        current="$(readlink "$link_path")"
+        case "$current" in
+            ../../.pi/agent/skills/*)
+                name="${current##*/}"
+                if [[ ! -e "${pi_skills_dir}/${name}" ]]; then
+                    rm "$link_path"
+                    ((++stale_removed))
+                fi
+                ;;
+        esac
+    done < <(find "$claude_skills_dir" -mindepth 1 -maxdepth 1 -type l -print0 2>/dev/null)
+
+    print_success "Claude skills synced from Pi (${synced} updated, ${unchanged} current, ${skipped} skipped, ${stale_removed} stale removed)"
 }
 
 _generate_ssh_key() {
@@ -870,22 +932,17 @@ cmd_unlink() {
     fi
 }
 
+cmd_sync_claude_skills() {
+    print_header "Syncing Claude skills from Pi"
+    _sync_claude_skills_from_pi
+}
+
 cmd_stow() {
     print_header "Stowing dotfiles"
 
-    if ! command_exists stow; then
-        print_error "GNU Stow is not installed"
-        print_info "Install it first: brew install stow"
-        return 1
-    fi
-
-    print_info "Creating symlinks for dotfiles..."
-
-    if stow -R -v -d "${DOTFILES_DIR}" -t "${HOME}" home; then
-        print_success "Dotfiles stowed successfully"
+    if _stow_dotfiles; then
         print_info "Configuration files are now symlinked to your home directory"
     else
-        print_error "Failed to stow dotfiles"
         print_info "Check for conflicting files in your home directory"
         return 1
     fi
@@ -944,6 +1001,7 @@ complete -c dot -n "__fish_use_subcommand" -a "retry-failed" -d "Retry failed pa
 complete -c dot -n "__fish_use_subcommand" -a "summary" -d "Summarize recent git commits using Pi"
 complete -c dot -n "__fish_use_subcommand" -a "benchmark-shell" -d "Benchmark Fish shell startup performance"
 complete -c dot -n "__fish_use_subcommand" -a "gen-ssh-key" -d "Generate SSH key for GitHub/GitLab with email"
+complete -c dot -n "__fish_use_subcommand" -a "sync-claude-skills" -d "Mirror Pi skills into Claude Code"
 complete -c dot -n "__fish_use_subcommand" -a "stow" -d "Create symlinks for dotfiles using GNU Stow"
 complete -c dot -n "__fish_use_subcommand" -a "completions" -d "Generate Fish shell completions"
 complete -c dot -n "__fish_use_subcommand" -a "link" -d "Install dot command globally (create symlink in PATH)"
@@ -2133,6 +2191,7 @@ cmd_help() {
     echo "    summary             Summarize recent git commits using Pi"
     echo "    benchmark-shell     Benchmark Fish shell startup performance"
     echo "    gen-ssh-key         Generate SSH key for GitHub/GitLab with email"
+    echo "    sync-claude-skills  Mirror Pi skills into Claude Code"
     echo "    stow                Create symlinks for dotfiles using GNU Stow"
     echo "    completions         Generate Fish shell completions"
     echo "    link                Install dot command globally (create symlink in PATH)"
@@ -2165,6 +2224,7 @@ cmd_help() {
     echo "    ${SCRIPT_NAME} benchmark-shell -r 20 -v  # Run 20 benchmarks with verbose output"
     echo "    ${SCRIPT_NAME} gen-ssh-key               # Generate SSH key (prompts for email)"
     echo "    ${SCRIPT_NAME} gen-ssh-key user@github.com  # Generate SSH key with email"
+    echo "    ${SCRIPT_NAME} sync-claude-skills        # Mirror Pi skills into Claude Code"
     echo "    ${SCRIPT_NAME} stow                      # Create symlinks for dotfiles"
     echo "    ${SCRIPT_NAME} completions               # Generate Fish shell completions"
     echo "    ${SCRIPT_NAME} link                      # Install dot command globally in PATH"
@@ -2244,6 +2304,9 @@ main() {
             ;;
         gen-ssh-key)
             cmd_gen_ssh_key "$@"
+            ;;
+        sync-claude-skills)
+            cmd_sync_claude_skills "$@"
             ;;
         stow)
             cmd_stow "$@"

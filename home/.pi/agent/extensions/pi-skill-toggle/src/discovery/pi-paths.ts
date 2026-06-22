@@ -15,20 +15,31 @@ export function getAgentDir(): string {
 
 export function getSkillRoots(cwd: string): SkillRoot[] {
   const resolvedCwd = resolve(cwd);
+  const globalLegacySkills = join(homedir(), ".agents", "skills");
+  const projectSkills = resolve(resolvedCwd, ".pi", "skills");
+  const projectLegacySkills = resolve(resolvedCwd, ".agents", "skills");
+
   const roots: SkillRoot[] = [
     {
       path: join(getAgentDir(), "skills"),
       source: { kind: "user", root: join(getAgentDir(), "skills") },
     },
+    // Pi also discovers user-level legacy skills from ~/.agents/skills. This
+    // global tree is where many pre-Pi and third-party skills live, so it must
+    // be visible here for /toggle-skills to reflect the real agent surface.
     {
-      path: resolve(resolvedCwd, ".pi", "skills"),
-      source: { kind: "project", root: resolve(resolvedCwd, ".pi", "skills") },
+      path: globalLegacySkills,
+      source: { kind: "user-legacy", root: globalLegacySkills },
+    },
+    {
+      path: projectSkills,
+      source: { kind: "project", root: projectSkills },
     },
     // Pi's current loader focuses on .pi/skills, but README-era installs may still
     // have .agents/skills. Include it as a local editable convenience.
     {
-      path: resolve(resolvedCwd, ".agents", "skills"),
-      source: { kind: "project-legacy", root: resolve(resolvedCwd, ".agents", "skills") },
+      path: projectLegacySkills,
+      source: { kind: "project-legacy", root: projectLegacySkills },
     },
   ];
 

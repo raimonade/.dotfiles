@@ -9,6 +9,8 @@ export function formatSourceKind(kind: string): string {
   switch (kind) {
     case "user":
       return "User";
+    case "user-legacy":
+      return "User legacy";
     case "project":
       return "Project";
     case "project-legacy":
