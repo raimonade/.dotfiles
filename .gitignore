@@ -39,6 +39,7 @@ home/.pi/agent/*
 home/.pi/todos/*
 home/.pi/.pi/todos/*
 home/.pi/pi-acp/
+home/.pi/ephemeral/quarantine/
 .pi/todos/*
 
 # pi MCP adapter runtime/secrets
