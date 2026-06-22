@@ -24,12 +24,16 @@ Run workspace checks:
 ```bash
 npm run check
 npm run test:web-tools
+npm run test:save-md
+npm run test:codex-fast-mode
 npm run typecheck:pi-ephemeral
 npm run typecheck:pi-skill-toggle
 ```
 
 Current workspace-managed extensions:
 
+- `agent/extensions/opencode-cloudflare`
+- `agent/extensions/save-md`
 - `agent/extensions/web-tools`
 - `agent/extensions/pi-ephemeral`
 - `agent/extensions/pi-skill-toggle`
@@ -57,10 +61,6 @@ Global catalog sources live here:
 - `~/.pi/ephemeral/prompts/`
 - `~/.pi/ephemeral/extensions/`
 - `~/.pi/ephemeral/mcp/mcp.json`
-
-Current starter catalog in this dotfiles repo includes:
-
-- ephemeral skills: `elysiajs`, `emil-design-eng`, `pr-walkthrough`, `prd-to-todos`, `setup-matt-pocock-skills`, `studio`, `ui`, `write-a-prd`
 
 Typical flow:
 

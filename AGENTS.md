@@ -1,30 +1,36 @@
 # DOTFILES
 
-**Generated:** 2026-01-29T00:00:00Z
-**Commit:** f2997bb
+**Generated:** 2026-06-22T00:00:00Z
+**Commit:** upstream-sync
 
-macOS dev env via GNU Stow. Fish + Neovim + Tmux + Git + jj.
+macOS dev env via GNU Stow. Fish + Neovim + Tmux + Git + jj + pi.
 
 ## STRUCTURE
 
 ```
 .dotfiles/
-├── dot                 # CLI: init/update/doctor/stow/package (2500 lines bash)
+├── dot                 # CLI: init/update/doctor/stow/package (bash)
 ├── home/.claude/       # Stowed to ~/.claude/
 │   ├── agents/         # Subagents: oracle, librarian, reviewer, planner, security
 │   ├── commands/       # Slash commands: code-review, clean, ...
-│   └── skills/         # Custom skills: elysia, react-best-practices, vcs-detect
+│   └── skills/         # Custom/symlinked Claude skills
 ├── home/.config/       # Stowed to ~/.config/
 │   ├── fish/           # Shell (AGENTS.md)
 │   ├── nvim/           # Editor (AGENTS.md)
 │   ├── tmux/           # Multiplexer + TPM plugins
 │   ├── git/            # Conditional work config
 │   ├── jj/             # Jujutsu VCS + intent-check hook
-│   └── ghostty/        # Terminal
+│   ├── ghostty/        # Terminal
+│   ├── herdr/          # Herdr config
+│   └── starship.toml   # Prompt
+├── home/.pi/           # Pi agent workspace (AGENTS.md)
+│   ├── agent/extensions/ # TypeScript extensions
+│   └── agent/skills/   # Agent skills
 ├── home/.local/bin/    # Scripts stowed to ~/.local/bin (on PATH)
+│   ├── agent-repos     # Agent repository helper
 │   └── task-loop       # Autonomous PRD impl loop
 ├── packages/
-│   ├── bundle          # Base Brewfile (29 formulas, 12 casks)
+│   ├── bundle          # Base Brewfile
 │   └── bundle.work     # Work additions (formulas only)
 └── docs/
 ```
@@ -36,17 +42,22 @@ macOS dev env via GNU Stow. Fish + Neovim + Tmux + Git + jj.
 | Add package | `dot package add <name>` or edit `packages/bundle` |
 | Shell alias/abbr | `home/.config/fish/conf.d/aliases.fish` |
 | Shell function | `home/.config/fish/functions/` |
-| Git alias | `home/.config/git/config` [alias] section |
+| Git alias | `home/.config/git/config` `[alias]` section |
 | Neovim plugin | `home/.config/nvim/lua/plugins/<name>.lua` |
 | Neovim keymap | `home/.config/nvim/lua/rk/keymaps.lua` |
 | Tmux binding | `home/.config/tmux/tmux.conf` |
-| jj alias | `home/.config/jj/config.toml` [aliases] |
+| Starship prompt | `home/.config/starship.toml` |
+| jj alias | `home/.config/jj/config.toml` `[aliases]` |
 | Git config | `home/.config/git/config` |
 | Claude skill | `home/.claude/skills/<name>/` |
 | Claude command | `home/.claude/commands/<name>.md` |
 | Claude agent | `home/.claude/agents/<name>.md` |
 | Claude settings | `home/.claude/settings.json` |
 | Claude MCP | `home/.claude/mcp.json` |
+| Pi extension | `home/.pi/agent/extensions/<name>/` |
+| Pi skill | `home/.pi/agent/skills/<name>/SKILL.md` |
+| Pi settings | `home/.pi/agent/settings.json` |
+| Work git identity | Auto via `home/.config/git/work_config` for `~/Code/work/` |
 
 ## CONVENTIONS
 
@@ -55,7 +66,9 @@ macOS dev env via GNU Stow. Fish + Neovim + Tmux + Git + jj.
 - Neovim: 1 plugin per file in `lua/plugins/`, returns lazy.nvim spec
 - Git abbrs: ~180 oh-my-zsh style via `__git.init.fish`
 - Private helpers: prefix `__` (e.g., `__git.default_branch`)
-- VCS: jj colocated (`.jj/` + `.git/`), `dot update` is jj-aware
+- VCS: git repo; jj config is still stowed for colocated repos that use it
+- Pi extensions: TypeScript, npm workspaces under `home/.pi/`
+- Pi skills: Markdown-first (`SKILL.md`) with optional bundled resources
 
 ## ANTI-PATTERNS
 
@@ -63,13 +76,13 @@ macOS dev env via GNU Stow. Fish + Neovim + Tmux + Git + jj.
 - Casks in `bundle.work` (use base bundle)
 - Hardcode paths (use `$DOTFILES_DIR`, `$HOME`)
 - Nested git repos in stowed dirs (creates symlink issues)
-- node_modules in stowed dirs
+- node_modules in stowed dirs (pi extensions exception — gitignored)
 
 ## COMMANDS
 
 ```bash
 dot init              # Full setup (brew, stow, bun, claude, vite+, pi, ssh, fish)
-dot update            # Pull (jj-aware) + brew upgrade + restow
+dot update            # Pull + brew upgrade + restow + pi update
 dot doctor            # Health check
 dot stow              # Resymlink only
 dot package add X     # Add + install package
@@ -86,17 +99,23 @@ dot gen-ssh-key       # Generate ed25519 key by email domain
 | Tmux | `tmux.conf` | Prefix `C-;`, auto-installs TPM |
 | Git | `config` | SSH signing, `pull.rebase`, conditional include |
 | jj | `config.toml` | SSH signing, private commits blocked, intent-check hook |
+| Starship | `starship.toml` | 2s timeout for slower shims, custom.scm after dir |
+| Pi | `settings.json` | Catppuccin theme and configured extensions/skills |
 
 ## UNIQUE STYLES
 
 - tmux prefix: `C-;` (not `C-b`)
 - tmux splits: `\` horizontal, `Enter` vertical
+- tmux extended-keys: `always` + CSI-u (required for pi/claude-code; fish needs `tmux_keys.fish` workaround)
 - nvim: `jj`/`JJ` exit insert, `H`/`L` line start/end
+- nvim completion: blink.cmp (not nvim-cmp), LSP source score_offset=1000
 - git: `fomo` = fetch origin main + rebase
 - Theme: Catppuccin Macchiato across tools
 
 ## NOTES
 
-- jj hook warns on push if AGENTS.md stale
 - `dot update` handles WARP VPN brew API issues automatically
 - Tmux theme must load BEFORE continuum (status-right conflict)
+- Starship `command_timeout = 2000` because some node shims are slow
+- `secrets.fish` is gitignored — contains env tokens for work services
+- `.pi/agent/*` mostly gitignored; extensions + skills explicitly un-ignored

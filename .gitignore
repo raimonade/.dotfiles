@@ -4,12 +4,10 @@ home/.config/fish/fish_variables
 home/.config/fish/conf.d/secrets.fish
 home/.config/fish/conf.d/vault-funcs.fish
 .envrc
-*/**/tmux/plugins/*
 backups/
 packages/failed_packages_*.txt
 tmp/
 .DS_STORE
-
 
 # Python
 __pycache__/
@@ -18,6 +16,16 @@ __pycache__/
 # jj
 .jj
 
+# opencode
+home/.config/opencode/node_modules/
+home/.config/opencode/plugins/git-ai.ts
+.opencode/plans/
+
+# herdr runtime/state
+home/.config/herdr/*.log
+home/.config/herdr/session-history.json
+home/.config/herdr/session.json
+home/.config/herdr/release-notes.json
 
 # jj per-repo configs
 home/.config/jj/repos/
@@ -29,6 +37,7 @@ home/.config/zed/prompts/
 # pi agent runtime/state (keep settings + customization resources tracked)
 home/.pi/agent/*
 home/.pi/todos/*
+home/.pi/.pi/todos/*
 home/.pi/pi-acp/
 .pi/todos/*
 
@@ -56,3 +65,5 @@ home/.pi/agent/extensions/**/node_modules/
 !home/.pi/agent/prelude/**
 !home/.pi/agent/skills/
 !home/.pi/agent/skills/**
+home/.pi/agent/skills/ui/
+home/.pi/agent/skills/account-id-tags/

@@ -22,7 +22,7 @@ Current defaults:
 - `maxResponseBytes`: `5 MB`
 - `blockPrivateHosts`: `true`
 - `maxRedirects`: `5`
-- `fallbackUserAgent`: `pi`
+- `fallbackUserAgent`: `opencode`
 
 Behavior notes:
 

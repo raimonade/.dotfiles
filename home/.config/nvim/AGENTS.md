@@ -1,6 +1,9 @@
 # NEOVIM CONFIG
 
-Lua-based, lazy.nvim managed. TypeScript-focused w/ LSP. jj-aware.
+**Generated:** 2026-06-22T00:00:00Z
+**Commit:** upstream-sync
+
+Lua-based, lazy.nvim managed. TypeScript-focused w/ LSP. jj-aware where configured.
 
 ## STRUCTURE
 
@@ -10,11 +13,13 @@ nvim/
 ├── lua/
 │   ├── rk/               # Personal config module
 │   │   ├── init.lua      # Orchestrates all requires
-│   │   ├── keymaps.lua   # All keybindings (exports on_attach for LSP)
+│   │   ├── keymaps.lua   # All keybindings, exports map_lsp_keybinds
 │   │   ├── options.lua   # vim.opt settings
 │   │   ├── lazy.lua      # lazy.nvim bootstrap
-│   │   └── prelude.lua   # Utility functions
+│   │   ├── prelude.lua   # Utility functions (copy_line_diagnostics, open_link)
+│   │   └── ...           # highlight_yank, rotate_windows, toggle_diagnostics, etc.
 │   └── plugins/          # 1 file per plugin
+└── after/                # Filetype overrides (ftdetect)
 ```
 
 ## WHERE TO LOOK
@@ -25,25 +30,32 @@ nvim/
 | Add keymap | `lua/rk/keymaps.lua` |
 | Change option | `lua/rk/options.lua` |
 | LSP server | `lua/plugins/lsp.lua` via `vim.lsp.config()` |
-| Formatter | `lua/plugins/conform.lua` |
+| Formatter | `lua/plugins/conform.lua` — formatter chain with conditions |
+| Completion | `lua/plugins/blink-cmp.lua` (not nvim-cmp) |
 | TypeScript | `lua/plugins/typescript-tools.lua` (not lspconfig) |
-| VCS signs | `lua/plugins/vcsigns.lua` (works with jj) |
+| VCS signs | `lua/plugins/vcsigns.lua` |
+| Symbol outline | `lua/plugins/outline.lua` (`<leader>so`) |
+| Statusline | `lua/plugins/lualine.lua` (shows harpoon marks) |
 
 ## CONVENTIONS
 
 - Plugin files return `{ ... }` table (lazy.nvim spec)
 - Lazy load via `event`, `ft`, `cmd`, `keys`
 - LSP uses nvim 0.11+ API: `vim.lsp.config()` + `vim.lsp.enable()`
-- Keymaps applied via `LspAttach` autocmd from exported `keymaps.on_attach`
+- Keymaps applied via `LspAttach` autocmd from exported `keymaps.map_lsp_keybinds`
+- LSP detaches from non-file buffers (diffview://, fugitive://)
 - Auto-center: ALL nav commands append `zz`
+- Completion: blink.cmp with LSP priority (score_offset=1000), ghost text enabled
 - Module pattern: `local M = {}` ... `return M`
 
 ## ANTI-PATTERNS
 
 - tsserver via lspconfig (use typescript-tools.nvim)
+- nvim-cmp for completion (use blink.cmp)
 - Hardcode colorscheme (catppuccin-macchiato via plugin)
 - Skip lazy loading for heavy plugins
 - LSP semantic highlights enabled (we disable @lsp groups)
+- Formatters without project config condition (conform checks for config files upward)
 
 ## KEY BINDINGS
 
@@ -59,27 +71,42 @@ nvim/
 | `<leader>'` | n | Switch to last buffer |
 | `<leader>f` | n | Format buffer |
 | `<leader>1-5` | n | Harpoon file navigation |
-| `<leader>sf` | n | Find files (jj-aware) |
+| `<leader>sf` | n | Find files (telescope) |
 | `<leader>sg` | n | Live grep |
 | `<leader>/` | n | Fuzzy find in buffer |
 | `<leader>ih` | n | Toggle inlay hints |
 | `<leader>.` | n | Scratch buffer |
+| `<leader>ts` | n | Toggle TwoSlash queries |
+| `<leader>so` | n | Toggle symbol outline |
+| `<leader>tc` | n | Run TSC (TypeScript compile) |
+| `<leader>rw` | n | Rotate windows |
+| `<leader>og` | n,v | Open in GitHub |
 | `gx` | n | Open link (markdown/URL aware) |
 | `]c`/`[c` | n | Next/prev hunk (centered) |
 | `<C-h/j/k/l>` | n | Pane navigation (tmux-aware) |
 
 ## LSP SERVERS
 
-typescript-tools (TS/JS), lua_ls (+ lazydev), tailwindcss, svelte, bash, css, html, json, yaml
+typescript-tools (TS/JS), lua_ls (+ lazydev), rust_analyzer, ocamllsp (manual via dune), tailwindcss, svelte, biome, eslint (autostart=false), zls (Zig), sqls, bashls, cssls, html, jsonls, marksman, yamlls, oxlint (needs `.oxlintrc.json`)
 
 ## FORMATTER CHAIN
 
-JS/TS/TSX/Svelte: oxfmt -> prettierd (first available, respects project config). Lua: stylua.
+JS/TS/TSX/Astro: oxfmt → biome → prettierd (first available, `stop_after_first = true`)
+Svelte: oxfmt → prettierd
+Lua: stylua
+
+All formatters are conditional — they only activate when their config file exists upward from the buffer (e.g., `biome.json` for biome, `.prettierrc*` for prettierd, `.oxfmtrc.json` for oxfmt).
 
 ## UNIQUE FEATURES
 
-- vcsigns.nvim: Works with jj, diffs against parent commit
+- blink.cmp: Fast completion with LSP priority, ghost text, Tab/S-Tab snippet navigation
+- vcsigns.nvim: Git gutter signs, diffs against parent commit
 - tiny-inline-diagnostic: Powerline-style inline diagnostics
 - Snacks.nvim: Notifications, buffer delete, git browse, toggles
 - jj-aware file picker: Tries jj telescope extension first
 - telescope-jj: jj diff picker (`<leader>sj`)
+- TwoSlash queries: Inline type inspection for TS
+- render-markdown: Rich markdown preview in-buffer
+- wilder.nvim: Enhanced cmdline completion (`:`, `/`, `?`)
+- lualine: Custom statusline showing harpoon marks + truncated branch
+- ConformDisable/ConformEnable: Toggle format-on-save at buffer or global level

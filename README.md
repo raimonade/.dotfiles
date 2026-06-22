@@ -75,9 +75,10 @@ dot init --skip-ssh
 4. Installs Bun runtime
 5. Installs Claude Code CLI via npm (with bun fallback)
 6. Installs Vite+ (required for Pi installation)
-7. Installs Pi
+7. Installs Pi via Vite+
 8. Generates SSH key for GitHub (optional)
-9. Sets up Fish shell with plugins
+9. Installs MonoLisa font (optional)
+10. Sets up Fish shell with plugins
 
 ### Maintenance Commands
 
@@ -88,6 +89,7 @@ dot update
 - Pulls latest dotfiles changes (auto-detects jj vs git)
 - Updates Homebrew packages
 - Re-stows configuration files
+- Runs `pi update` to update Pi and configured packages
 
 #### `dot doctor` - Health Check
 ```bash
@@ -369,6 +371,9 @@ npm install -g @anthropic-ai/claude-code
 ```bash
 # Start Pi and configure providers/models from the built-in UI or settings
 pi
+
+# Reinstall/update Pi through Vite+ if needed
+vp install -g @earendil-works/pi-coding-agent
 ```
 
 ### Getting Help

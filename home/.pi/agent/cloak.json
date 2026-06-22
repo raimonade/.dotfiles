@@ -15,6 +15,16 @@
       "replace": "$1"
     },
     {
+      "filePattern": "**/*.opencode.json",
+      "cloakPattern": "(\\\"apiKey\\\"\\s*:\\s*\\\")[^\\\"]+",
+      "replace": "$1"
+    },
+    {
+      "filePattern": "**/opencode.json",
+      "cloakPattern": "(\\\"apiKey\\\"\\s*:\\s*\\\")[^\\\"]+",
+      "replace": "$1"
+    },
+    {
       "filePattern": "**/config.toml",
       "cloakPattern": "(token\\s*=\\s*).+",
       "replace": "$1"

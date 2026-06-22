@@ -58,10 +58,10 @@ format = "[$symbol($version)]($style) "
 [gcloud]
 disabled = true
 
+[package]
+disabled = true
+
 [cmd_duration]
 min_time = 2_000
 format = "[$duration]($style) "
 style = "bold yellow"
-
-[package]
-disabled = true
