@@ -50,8 +50,9 @@ bun\.lock
 \.claude/skills/web-design-guidelines
 \.claude/skills/\.DS_Store
 
-# Local runtime state
-\.local
+# Local runtime state (keep .local/bin stowable)
+\.local/share
+\.local/state
 \.pi/pi-acp
 
 
