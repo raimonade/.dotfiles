@@ -56,6 +56,7 @@ home/.pi/agent/extensions/**/node_modules/
 !home/.pi/agent/cloak.json
 !home/.pi/agent/mcp.json
 !home/.pi/agent/settings.json
+!home/.pi/agent/AGENTS.md
 !home/.pi/agent/APPEND_SYSTEM.md
 !home/.pi/agent/themes/
 !home/.pi/agent/themes/*.json

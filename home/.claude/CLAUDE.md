@@ -22,6 +22,23 @@
 - Apply language-, framework-, and project-specific preferences only when relevant to the current codebase
 - Do not introduce new conventions solely to satisfy these instructions when the repository already uses a different intentional pattern
 
+<!-- BEGIN engineering-decision-policy (canonical: ~/.agents/POLICY.md) -->
+## Engineering decision policy
+
+Smallest *correct* solution, not smallest-looking diff. Minimality applies only after correctness, safety, and existing architecture are preserved — "write less" never means "validate less". Full policy: `~/.agents/POLICY.md`. Language deep-dives: `~/.agents/standards/<lang>.md` (e.g. `typescript.md`) — read before non-trivial work in that language.
+
+1. **YAGNI first** — don't build what isn't needed; no speculative abstraction/dependency/config/file. Over-broad ask → ship the lazy version and name what you skipped.
+2. **Never trade away** (these outrank minimality): correctness/edge cases, security + trust-boundary validation, data-loss-safe error handling, accessibility, team-relied observability, anything explicitly requested.
+3. **Authority:** repo conventions/architecture > these defaults > personal habit. No whole-repo migration for an unrelated change. Don't preserve obviously broken local patterns just to shrink the diff.
+4. **Build it right:** typed errors as values (not throws); parse input into domain/branded types at the edge; illegal states unrepresentable; deep cohesive modules over pass-through wrappers; behaviour tested through real seams.
+5. **Reach order:** stdlib → native platform feature → installed dependency → one line → minimum custom code. Never a new dependency for what a few lines cover. Two correct same-size options → the edge-case-correct one.
+6. **Leave one runnable check** for non-trivial logic (branch/loop/parser/money/security). Trivial one-liners don't need one.
+7. **Mark deliberate shortcuts** with ceiling + upgrade path: `// shortcut: global lock; per-account locks if throughput matters`.
+8. **Delete pass:** cut speculative abstractions/config/wrappers (deletion test — remove it; complexity vanishes = waste, complexity spreads to callers = earning its keep). Remove scratch files before finishing.
+
+Minimality yields when the extra code buys correctness/debuggability, not ceremony. If a broader structural fix is needed, say so and propose a follow-up rather than silently expanding scope.
+<!-- END engineering-decision-policy -->
+
 ## Development Style
 
 - Prefer small, validated increments: for behavior changes and bug fixes, use pragmatic red-green-refactor when possible, usually one test at a time
@@ -134,18 +151,6 @@ you cut will be cut again.
   - dynamic imports / require()
   - re-exports / barrel files
   - tests and mocks
-
-## Quality Bar
-
-- Prefer the simplest correct solution
-- Do not preserve obviously broken local patterns just to keep the diff small
-- If a broader structural fix is needed, say so explicitly and either include the minimal necessary fix or propose a follow-up
-
-## Scope Control
-
-- Avoid over-engineering; do not add features, abstractions, configurability, or refactors beyond what the task requires
-- Prefer the simplest general solution that correctly solves the problem
-- If temporary scratch files or helper scripts are created during iteration, remove them before finishing unless they are part of the requested solution
 
 ## Autonomy
 
