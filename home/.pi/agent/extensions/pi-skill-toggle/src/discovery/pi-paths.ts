@@ -5,6 +5,7 @@ import type { SkillSource } from "../types.ts";
 export interface SkillRoot {
   path: string;
   source: SkillSource;
+  includeRootMarkdownFiles: boolean;
 }
 
 export function getAgentDir(): string {
@@ -13,33 +14,38 @@ export function getAgentDir(): string {
   return join(homedir(), ".pi", "agent");
 }
 
+export function getGlobalAgentsSkillDir(): string {
+  return join(homedir(), ".agents", "skills");
+}
+
 export function getSkillRoots(cwd: string): SkillRoot[] {
   const resolvedCwd = resolve(cwd);
-  const globalLegacySkills = join(homedir(), ".agents", "skills");
-  const projectSkills = resolve(resolvedCwd, ".pi", "skills");
-  const projectLegacySkills = resolve(resolvedCwd, ".agents", "skills");
-
+  const userSkillRoot = join(getAgentDir(), "skills");
+  const globalSkillRoot = getGlobalAgentsSkillDir();
+  const projectSkillRoot = resolve(resolvedCwd, ".pi", "skills");
+  const projectLegacySkillRoot = resolve(resolvedCwd, ".agents", "skills");
   const roots: SkillRoot[] = [
     {
-      path: join(getAgentDir(), "skills"),
-      source: { kind: "user", root: join(getAgentDir(), "skills") },
-    },
-    // Pi also discovers user-level legacy skills from ~/.agents/skills. This
-    // global tree is where many pre-Pi and third-party skills live, so it must
-    // be visible here for /toggle-skills to reflect the real agent surface.
-    {
-      path: globalLegacySkills,
-      source: { kind: "user-legacy", root: globalLegacySkills },
+      path: userSkillRoot,
+      source: { kind: "user", root: userSkillRoot },
+      includeRootMarkdownFiles: true,
     },
     {
-      path: projectSkills,
-      source: { kind: "project", root: projectSkills },
+      path: globalSkillRoot,
+      source: { kind: "global", root: globalSkillRoot },
+      includeRootMarkdownFiles: false,
     },
-    // Pi's current loader focuses on .pi/skills, but README-era installs may still
-    // have .agents/skills. Include it as a local editable convenience.
     {
-      path: projectLegacySkills,
-      source: { kind: "project-legacy", root: projectLegacySkills },
+      path: projectSkillRoot,
+      source: { kind: "project", root: projectSkillRoot },
+      includeRootMarkdownFiles: true,
+    },
+    // Pi also loads .agents/skills as a project skill directory. Root markdown
+    // files are ignored there; directories containing SKILL.md are discovered.
+    {
+      path: projectLegacySkillRoot,
+      source: { kind: "project-legacy", root: projectLegacySkillRoot },
+      includeRootMarkdownFiles: false,
     },
   ];
 

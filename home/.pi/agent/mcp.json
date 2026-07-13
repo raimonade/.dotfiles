@@ -1,44 +1,22 @@
 {
   "mcpServers": {
-    "context7": {
-      "url": "https://mcp.context7.com/mcp",
-      "lifecycle": "eager",
-      "directTools": true
-    },
-    "grep_app": {
-      "url": "https://mcp.grep.app",
-      "lifecycle": "eager"
-    },
-    "axiom": {
-      "url": "https://mcp.axiom.co/mcp",
-      "auth": "oauth",
+    "paper": {
+      "url": "http://127.0.0.1:29979/mcp",
       "lifecycle": "lazy",
       "directTools": true
     },
-    "sanity": {
-      "url": "https://mcp.sanity.io",
-      "auth": "oauth",
+    "tracedecay": {
+      "command": "/opt/homebrew/bin/tracedecay",
+      "args": [
+        "serve"
+      ],
       "lifecycle": "lazy"
     },
-    "posthog": {
-      "url": "https://mcp.posthog.com/mcp",
-      "auth": "oauth",
-      "lifecycle": "lazy"
-    },
-    "vercel": {
-      "url": "https://mcp.vercel.com",
-      "auth": "oauth",
-      "lifecycle": "lazy"
-    },
-    "webflow": {
-      "url": "https://mcp.webflow.com/mcp",
-      "auth": "oauth",
-      "lifecycle": "lazy",
-      "directTools": true
-    },
-    "cloudflare_api": {
-      "url": "https://mcp.cloudflare.com/mcp",
-      "auth": "oauth",
+    "executor": {
+      "command": "executor",
+      "args": [
+        "mcp"
+      ],
       "lifecycle": "lazy"
     }
   }

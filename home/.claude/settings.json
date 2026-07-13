@@ -123,7 +123,7 @@
       "Bash(xargs:*)"
     ]
   },
-  "model": "claude-opus-4-8",
+  "model": "opus[1m]",
   "enabledMcpjsonServers": [
     "context7",
     "grep-app",
@@ -226,7 +226,7 @@
       }
     }
   },
-  "effortLevel": "high",
+  "effortLevel": "medium",
   "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
   "theme": "dark",
