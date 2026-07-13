@@ -1,23 +1,25 @@
 # opencode-cloudflare
 
-Pi extension that exposes OpenCode's Cloudflare-hosted gateway as a single provider:
+Pi provider for OpenCode's Cloudflare-hosted gateway:
 
 - provider: `opencode.cloudflare.dev`
+- discovery: `https://opencode.cloudflare.dev/.well-known/opencode`
+- backends: Anthropic, OpenAI, Google, and Workers AI
 
-It supports:
+## Design
 
-- native Pi `/login`
-- importing existing OpenCode auth from `~/.local/share/opencode/auth.json`
-- routed Anthropic / OpenAI / Google / Workers AI access through `https://opencode.cloudflare.dev`
-- the service's provider allowlists/blacklists, so intentionally blocked gateway models are not advertised in Pi
+The extension is an adapter around Pi's native provider implementations:
 
-## Usage
+1. `config.ts` parses untrusted discovery and local-overlay data into a precise runtime configuration.
+2. `config-store.ts` owns two-step discovery, authenticated remote-config I/O, fallback policy, cancellation, caching, and diagnostics for one extension runtime.
+3. `catalog.ts` projects the gateway allowlists, denylists, model metadata, and routes into Pi model registrations.
+4. `auth.ts` owns token import, redaction, expiry, Cloudflare Access login, and Pi credential storage.
+5. `stream.ts` resolves a route and delegates protocol behavior to Pi's native Anthropic, OpenAI Responses, Google, or OpenAI-compatible streamer.
+6. `index.ts` is the composition root and command adapter.
 
-With this extension loaded:
+There is no module-global runtime cache, import-time I/O, or hand-written substitute for Pi's provider protocols. Every backend uses Pi's native provider conversion while gateway authentication remains isolated in request headers.
 
-```sh
-pi -e ./home/.pi/agent/extensions/opencode-cloudflare --list-models opencode.cloudflare.dev
-```
+## Authentication
 
 Interactive login:
 
@@ -26,50 +28,51 @@ Interactive login:
 # choose: OpenCode Cloudflare
 ```
 
-Reuse an existing OpenCode login:
+Reuse OpenCode authentication:
 
 ```sh
 opencode auth login https://opencode.cloudflare.dev
-pi -e ./home/.pi/agent/extensions/opencode-cloudflare --list-models opencode.cloudflare.dev
 ```
 
-Optional explicit env override:
+At startup, a usable imported OpenCode token is synchronized into Pi OAuth storage so the provider is immediately selectable.
+
+Optional explicit token override:
 
 ```sh
 export OPENCODE_CLOUDFLARE_TOKEN=...
 ```
 
-Optional auth file override via environment variable:
+Optional OpenCode auth-file override:
 
 ```sh
 export OPENCODE_CLOUDFLARE_AUTH_FILE=/path/to/auth.json
 ```
 
-This is used for token import/fallback. If unset, the extension looks in:
+Without an override, token import checks:
 
 - `$XDG_DATA_HOME/opencode/auth.json`
 - `~/.local/share/opencode/auth.json`
 
 ## Local model overlays
 
-Add local, machine-specific OpenCode-shaped provider model entries in:
+Machine-specific OpenCode-shaped model entries may be added in:
 
 ```sh
 ~/.pi/agent/opencode-cloudflare.local.jsonc
 ```
 
-The file is intentionally not tracked by this dotfiles repo. Override the path with:
+Override that location with:
 
 ```sh
 export OPENCODE_CLOUDFLARE_LOCAL_CONFIG=/path/to/overlay.jsonc
 ```
 
-Example shape:
+Example:
 
 ```jsonc
 {
   "provider": {
-    "<gateway-provider>": {
+    "openai": {
       "models": {
         "<model-id>": {
           "id": "<request-model-id>",
@@ -83,6 +86,10 @@ Example shape:
           "modalities": {
             "input": ["text", "image"],
             "output": ["text"]
+          },
+          "options": {
+            "text": { "verbosity": "medium" },
+            "reasoning": { "context": "all_turns" }
           }
         }
       }
@@ -91,68 +98,20 @@ Example shape:
 }
 ```
 
-Provider keys are normalized the same way as the gateway config, including aliases such as `cloudflare-workers-ai`. Local model entries may also provide Pi-specific `thinkingLevelMap` and `compat` fields and `cost.cache_write` for accurate adaptive-thinking behavior and usage reporting. For OpenAI Responses models, `options.text.verbosity` may set an explicit `low`, `medium`, or `high` response verbosity.
-
-For example, a private adaptive Anthropic model that is not yet in Pi's built-in catalog can be exposed immediately using placeholders rather than a real private model ID:
-
-```jsonc
-{
-  "provider": {
-    "anthropic": {
-      "models": {
-        "anthropic/<private-adaptive-model-id>": {
-          "id": "<private-adaptive-request-id>",
-          "name": "Private Adaptive Anthropic Model",
-          "attachment": true,
-          "reasoning": true,
-          "thinkingLevelMap": { "xhigh": "xhigh" },
-          "compat": { "forceAdaptiveThinking": true },
-          "cost": { "input": 5, "output": 25, "cache_read": 0.5, "cache_write": 6.25 },
-          "limit": { "context": 1000000, "output": 128000 },
-          "modalities": { "input": ["text", "image"], "output": ["text"] }
-        }
-      }
-    }
-  }
-}
-```
+Known fields are parsed at the boundary. Invalid known fields fail startup instead of being silently trusted. Unknown provider metadata is ignored.
 
 ## Commands
 
-- `/opencode-cf-status` — show Pi/OpenCode auth status, whether the catalog is using live well-known config or fallback defaults, the last fetch result, and catalog counts
-- `/opencode-cf-sync-auth` — copy the current OpenCode token into Pi auth storage, then reload
-- `/opencode-cf-doctor` — refetch `.well-known/opencode`, report live config diagnostics, and validate the extension state
+- `/opencode-cf-status` — show auth, discovery-cache, and catalog status
+- `/opencode-cf-sync-auth` — copy current OpenCode auth into Pi storage and reload
+- `/opencode-cf-doctor` — require live discovery and report gateway diagnostics
 
-## Example prompts
+## Development
 
-Workers AI:
-
-```sh
-pi -e ./home/.pi/agent/extensions/opencode-cloudflare -p --provider opencode.cloudflare.dev --model @cf/moonshotai/kimi-k2.5 "Reply with exactly: ok"
-```
-
-OpenAI:
+From `~/.dotfiles/home/.pi`:
 
 ```sh
-pi -e ./home/.pi/agent/extensions/opencode-cloudflare -p --provider opencode.cloudflare.dev --model gpt-4o "Reply with exactly: ok"
+npm run check --workspace=pi-extension-opencode-cloudflare
 ```
 
-Anthropic:
-
-```sh
-pi -e ./home/.pi/agent/extensions/opencode-cloudflare -p --provider opencode.cloudflare.dev --model claude-sonnet-4-5 "Reply with exactly: ok"
-```
-
-Google:
-
-```sh
-pi -e ./home/.pi/agent/extensions/opencode-cloudflare -p --provider opencode.cloudflare.dev --model gemini-2.5-flash "Reply with exactly: ok"
-```
-
-## Notes
-
-- The extension uses a single custom Pi API (`opencode-cloudflare`) and dispatches each request to the appropriate built-in Pi streamer.
-- Structured gateway JSON failures are translated into actionable Pi errors, such as prompting `/login opencode.cloudflare.dev` or `/opencode-cf-sync-auth` for rejected Access tokens.
-- Anthropic gateway requests use the Anthropic SDK with explicit `authToken`, producing `Authorization: Bearer <token>` plus `cf-access-token`; the old `provider: "github-copilot"` auth shim is no longer used.
-- If you refresh your OpenCode token outside of Pi while Pi is already running, use `/reload` so Pi refreshes its cached fallback token command.
-- The gateway auth flow is allowlisted to `https://opencode.cloudflare.dev` only. Native `/login` accepts only a gateway-provided `cloudflared access login ... -app=https://opencode.cloudflare.dev` argument array; remote shell command strings or different app targets are refused.
+The check runs a package-scoped strict TypeScript build plus behavioral tests across configuration, authentication, and every backend route.
