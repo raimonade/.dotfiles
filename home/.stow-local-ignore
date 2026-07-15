@@ -4,6 +4,10 @@ bun\.lock
 # Agent skills installed globally/managed outside stow
 \.agents/skills
 
+# Claude files augmented at runtime by TraceDecay
+\.claude/CLAUDE\.md
+\.claude/settings\.json
+
 # Claude Code runtime (not config)
 \.claude/backups
 \.claude/cache

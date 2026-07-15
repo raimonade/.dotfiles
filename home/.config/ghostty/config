@@ -24,8 +24,8 @@ font-size = 13
 # Opacity of split windows
 unfocused-split-opacity = 0.97
 
-# Set the background-opacity
-background-opacity = 0.9
+# Set the background-opacity to be fully opaque
+background-opacity = 1.0
 
 # Cursor style
 cursor-style-blink = true
