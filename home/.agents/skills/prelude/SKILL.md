@@ -1,5 +1,5 @@
 ---
-name: bootstrap-prelude
+name: prelude
 description: Prelude bootstrapping for TypeScript. Use when creating or rebuilding a prelude.ts from ambient generic helpers and types.
 ---
 
