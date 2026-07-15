@@ -3,7 +3,7 @@
 **Generated:** 2026-06-22T00:00:00Z
 **Commit:** upstream-sync
 
-Lua-based, lazy.nvim managed. TypeScript-focused w/ LSP. jj-aware where configured.
+Lua-based, lazy.nvim managed. TypeScript-focused w/ LSP and Git integration.
 
 ## STRUCTURE
 
@@ -83,7 +83,7 @@ nvim/
 | `<leader>og` | n,v | Open in GitHub |
 | `gx` | n | Open link (markdown/URL aware) |
 | `]c`/`[c` | n | Next/prev hunk (centered) |
-| `<C-h/j/k/l>` | n | Pane navigation (tmux-aware) |
+| `<C-h/j/k/l>` | n | Pane navigation across Neovim and Herdr |
 
 ## LSP SERVERS
 
@@ -103,8 +103,7 @@ All formatters are conditional — they only activate when their config file exi
 - vcsigns.nvim: Git gutter signs, diffs against parent commit
 - tiny-inline-diagnostic: Powerline-style inline diagnostics
 - Snacks.nvim: Notifications, buffer delete, git browse, toggles
-- jj-aware file picker: Tries jj telescope extension first
-- telescope-jj: jj diff picker (`<leader>sj`)
+- Telescope file picker includes hidden files
 - TwoSlash queries: Inline type inspection for TS
 - render-markdown: Rich markdown preview in-buffer
 - wilder.nvim: Enhanced cmdline completion (`:`, `/`, `?`)

@@ -9,38 +9,33 @@ vim.keymap.set("n", "<space>", "<nop>", { desc = "Disable space (leader) in norm
 
 vim.keymap.set("n", "<C-/>", "<nop>")
 
--- Window and kitty navigation
-vim.keymap.set("n", "<C-j>", function()
-	if vim.fn.exists(":NvimTmuxNavigateDown") ~= 0 then
-		vim.cmd.NvimTmuxNavigateDown()
-	else
-		vim.cmd.wincmd("j")
+-- Seamless navigation between Neovim splits and Herdr panes.
+local function navigate_window(wincmd, direction)
+	local previous_window = vim.api.nvim_get_current_win()
+	vim.cmd("wincmd " .. wincmd)
+	if vim.api.nvim_get_current_win() ~= previous_window then
+		return
 	end
-end, { desc = "Navigate down" })
 
-vim.keymap.set("n", "<C-k>", function()
-	if vim.fn.exists(":NvimTmuxNavigateUp") ~= 0 then
-		vim.cmd.NvimTmuxNavigateUp()
-	else
-		vim.cmd.wincmd("k")
+	if vim.env.HERDR_PANE_ID and vim.env.HERDR_PANE_ID ~= "" then
+		local herdr = vim.env.HERDR_BIN_PATH
+		if herdr == nil or herdr == "" then
+			herdr = "herdr"
+		end
+		vim.fn.system({ herdr, "pane", "focus", "--direction", direction, "--current" })
 	end
-end, { desc = "Navigate up" })
+end
 
-vim.keymap.set("n", "<C-l>", function()
-	if vim.fn.exists(":NvimTmuxNavigateRight") ~= 0 then
-		vim.cmd.NvimTmuxNavigateRight()
-	else
-		vim.cmd.wincmd("l")
-	end
-end, { desc = "Navigate right" })
+local function map_window_navigation(lhs, wincmd, direction, description)
+	vim.keymap.set("n", lhs, function()
+		navigate_window(wincmd, direction)
+	end, { silent = true, noremap = true, desc = description })
+end
 
-vim.keymap.set("n", "<C-h>", function()
-	if vim.fn.exists(":NvimTmuxNavigateLeft") ~= 0 then
-		vim.cmd.NvimTmuxNavigateLeft()
-	else
-		vim.cmd.wincmd("h")
-	end
-end, { desc = "Navigate left" })
+map_window_navigation("<C-h>", "h", "left", "Navigate left (Neovim/Herdr)")
+map_window_navigation("<C-j>", "j", "down", "Navigate down (Neovim/Herdr)")
+map_window_navigation("<C-k>", "k", "up", "Navigate up (Neovim/Herdr)")
+map_window_navigation("<C-l>", "l", "right", "Navigate right (Neovim/Herdr)")
 
 -- Swap between last two buffers
 vim.keymap.set("n", "<leader>'", "<C-^>", { desc = "Switch to last buffer" })
@@ -222,7 +217,7 @@ vim.keymap.set("n", "<leader>?", require("telescope.builtin").oldfiles, { desc =
 
 vim.keymap.set("n", "<leader>sb", require("telescope.builtin").buffers, { desc = "Search open buffers" })
 
--- <leader>sf moved to telescope.lua (jj-aware with fallback)
+-- <leader>sf is configured in telescope.lua.
 
 vim.keymap.set("n", "<leader>sh", require("telescope.builtin").help_tags, { desc = "Search help tags" })
 

@@ -103,7 +103,7 @@
 ### WHERE TO LOOK
 - Task-oriented: "I want to do X" → "look here"
 - Most valuable section — spend effort here
-- Include non-obvious locations (e.g., "Git hooks are in jj config, not .git/hooks")
+- Include non-obvious locations (e.g., "Git hooks are generated outside .git/hooks")
 
 ### CONVENTIONS
 - Only deviations from language/framework defaults

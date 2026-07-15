@@ -686,16 +686,7 @@ cmd_update() {
     # Pull latest changes
     print_info "Pulling latest changes..."
 
-    # Check if jj is managing this repo (colocated mode)
-    if [[ -d "${DOTFILES_DIR}/.jj" ]] && command_exists jj; then
-        print_info "Detected jj-managed repository"
-        if jj git fetch -R "$DOTFILES_DIR" && jj -R "$DOTFILES_DIR" rebase -d 'trunk()'; then
-            print_success "Repository updated via jj"
-        else
-            print_error "Failed to update repository via jj"
-            return 1
-        fi
-    elif git -C "$DOTFILES_DIR" pull; then
+    if git -C "$DOTFILES_DIR" pull; then
         print_success "Repository updated"
     else
         print_error "Failed to update repository"
@@ -772,31 +763,6 @@ cmd_doctor() {
         ((++issues))
     fi
 
-    # Check jj (Jujutsu)
-    if command_exists jj; then
-        print_success "jj (Jujutsu) installed"
-
-        # Check if jj config exists
-        local jj_config="${HOME}/.config/jj/config.toml"
-        if [[ -f "$jj_config" ]]; then
-            print_success "jj config found"
-
-            # Check if user is configured
-            if grep -q "^\[user\]" "$jj_config" && grep -q "email" "$jj_config"; then
-                print_success "jj user configured"
-            else
-                print_warning "jj user not configured in config.toml"
-                print_info "Add [user] section with name and email"
-            fi
-        else
-            print_warning "jj config not found at $jj_config"
-            print_info "Run 'jj config edit --user' to configure"
-        fi
-    else
-        print_warning "jj (Jujutsu) not installed"
-        print_info "Install with: brew install jj"
-    fi
-
     # Check symlinks
     local broken_links=0
     while IFS= read -r -d '' link; do
@@ -833,7 +799,7 @@ cmd_doctor() {
     done
 
     # Additional tools managed outside the registry (brew packages, etc.)
-    local extra_tools=("git" "herdr" "nvim" "tmux" "node" "npm")
+    local extra_tools=("git" "herdr" "node" "npm")
     for tool in "${extra_tools[@]}"; do
         if command_exists "$tool"; then
             print_success "$tool is available"
@@ -841,6 +807,12 @@ cmd_doctor() {
             missing_tools+=("$tool")
         fi
     done
+
+    if command_exists zed || command_exists zed-preview; then
+        print_success "Zed CLI is available"
+    else
+        missing_tools+=("zed")
+    fi
 
     if [[ ${#missing_tools[@]} -gt 0 ]]; then
         print_warning "Missing development tools: ${missing_tools[*]}"
@@ -951,7 +923,7 @@ cmd_stow() {
 cmd_edit() {
     print_header "Opening dotfiles in editor"
 
-    local editor="${EDITOR:-nvim}"
+    local editor="${VISUAL:-${EDITOR:-zed}}"
 
     if command_exists "$editor"; then
         exec "$editor" "$DOTFILES_DIR"

@@ -81,7 +81,7 @@ Then you can use it in two ways.
 1. Ask Pi to use the `todo` tool, for example:
 
 - “list my todos”
-- “create a todo to add tests for the tmux config”
+- “create a todo to add tests for the Herdr config”
 - “claim TODO-deadbeef and start working on it”
 - “append implementation notes to TODO-deadbeef”
 - “close TODO-deadbeef”
@@ -249,7 +249,7 @@ If you pass text after the command, it is used as the initial search filter:
 
 ```text
 /todos tests
-/todos tmux
+/todos herdr
 /todos TODO-deadbeef
 ```
 
@@ -330,14 +330,14 @@ Where `<slug>` is a lowercase, hyphenated slug derived once from the PRD title.
 
 Example:
 
-- PRD title: `Improved tmux session restore`
-- shared tag: `prd:improved-tmux-session-restore`
+- PRD title: `Improved Herdr session restore`
+- shared tag: `prd:improved-herdr-session-restore`
 
 Then each todo from that PRD should usually include tags like:
 
 - `prd`
 - `vertical-slice`
-- `prd:improved-tmux-session-restore`
+- `prd:improved-herdr-session-restore`
 
 Optional extra tags can still describe the area of work, for example:
 
@@ -352,8 +352,8 @@ That gives you a simple search/grouping mechanism in `/todos` and via the `todo`
 Examples:
 
 ```text
-/todos prd:improved-tmux-session-restore
-/todos improved-tmux-session-restore
+/todos prd:improved-herdr-session-restore
+/todos improved-herdr-session-restore
 ```
 
 #### Why tags are the best mechanism today
@@ -400,7 +400,7 @@ Example:
 {
   "id": "deadbeef",
   "title": "Add tests",
-  "tags": ["qa", "tmux"],
+  "tags": ["qa", "herdr"],
   "status": "open",
   "created_at": "2026-01-25T17:00:00.000Z",
   "assigned_to_session": "session-123"

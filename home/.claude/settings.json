@@ -46,7 +46,6 @@
       "Bash(head:*)",
       "Bash(hostname)",
       "Bash(id)",
-      "Bash(jj:*)",
       "Bash(jq:*)",
       "Bash(ls:*)",
       "Bash(make:*)",
@@ -100,8 +99,6 @@
     ],
     "ask": [
       "Bash(git push:*)",
-      "Bash(jj git push:*)",
-      "Bash(jj gp:*)",
       "Bash(gh * approve:*)",
       "Bash(gh * close:*)",
       "Bash(gh * comment:*)",
@@ -137,7 +134,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "if [ -z \"$TMUX\" ]; then echo '[Hook] Consider using tmux for session persistence with long-running commands' >&2; fi"
+            "command": "if [ \"$HERDR_ENV\" != \"1\" ]; then echo '[Hook] Consider using Herdr for persistent long-running commands' >&2; fi"
           }
         ]
       },

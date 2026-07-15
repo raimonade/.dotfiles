@@ -11,11 +11,11 @@ Layered: `config.fish` -> `conf.d/*.fish` (auto) -> `functions/*.fish` (lazy)
 fish/
 ├── config.fish         # Core: greeting, EDITOR, MANPAGER, dotfiles PATH
 ├── conf.d/             # Auto-sourced config fragments
-│   ├── aliases.fish    # Shell aliases (c, code, pn, wr)
+│   ├── aliases.fish    # Shell aliases (c, pn, wr); code is a lazy function
 │   ├── paths.fish      # PATH modifications (.dotfiles, .local/bin, ghostty)
 │   ├── git.fish        # Git abbreviations init
 │   ├── brew.fish       # Homebrew setup
-│   ├── tmux_keys.fish  # CSI-u Shift+Enter workaround for tmux extended-keys
+│   ├── zed.fish        # VISUAL=Zed when its CLI is installed
 │   ├── vite-plus.fish  # Sources Vite+ env
 │   ├── starship.fish   # Starship prompt init
 │   ├── secrets.fish    # Env tokens (GITIGNORED)
@@ -56,18 +56,17 @@ fish/
 - Global vars without `set -gx`
 - Using `~` in scripts (use `$HOME`)
 
-## KEY ALIASES
+## KEY COMMANDS
 
-| Alias | Expands To |
+| Command | Expands To |
 |-------|------------|
 | `c` | clear |
-| `code` | vim (which maps to nvim) |
-| `vim`/`vi` | nvim with `.` default (defined in `conf.d/functions.fish`) |
+| `code [path]` | New Zed workspace; current directory by default |
+| `vim`/`vi` | Compatibility entrypoints that open Zed via `code` |
 | `pn` | pnpm |
 | `wr` | wrangler |
-| `ks` | tmux kill-server |
 | `pbc`/`pbp` | pbcopy/pbpaste |
-| `scratch` | nvim with nofile buftype |
+| `scratch` | Temporary file opened through blocking `$EDITOR` (Zed) |
 
 ## GIT ABBREVIATIONS
 
@@ -84,13 +83,18 @@ fish/
 
 | Function | Purpose |
 |----------|---------|
+| `wt <branch> [base]` | Upstream: create a branch and matching worktree |
+| `wtd <remote-branch>` | Upstream: detached remote review worktree |
+| `wtr <directory>` | Upstream: remove worktree and local branch |
+| `wtcd <directory>` | Upstream: change to configured/sibling worktree |
+| `wtl`/`wtp` | Upstream: list worktrees / prune stale metadata |
 | `gwip`/`gunwip` | Create/undo WIP commit |
 | `gbda` | Delete merged branches (incl. squash-merged) |
 | `git_rebase_stack`/`gstk` | Rebase PR stack, auto-detects via gh |
 | `gtest <cmd>` | Test command against staged changes only |
 | `gbage` | List branches by age |
 | `grename <old> <new>` | Rename branch locally + remote |
-| `fvim [query]` | fzf → nvim |
+| `fvim [query]` | fzf → Zed |
 | `uuid`/`ulid` | Generate IDs |
 | `timer <duration>` | Countdown with notification (5s, 10m, 1h) |
 | `notify <msg>` | Desktop notification |
@@ -100,13 +104,14 @@ fish/
 | `nato <text>` | Convert text to NATO phonetic alphabet |
 | `rn` | Right now — current time + calendar |
 
-## TMUX CSI-U WORKAROUND
+## UPSTREAM WORKTREE FLOW
 
-`conf.d/tmux_keys.fish` binds `\e[13;2u` (Shift+Enter CSI-u) to `execute` inside tmux. Required because tmux `extended-keys always` sends CSI-u to ALL programs, but fish doesn't natively handle them. Only needed inside tmux; TUI apps (pi, nvim) parse CSI-u natively.
+The `wt*` functions are restored byte-for-byte from `dmmulroy/.dotfiles`. They use raw Git worktrees, honor `WT_DIR`, recognize `.bare` layouts, and otherwise use sibling directories. Herdr and Zed are deliberately not patched into these upstream helpers; use Herdr's native worktree surface or `code .` separately.
 
 ## NOTES
 
 - `secrets.fish` + `vault-funcs.fish` are gitignored — contain sensitive tokens
 - `fish_frozen_key_bindings.fish` exists in conf.d — prevents fish from re-generating bindings
 - `catppuccin_macchiato_theme.fish` sets shell colors to match global theme
-- `config.fish` is minimal: greeting off, EDITOR=nvim, MANPAGER=nvim, dotfiles PATH
+- `config.fish` is minimal: greeting off, terminal-native MANPAGER, dotfiles PATH
+- `conf.d/zed.fish` sets Zed `$VISUAL` plus blocking `zed-wait.sh` `$EDITOR`

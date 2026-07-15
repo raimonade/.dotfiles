@@ -2,11 +2,10 @@
 
 Applies to every coding agent (Claude, Codex, Pi, Cursor, Copilot, …) on every
 project and language. **Local repo rules win** (`AGENTS.md` / `CLAUDE.md` /
-`.cursor/rules`); this overrides personal habit. Two siblings carry the rest:
-`~/.agents/POLICY.md` governs _whether and how much_ to build, and
-`~/.agents/standards/<language>.md` (e.g. `typescript.md`) governs _how_ to build
-it in that language — read the matching one before non-trivial work. This file
-governs _how to work_: process, communication, grounding, verification, safety.
+`.cursor/rules`); this overrides personal habit. `~/.agents/POLICY.md` governs
+_whether and how much_ to build; the installed `coding-standards` skill governs
+how to build TypeScript. This file governs _how to work_: process,
+communication, grounding, verification, safety.
 
 Each agent entry file (`~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md`,
 `~/.pi/agent/AGENTS.md`) embeds a condensed always-on subset of this file inside
@@ -54,16 +53,16 @@ then re-sync those blocks together (they are hand-synced, like the policy block)
 - Before non-trivial or risky changes, briefly name the relevant facts read, assumptions, product/domain invariants, and intended verification
 - During reads, use deterministic context where it matters: callers, exports, tests, docs, complexity, duplication, and other risk surfaces
 - For domain/data/security/API/navigation/UI behavior changes, verify the right state was changed and product intent was preserved, not only style/types
-- Turn repeated reviewer corrections or incidents into a test, static rule, repo instruction, or checklist item; avoid vague "be careful" memory
+- When a failure class recurs, encode its invariant mechanically — type, parser, exhaustive state model, resource-owning API, static rule, or focused test — instead of relying on a remembered rule. Prose explains an invariant; automation enforces it. A repeated reviewer or agent miss repairs the generating test, static rule, repo instruction, prompt, or workflow, not vague "be careful" memory.
 
 ## Verification, testing & completion
 
 - Treat work as incomplete until the requested deliverables are done or explicitly marked blocked
-- Do not treat a successful edit/tool call as proof the task is complete
+- Do not treat a successful edit/tool call or green typecheck, lint, or build as proof the task is complete; those gates do not prove runtime behavior. For non-trivial logic, verify behavior at boundaries, edge cases, and relevant build modes.
 - Before reporting success, run the smallest relevant verification for the changed surface area (test/typecheck/lint/build) and report the exact command and result; prefer targeted checks during iteration, and broader checks before final handoff when the repo provides them
 - If verification could not be run, say exactly what was not run and why
-- Write tests that verify semantically correct behavior
-- Failing tests are acceptable when they expose genuine bugs and test correct behavior; do not change or delete tests just to make the suite pass
+- Write tests that verify semantically correct behavior, and confirm relevant tests actually execute rather than silently skip
+- Failing tests are acceptable when they expose genuine bugs and test correct behavior; do not change, skip, or delete tests just to make the suite pass
 
 ## Error message design
 
@@ -79,7 +78,7 @@ then re-sync those blocks together (they are hand-synced, like the policy block)
 - Treat skills as active project memory, not optional decoration: at the start of non-trivial work, scan available skill names/descriptions and load (`read` the `SKILL.md`) any model-invoked skill whose description materially overlaps the task before planning or editing
 - Re-check skills when the task changes shape (debug → refactor, API → UI, TypeScript → Cloudflare, etc.)
 - Follow a loaded skill's reading order and reference links, but keep use proportional: load lightweight/reference skills eagerly; do not surprise-run heavy user-invoked workflows or broad scans unless asked
-- If a relevant skill exists but is unavailable in the current harness, say so briefly and fall back to `~/.agents/standards/<language>.md` plus local repo rules
+- If a relevant skill exists but is unavailable in the current harness, say so briefly and follow local repo rules
 - Local repo instructions and inspected code still win over skills
 
 ## Tooling
@@ -127,10 +126,9 @@ then re-sync those blocks together (they are hand-synced, like the policy block)
 - Never bypass safeguards with destructive shortcuts unless explicitly requested
 - Do not revert or overwrite user changes you did not make unless explicitly requested
 
-## Git, jj, VCS, SCM, pull requests, commits
+## Git, VCS, SCM, pull requests, commits
 
-- **ALWAYS check for `.jj/` dir before ANY VCS command** - if present, use jj not git
-- In colocated repos, use `jj` for normal workflow unless the task specifically requires `git`
+- Use Git for version control
 - Make local commits freely, including WIP, to protect work — but never push or create/update PRs unless explicitly requested
 - **Never** add AI/assistant attribution or list the agent as a contributor in PRs, commits, messages, or PR descriptions
 - **gh CLI available** for GitHub operations (PRs, issues, etc.)

@@ -13,7 +13,7 @@
 	gpgSign = true
 
 [core]
-	editor = "nvim"
+	editor = "~/.config/zed/zed-wait.sh"
 	fsmonitor = true
 
 [fetch]

@@ -4,13 +4,9 @@ Review code changes using THREE parallel @code-review subagents, then correlate 
 
 ## Process
 
-0. **Detect VCS**
-   First, call `skill({ name: 'vcs-detect' })` to determine whether the repo uses git or jj, then use the appropriate VCS commands throughout.
-
 1. **Detect changes to review**
-   - jj: `jj status` and `jj diff` for uncommitted changes
-   - git: `git status` and `git diff` for uncommitted changes
-   - If no uncommitted changes, review the last commit (`jj show` or `git show`)
+   - Use `git status` and `git diff` for uncommitted changes
+   - If no uncommitted changes, review the last commit with `git show`
    - If user provides a PR number/link, use `gh pr diff <number>` to fetch it
 
 2. **Spawn 3 parallel reviewer agents**

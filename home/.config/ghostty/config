@@ -1,10 +1,10 @@
 # Ghostty theme
-theme = Catppuccin Macchiato
+theme = Whimsy
 
 # Updates
 auto-update-channel = tip
 
-# Shell integrations
+# Shell integration; launch Herdr explicitly from a project directory.
 shell-integration = fish
 quit-after-last-window-closed = true
 

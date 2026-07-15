@@ -2,9 +2,9 @@
 
 Applies to every coding agent (Claude, Codex, Pi, Cursor, Copilot, …) on every
 project and language. **Local repo rules win** (`AGENTS.md` / `CLAUDE.md` /
-`.cursor/rules`). This overrides personal habit. Language-specific deep
-standards live in `~/.agents/standards/<language>.md` (e.g. `typescript.md`) —
-read the matching one before non-trivial work in that language.
+`.cursor/rules`). This overrides personal habit. TypeScript deep standards live
+in the installed `coding-standards` skill; load it before non-trivial TypeScript
+work.
 
 **Optimize for the smallest _correct_ solution, not the smallest-looking diff.**
 Minimality is a review lens applied _after_ correctness, safety, and existing
@@ -36,7 +36,7 @@ architecture are preserved. "Write less" never means "validate less."
    unrelated change; new code paths may adopt these standards without forcing
    the rest to follow.
 
-4. **When building, build it right** (deep dive: `~/.agents/standards/<language>.md`):
+4. **When building, build it right** (deep dive: the installed `coding-standards` skill):
    - expected failures are typed return values, not `throw` / rejected promises
    - parse untrusted input into domain/branded types at the edge (parse, don't
      validate); keep internal state typed and explicit
@@ -62,7 +62,11 @@ architecture are preserved. "Write less" never means "validate less."
 7. **Mark deliberate shortcuts.** A simplification with a known ceiling names the
    ceiling and the upgrade path in one comment:
    `// shortcut: global lock; per-account locks if throughput matters`. Simple
-   reads as intent, not ignorance.
+   reads as intent, not ignorance. The inverse is a rejection signal: if a
+   workaround needs a paragraph-long comment to justify why it is acceptable,
+   the code is wrong — fix the code or report the blocker. Comments may document
+   an irreducible external constraint or deliberate fail-closed behavior; they
+   must never make a stub, placeholder, or known-wrong path read as complete.
 
 8. **Delete pass before done.** Cut speculative abstractions, dead config, and
    pass-through wrappers. Deletion test: remove it — if complexity disappears it

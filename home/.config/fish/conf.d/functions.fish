@@ -1,24 +1,19 @@
 function fvim
+    set -l selected
     if test (count $argv) -eq 0
-        fd -H -t f | fzf --header "Open File in Vim" --preview "cat {}" | xargs nvim
+        set selected (fd -H -t f | fzf --header "Open File in Zed" --preview "cat {}")
     else
         set -l query (string join " " $argv)
-        fd -H -t f | fzf --header "Open File in Vim" --preview "cat {}" -q "$query" | xargs nvim
+        set selected (fd -H -t f | fzf --header "Open File in Zed" --preview "cat {}" -q "$query")
     end
+
+    test -n "$selected"; and code "$selected"
 end
 
 function vim
-    if test (count $argv) -eq 0
-        nvim .
-    else
-        nvim $argv
-    end
+    code $argv
 end
 
 function vi
-    if test (count $argv) -eq 0
-        nvim .
-    else
-        nvim $argv
-    end
+    code $argv
 end

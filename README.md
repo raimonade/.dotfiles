@@ -4,7 +4,7 @@ A comprehensive, automated dotfiles management system for macOS development envi
 
 ## Overview
 
-This repository contains my personal development environment configuration, managed through a custom CLI tool called `dot`. It uses GNU Stow for symlink management, Homebrew for package installation, and includes configurations for Fish shell, Neovim, Tmux, Git, and other essential development tools.
+This repository contains my personal development environment configuration, managed through a custom CLI tool called `dot`. It uses GNU Stow for symlink management and Homebrew for packages. The daily workflow follows dmmulroy's Ghostty → Herdr → Git worktree setup, substituting Zed for Neovim.
 
 ### Key Features
 
@@ -39,8 +39,9 @@ After installation, the `dot` command will be available globally for ongoing man
 │   ├── .config/
 │   │   ├── fish/      # Fish shell configuration
 │   │   ├── git/       # Git configuration
-│   │   ├── nvim/      # Neovim configuration
-│   │   ├── tmux/      # Tmux configuration
+│   │   ├── zed/       # Primary editor + blocking CLI adapter
+│   │   ├── herdr/     # Primary workspace manager
+│   │   ├── nvim/      # Retained config, outside the primary workflow
 │   │   └── ...
 │   └── .ideavimrc     # IntelliJ IDEA Vim config
 ├── packages/
@@ -49,6 +50,32 @@ After installation, the `dot` command will be available globally for ongoing man
 ├── CLAUDE.md          # Instructions for AI assistants
 └── README.md          # This file
 ```
+
+## Daily Worktree Workflow
+
+The Fish worktree commands stay exactly aligned with [`dmmulroy/.dotfiles`](https://github.com/dmmulroy/.dotfiles):
+
+```bash
+# Create a branch and matching worktree from main (or an optional base)
+wt feature/my-task
+wt feature/follow-up feature/my-task
+
+# Change to a configured/sibling worktree
+wtcd feature/my-task
+
+# Review a remote branch in a detached checkout
+wtd someone/remote-branch
+
+# Remove the checkout and safely delete its local branch
+wtr feature/my-task
+
+# Keep the branch while removing its checkout
+wtr --keep feature/my-task
+```
+
+The upstream helpers use `WT_DIR` when configured, support `.bare` repository layouts, and otherwise place worktrees beside the current checkout. They intentionally contain no local Herdr or Zed integration. Open Zed explicitly with `code .`; Herdr's own worktree UI/API remains separate.
+
+From a project directory, run `herdr` to launch or attach its persistent session. Use workspaces for tasks/projects, tabs for agents/logs/servers/reviews, and panes for individual terminal processes.
 
 ## The `dot` CLI Tool
 
@@ -86,7 +113,7 @@ dot init --skip-ssh
 ```bash
 dot update
 ```
-- Pulls latest dotfiles changes (auto-detects jj vs git)
+- Pulls latest dotfiles changes with Git
 - Updates Homebrew packages
 - Re-stows configuration files
 - Runs `pi update` to update Pi and configured packages
@@ -97,7 +124,7 @@ dot doctor
 ```
 Comprehensive diagnostics including:
 - ✅ Homebrew installation
-- ✅ Essential tools (git, nvim, tmux, node, etc.)
+- ✅ Essential tools (git, zed, herdr, node, etc.)
 - ✅ Claude Code installation and functionality
 - ✅ Pi installation and functionality
 - ✅ Fish shell configuration
@@ -227,7 +254,7 @@ dot package remove docker base  # Remove docker from base bundle only
 #### Package Files
 
 **`packages/bundle`** - Base packages for all machines:
-- Development tools: neovim, tmux, fish, git
+- Development tools: Zed, Herdr, Fish, Git
 - CLI utilities: ripgrep, fd, fzf, starship
 - Applications: Arc browser, Raycast, OrbStack
 - AI tools: aider
@@ -247,18 +274,17 @@ dot package remove docker base  # Remove docker from base bundle only
 ### Key Configurations
 
 - **Fish Shell**: Custom functions, environment variables, and plugin management via Fisher
-- **Neovim**: Lua-based configuration with lazy.nvim plugin manager
-- **Tmux**: Plugin management via TPM, session persistence, Vim-style navigation
-- **Git**: Conditional work configuration, custom aliases, GPG signing
+- **Zed**: Primary graphical project editor, opened explicitly with `code`
+- **Herdr**: Persistent project/task workspaces, tabs, panes, worktree provenance, and coding-agent state
+- **Git**: Worktree helpers, rebase-oriented aliases, signing, and stacked-PR support
 
 ### Architecture Highlights
 
 - **GNU Stow**: Manages symlinks from `home/` to `~`
 - **Modular Design**: Separate configs for different tools
-- **Conditional Loading**: Work-specific Git config for `~/Code/work/`
-- **Plugin Managers**: Each tool uses its own (lazy.nvim, TPM, Fisher)
+- **Worktree Isolation**: Upstream helpers use `WT_DIR`, `.bare` roots, or sibling checkouts
+- **Plugin Managers**: Each tool uses its own where needed (Fisher and Herdr integrations)
 - **Error Resilience**: Package installation continues despite individual failures
-- **jj Support**: Auto-detects jj-managed repos and uses appropriate update commands
 
 ## Environment Setup
 
@@ -324,8 +350,9 @@ dot init  # or brew bundle --file=./packages/bundle
 2. Re-stow changes: `dot stow` (or `dot init` for full setup)
 3. Test configuration changes
 
-#### Work-Specific Setup
-The system automatically applies work-specific Git configuration for repositories under `~/Code/work/`.
+#### Editor and Workspace Setup
+
+Zed substitutes for upstream Neovim. `$VISUAL` selects the installed Zed CLI, while `$EDITOR` points to `~/.config/zed/zed-wait.sh` so Git and terminal tools block correctly. Manpages remain terminal-native through `less -R`. Start Herdr explicitly from the desired project directory.
 
 ## Troubleshooting
 
@@ -440,6 +467,8 @@ This repository is for personal use. Feel free to fork and adapt for your own ne
 
 - [GNU Stow](https://www.gnu.org/software/stow/) for symlink management
 - [Homebrew](https://brew.sh/) for package management
+- [Herdr](https://herdr.dev/) for persistent workspaces and worktree orchestration
+- [Zed](https://zed.dev/) for project editing
 - [Claude Code](https://docs.anthropic.com/en/docs/claude-code) for AI-powered development
 - [Pi](https://github.com/badlogic/pi-mono) for terminal AI workflows
 - The dotfiles community for inspiration and best practices

@@ -16,9 +16,6 @@ home/.agents/skills/ui/
 __pycache__/
 *.pyc
 
-# jj
-.jj
-
 # opencode
 home/.config/opencode/node_modules/
 home/.config/opencode/plugins/git-ai.ts
@@ -29,9 +26,8 @@ home/.config/herdr/*.log
 home/.config/herdr/session-history.json
 home/.config/herdr/session.json
 home/.config/herdr/release-notes.json
-
-# jj per-repo configs
-home/.config/jj/repos/
+home/.config/herdr/plugins.json
+home/.config/herdr/plugins/
 
 # local state / runtime (not config)
 home/.local/

@@ -121,8 +121,8 @@ Use that slug in a shared tag of the form:
 
 Example:
 
-- PRD title: `Improved tmux session restore`
-- shared PRD tag: `prd:improved-tmux-session-restore`
+- PRD title: `Improved Herdr session restore`
+- shared PRD tag: `prd:improved-herdr-session-restore`
 
 #### Title conventions
 
