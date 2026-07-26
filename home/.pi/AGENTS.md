@@ -22,6 +22,7 @@ Global Pi config, synced through dotfiles and stowed into `~/.pi`. npm workspace
     │   ├── pi-ephemeral/       # project-local ephemeral resource picker
     │   ├── pi-skill-toggle/    # interactive skill frontmatter toggler
     │   ├── pi-cloak/           # secret cloaking extension
+    │   ├── session-footer/     # responsive session telemetry footer
     │   ├── todos/              # file-backed todo tool
     │   └── *.ts                # standalone extensions
     └── skills/           # runtime/generated links; ignored by git
@@ -37,6 +38,7 @@ npm run check                      # typecheck/test local Pi extensions
 npm run test:web-tools             # web-tools tests only
 npm run test:save-md               # save-md tests only
 npm run test:codex-fast-mode       # codex fast mode tests only
+npm run test:session-footer        # responsive footer tests only
 ```
 
 ## Where to look

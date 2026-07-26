@@ -8,20 +8,31 @@ Rankings are defaults, not limits. Higher = better. `cost` means effective cost/
 
 | model | cost | intelligence | taste |
 | --- | ---: | ---: | ---: |
-| gpt-5.5 | 9 | 8 | 5 |
+| GPT-5.6 Sol | 9 | 10 | 6 |
 | sonnet-5 | 5 | 5 | 7 |
 | opus-4.8 | 4 | 9 | 9 |
 
 How to apply:
 
+- **Fable 5 never spawns Fable 5.** When the acting/orchestrating model is Fable 5, its subagents and delegated workflow steps must use GPT-5.6 Sol (Codex), sonnet-5, opus-4.8, or Haiku 4.5 — never another Fable 5 instance. Pick among those four by the same cost/intelligence/taste tradeoffs as any other routing decision; this rule only removes Fable 5 itself from the child-model choice set.
 - These are defaults, not limits. If a cheaper model's output misses the bar, rerun or redo with a smarter model without asking. Judge output quality, not price.
 - Cost is a tie-breaker only. For anything that ships, intelligence > taste > cost.
 - Use Opus 4.8 as the orchestrator/synthesis model for hard judgment. Default to **Opus 4.8 high effort** only; avoid xhigh/max/extra unless a high-value task failed at high effort and needs escalation.
-- Bulk/mechanical execution belongs to **gpt-5.5 via Codex**: clear-spec implementation, migrations, repetitive edits, test writing, data analysis, broad codebase spelunking, and other token-hungry work.
+- Bulk/mechanical execution belongs to **GPT-5.6 Sol via Codex**: clear-spec implementation, migrations, repetitive edits, test writing, data analysis, broad codebase spelunking, and other token-hungry work. For discovery-heavy implementation, let Codex own discovery through verification instead of making Opus read the same surface first.
 - Computer use, browser/UI verification, screenshots, and hands-on UX checks also belong to Codex first; report the findings back to Opus 4.8 for final judgment.
 - User-facing work (UI, copy, API design, product decisions) needs taste >= 7: use opus-4.8 or sonnet-5; use Codex only for execution once the direction is clear.
-- Reviews of plans/implementations: use opus-4.8 for final judgment; optionally use gpt-5.5/Codex as an independent extra reviewer.
+- Reviews of plans/implementations: use opus-4.8 for final judgment; optionally use GPT-5.6 Sol/Codex as an independent extra reviewer.
 - Never use Haiku unless the user explicitly asks.
+
+## Cross-model implementation handoff
+
+Follow `~/.agents/CONDUCT.md`'s trajectory-first policy. A read-only Opus plan followed by a fresh Codex implementation session is not the default cost optimization: it duplicates discovery and loses provider cache/context.
+
+- If the harness can switch models without losing the conversation, use the prewalk shape: Opus grounds the approach, creates a bounded todo with a validation step per item, establishes a repro/failing test when applicable, and lands the first small valid edit; the executor continues with that history, diff, and todo after the planning-only instruction is removed.
+- Claude → Codex plugin/CLI delegation does not transfer Claude's private context window. For a cohesive task, either keep Claude end-to-end or let Codex own discovery and implementation end-to-end.
+- When cross-harness delegation is still justified, hand off the trajectory in the shared workspace: objective and constraints; files/symbols inspected; concrete observations; rejected hypotheses; decisions/invariants; current diff/test state; bounded remaining todo with exact checks. Tell the receiver to inspect the diff first, verify inherited claims, and reread only edit-critical spans.
+- Keep read-only plans when the user wants approval before edits or the work is risky, ambiguous, migration-heavy, security-sensitive, or a durable multi-session program. Design direction and independent review remain valid read-only deliverables.
+- Include cache invalidation, repeated reads, handoff, review, and correction in the routing decision. The first edit is grounding evidence, not a substitute for final review and behavioral verification.
 
 Codex fallback protocol:
 
@@ -36,15 +47,15 @@ Codex fallback protocol:
   - Read-only investigation: `codex exec -s read-only --cd "$PWD" "<self-contained prompt>"`.
   - Implementation: `codex exec -s workspace-write --cd "$PWD" "<self-contained prompt>"`.
   - Review: `codex review --uncommitted "<review focus>"` or `codex review --base <branch> "<review focus>"`.
-- This machine's `~/.codex/config.toml` defaults to `model = "gpt-5.5"`, so leaving the model unset usually means gpt-5.5.
-- Prompts to Codex must be self-contained: goal, constraints, files/areas to inspect, exact deliverable, verification command, and what to report back.
+- This machine's `~/.codex/config.toml` defaults to `model = "gpt-5.6-sol"`, so leave the model unset to use GPT-5.6 Sol. If a workflow overrides the model, explicitly select `gpt-5.6-sol`.
+- Fresh-context prompts to Codex must be self-contained, but never plan-only postcards: include the goal and constraints plus the concrete trajectory bundle above. For independent work, give ownership and acceptance criteria and let Codex discover the relevant code itself.
 - Require Codex to return: summary, files changed or inspected, checks run, failures/blockers, and any assumptions. Inspect its output before presenting it as final.
 
-Using gpt-5.5 inside Claude workflows/subagents:
+Using GPT-5.6 Sol inside Claude workflows/subagents:
 
 - If a workflow/Agent `model` parameter only accepts Claude models, use the Codex plugin's `codex-rescue` subagent path rather than building a custom wrapper.
-- The wrapper/subagent should be thin: forward a self-contained Codex task, preserve Codex output, and avoid doing the bulk work itself.
-- Do not spend high-effort Opus 4.8 tokens on child-agent bulk execution. Opus 4.8 should coordinate, critique, and synthesize.
+- The wrapper/subagent should be thin: forward either an independently owned Codex task or the concrete trajectory bundle above, preserve Codex output, and avoid doing the bulk work itself.
+- Do not spend high-effort Opus 4.8 tokens on child-agent bulk execution. GPT-5.6 Sol should execute; Opus 4.8 should coordinate, critique, and synthesize.
 
 ## Specialized Subagents
 

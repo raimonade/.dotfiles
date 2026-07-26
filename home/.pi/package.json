@@ -7,10 +7,11 @@
     "agent/extensions/*"
   ],
   "scripts": {
-    "check": "npm run check --workspace=pi-extension-opencode-cloudflare && npm run check --workspace=pi-save-md-extension && npm run check --workspace=pi-web-tools-extension && npm run typecheck:pi-ephemeral && npm run typecheck:pi-skill-toggle",
+    "check": "npm run check --workspace=pi-extension-opencode-cloudflare && npm run check --workspace=pi-save-md-extension && npm run check --workspace=pi-session-footer-extension && npm run check --workspace=pi-web-tools-extension && npm run typecheck:pi-ephemeral && npm run typecheck:pi-skill-toggle",
     "test:save-md": "npm run test --workspace=pi-save-md-extension",
     "test:web-tools": "npm run test --workspace=pi-web-tools-extension",
     "test:codex-fast-mode": "node --import tsx --test tests/codex-fast-mode.test.ts",
+    "test:session-footer": "npm run test --workspace=pi-session-footer-extension",
     "typecheck:pi-ephemeral": "npm run typecheck --workspace=pi-extension-ephemeral",
     "typecheck:pi-skill-toggle": "npm run typecheck --workspace=pi-skill-toggle"
   },

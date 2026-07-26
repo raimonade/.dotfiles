@@ -53,9 +53,6 @@ home/.pi/agent/mcp-npx-cache.json
 home/.pi/agent/mcp-auth.json
 home/.local/share/pi/mcp-auth.json
 
-# pi extensions node_modules
-home/.pi/agent/extensions/**/node_modules/
-
 !home/.pi/agent/tsconfig.json
 !home/.pi/agent/package.json
 !home/.pi/agent/cloak.json
@@ -69,3 +66,6 @@ home/.pi/agent/extensions/**/node_modules/
 !home/.pi/agent/extensions/**
 !home/.pi/agent/prelude/
 !home/.pi/agent/prelude/**
+
+# Must follow the extension re-includes above.
+home/.pi/agent/extensions/**/node_modules/

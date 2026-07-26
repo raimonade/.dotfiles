@@ -18,6 +18,13 @@
         "mcp"
       ],
       "lifecycle": "lazy"
+    },
+    "agent-browser": {
+      "command": "agent-browser",
+      "args": [
+        "mcp"
+      ],
+      "lifecycle": "lazy"
     }
   }
 }

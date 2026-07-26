@@ -10,7 +10,7 @@ fetch returns 401/403. Go through Executor instead.
 ## Universal surface — the CLI (works identically for Pi, Codex, Claude)
 
 ```sh
-executor tools sources                 # list everything configured + tool counts
+executor tools integrations            # list everything configured + tool counts
 executor tools search "<intent>"       # find a tool → returns its dotted `path`
 executor tools describe <path>         # input/output JSON + TypeScript schema
 executor call <path> '{"k":"v"}'       # invoke a tool
@@ -26,8 +26,18 @@ executor tools describe mobbin.user.mobbin.search_screens
 executor call mobbin.user.mobbin.search_screens '{"query":"settings billing","platform":"web"}'
 ```
 
-Reach order for "what do I have / just call X": `executor tools sources` /
+Reach order for "what do I have / just call X": `executor tools integrations` /
 `search` → `describe` → `call`. No MCP round-trip needed.
+
+## Local Plane
+
+The self-hosted Spotwise tracker is registered as the official Plane MCP server
+under `spotwise-plane.org.default.*`. Use it for Plane, `WAY-*` issues, and
+Wayfinder maps; never use agent-browser or raw API calls. Load the installed
+`plane` skill for fixed project context and the narrow self-hosted relation
+compatibility tool. Ignore the stale zero-tool `local_plane_*` entries. The
+generated `spotwise-plane.org.default.*` paths are canonical; redundant
+per-user connections were removed.
 
 ## Mobbin freshness
 

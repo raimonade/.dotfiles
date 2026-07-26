@@ -41,6 +41,17 @@ then re-sync those blocks together (they are hand-synced, like the policy block)
 - Prefer small, validated increments: for behavior changes and bug fixes, use pragmatic red-green-refactor when possible, usually one test at a time
 - For larger features, prefer tracer-bullet delivery: get a thin end-to-end slice working first, then deepen incrementally
 
+## Trajectory-first delegation and model handoffs
+
+- Do not reflexively make one capable agent read the code and produce a prose-only implementation plan, then start a blank-context executor that must repeat the same discovery. Context acquisition, cache loss, handoff, review, and correction are part of the cost.
+- Small or cohesive task: keep one capable agent from discovery through verification; skip model-switch ceremony.
+- Same-context switch supported: let the capable model ground the approach, create a bounded todo list with a validation step per item, establish a repro/failing test when applicable, and land the first small valid edit. Then switch while preserving tool/read history, the current diff, and todos; remove any planning-only instruction before execution continues.
+- Context cannot transfer across sessions, harnesses, or providers: prefer letting the executor own discovery and implementation. If a sequential handoff is still justified, transfer a concrete trajectory rather than a postcard: objective/constraints, files and symbols inspected, observed evidence, rejected hypotheses, decisions/invariants, current diff/test state, and a bounded remaining todo with exact checks. The receiver verifies inherited evidence and rereads only edit-critical spans.
+- Large parallel task: ground shared invariants first, then delegate genuinely independent slices with explicit ownership, acceptance criteria, and verification. Integrate and review the combined result; avoid telephone chains of plan summaries.
+- Switch models only when expected savings exceed cache invalidation, repeated reads, handoff, review, and quality risk. Different provider prices, local models, and multi-session scale can change that decision; if uncertain, keep the current agent.
+- Preserve plan review when the user asks for it, ambiguity needs a decision, or work is irreversible, security-sensitive, migration-heavy, or a long-running program whose spec/tickets are durable artifacts. Read-only research, design direction, and review are also valid terminal tasks, not failed implementation handoffs.
+- A first edit proves the approach touched reality; it does not prove correctness. Keep proportionate independent review and final behavioral verification. Benchmark rules against finding a known answer do not imply banning legitimate external research in real work.
+
 ## Grounding
 
 - If required context is retrievable, use tools to get it before asking
@@ -80,6 +91,15 @@ then re-sync those blocks together (they are hand-synced, like the policy block)
 - Follow a loaded skill's reading order and reference links, but keep use proportional: load lightweight/reference skills eagerly; do not surprise-run heavy user-invoked workflows or broad scans unless asked
 - If a relevant skill exists but is unavailable in the current harness, say so briefly and follow local repo rules
 - Local repo instructions and inspected code still win over skills
+
+## Frontend/design model routing
+
+- Execution models are not the default taste models. For taste-heavy frontend work, use Fable as the primary design/frontend delegate when available.
+- If Fable is unavailable or down, use Claude Code CLI with Opus for design direction, visual implementation delegation when appropriate, and the final visual review. Do not downgrade the fallback design pass to Sonnet.
+- Load applicable design context and skills first. Give either delegate a self-contained brief: goal, routes/files, constraints, design context, repo instructions, accessibility, exact deliverable, verification, and report shape.
+- The execution model may implement after a Fable/Opus design pass, an explicit mock/spec, or a clearly established design-system pattern. Mechanical work that preserves the existing visual design does not require taste delegation.
+- If neither Fable nor Claude Opus is available/authenticated, pause instead of shipping taste-heavy UI unaided.
+- Verify meaningful UI changes in-browser and obtain a Fable review or Claude Opus fallback review before final handoff.
 
 ## Tooling
 
@@ -131,6 +151,7 @@ then re-sync those blocks together (they are hand-synced, like the policy block)
 - Use Git for version control
 - Make local commits freely, including WIP, to protect work — but never push or create/update PRs unless explicitly requested
 - **Never** add AI/assistant attribution or list the agent as a contributor in PRs, commits, messages, or PR descriptions
+- When work copies, ports, or adapts someone else's implementation or design, do not mention that provenance or inspiration in commit messages, PR titles, or PR descriptions. Preserve attribution required by licenses, NOTICE files, or source headers.
 - **gh CLI available** for GitHub operations (PRs, issues, etc.)
 - **glab CLI available** for GitLab operations (PRs, issues, etc.)
 
