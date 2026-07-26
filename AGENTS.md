@@ -10,10 +10,12 @@ macOS dev env via GNU Stow. Ghostty + Herdr + Fish + Zed + Git worktrees + pi. W
 ```
 .dotfiles/
 ├── dot                 # CLI: init/update/doctor/stow/package (bash)
+├── home/.agents/       # Shared agent policy and canonical skills
+│   └── skills/         # Skills discovered by Pi, Claude, Codex, and other agents
 ├── home/.claude/       # Stowed to ~/.claude/
 │   ├── agents/         # Subagents: oracle, librarian, reviewer, planner, security
 │   ├── commands/       # Slash commands: code-review, clean, ...
-│   └── skills/         # Custom/symlinked Claude skills
+│   └── skills/         # Claude-specific skills and compatibility links
 ├── home/.config/       # Stowed to ~/.config/
 │   ├── fish/           # Shell (AGENTS.md)
 │   ├── zed/            # Primary editor; includes blocking CLI adapter
@@ -23,8 +25,7 @@ macOS dev env via GNU Stow. Ghostty + Herdr + Fish + Zed + Git worktrees + pi. W
 │   ├── ghostty/        # Terminal; launch Herdr explicitly per upstream
 │   └── starship.toml   # Prompt
 ├── home/.pi/           # Pi agent workspace (AGENTS.md)
-│   ├── agent/extensions/ # TypeScript extensions
-│   └── agent/skills/   # Agent skills
+│   └── agent/extensions/ # TypeScript extensions; runtime skills stay untracked
 ├── home/.local/bin/    # Scripts stowed to ~/.local/bin (on PATH)
 │   ├── agent-repos     # Agent repository helper
 │   └── task-loop       # Autonomous PRD impl loop
@@ -53,7 +54,7 @@ macOS dev env via GNU Stow. Ghostty + Herdr + Fish + Zed + Git worktrees + pi. W
 | Claude settings | `home/.claude/settings.json` |
 | Claude MCP | `home/.claude/mcp.json` |
 | Pi extension | `home/.pi/agent/extensions/<name>/` |
-| Pi skill | `home/.pi/agent/skills/<name>/SKILL.md` |
+| Shared agent skill | `home/.agents/skills/<name>/SKILL.md` |
 | Pi settings | `home/.pi/agent/settings.json` |
 
 ## CONVENTIONS
@@ -67,7 +68,7 @@ macOS dev env via GNU Stow. Ghostty + Herdr + Fish + Zed + Git worktrees + pi. W
 - Private helpers: prefix `__` (e.g., `__git.default_branch`)
 - VCS: Git worktrees for normal project flow
 - Pi extensions: TypeScript, npm workspaces under `home/.pi/`
-- Pi skills: Markdown-first (`SKILL.md`) with optional bundled resources
+- Shared skills: canonical under `home/.agents/skills/`, Markdown-first (`SKILL.md`), optional bundled resources
 
 ## ANTI-PATTERNS
 
@@ -75,12 +76,13 @@ macOS dev env via GNU Stow. Ghostty + Herdr + Fish + Zed + Git worktrees + pi. W
 - Casks in `bundle.work` (use base bundle)
 - Hardcode paths (use `$DOTFILES_DIR`, `$HOME`)
 - Nested git repos in stowed dirs (creates symlink issues)
-- node_modules in stowed dirs (pi extensions exception — gitignored)
+- node_modules in stowed dirs (Pi extensions exception — gitignored)
+- Track generated Pi skill/runtime directories (`home/.pi/agent/skills`, `home/.pi/ephemeral`, nested `home/.pi/.pi`)
 
 ## COMMANDS
 
 ```bash
-dot init              # Full setup (brew, stow, bun, claude, vite+, pi, ssh, fish)
+dot init              # Full setup (brew, stow, bun, Vite+, Pi, ssh, font, fish)
 dot update            # Pull + brew upgrade + restow + pi update
 dot doctor            # Health check
 dot stow              # Resymlink only

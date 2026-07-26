@@ -21,6 +21,10 @@ home/.config/opencode/node_modules/
 home/.config/opencode/plugins/git-ai.ts
 .opencode/plans/
 
+# Plannotator runtime/state (keep config tracked)
+home/.plannotator/*
+!home/.plannotator/config.json
+
 # herdr runtime/state
 home/.config/herdr/*.log
 home/.config/herdr/session-history.json
@@ -28,6 +32,7 @@ home/.config/herdr/session.json
 home/.config/herdr/release-notes.json
 home/.config/herdr/plugins.json
 home/.config/herdr/plugins/
+home/.config/herdr/.plugins.lock
 
 # local state / runtime (not config)
 home/.local/
@@ -36,9 +41,9 @@ home/.config/zed/prompts/
 # pi agent runtime/state (keep settings + customization resources tracked)
 home/.pi/agent/*
 home/.pi/todos/*
-home/.pi/.pi/todos/*
+home/.pi/.pi/
 home/.pi/pi-acp/
-home/.pi/ephemeral/quarantine/
+home/.pi/ephemeral/
 .pi/todos/*
 
 # pi MCP adapter runtime/secrets
@@ -64,7 +69,3 @@ home/.pi/agent/extensions/**/node_modules/
 !home/.pi/agent/extensions/**
 !home/.pi/agent/prelude/
 !home/.pi/agent/prelude/**
-!home/.pi/agent/skills/
-!home/.pi/agent/skills/**
-home/.pi/agent/skills/ui/
-home/.pi/agent/skills/account-id-tags/

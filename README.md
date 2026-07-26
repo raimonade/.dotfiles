@@ -36,6 +36,7 @@ After installation, the `dot` command will be available globally for ongoing man
 ~/.dotfiles/
 ├── dot                 # Main CLI tool
 ├── home/              # Configuration files (stowed to ~)
+│   ├── .agents/       # Shared agent policy + canonical cross-agent skills
 │   ├── .config/
 │   │   ├── fish/      # Fish shell configuration
 │   │   ├── git/       # Git configuration
@@ -77,6 +78,10 @@ The upstream helpers use `WT_DIR` when configured, support `.bare` repository la
 
 From a project directory, run `herdr` to launch or attach its persistent session. Use workspaces for tasks/projects, tabs for agents/logs/servers/reviews, and panes for individual terminal processes.
 
+## Agent Workflows
+
+Shared workflows are tracked once under `home/.agents/skills/` and discovered from `~/.agents/skills/` by Pi, Claude Code, Codex, and other compatible agents. Pi-generated `agent/skills/`, `ephemeral/`, and nested runtime directories stay untracked. The curated set follows the current dotfiles workflow collection, with the published TypeScript and Herdr skills synchronized from `dmmulroy/skills`.
+
 ## The `dot` CLI Tool
 
 The `dot` command is a comprehensive management tool for your dotfiles. It handles everything from initial setup to ongoing maintenance and provides AI-powered insights.
@@ -100,12 +105,11 @@ dot init --skip-ssh
 2. Installs packages from Brewfiles
 3. Creates symlinks with GNU Stow
 4. Installs Bun runtime
-5. Installs Claude Code CLI via npm (with bun fallback)
-6. Installs Vite+ (required for Pi installation)
-7. Installs Pi via Vite+
-8. Generates SSH key for GitHub (optional)
-9. Installs MonoLisa font (optional)
-10. Sets up Fish shell with plugins
+5. Installs Vite+ (required for Pi installation)
+6. Installs Pi via Vite+
+7. Generates SSH key for GitHub (optional)
+8. Installs MonoLisa font (optional)
+9. Sets up Fish shell with plugins
 
 ### Maintenance Commands
 
@@ -113,8 +117,8 @@ dot init --skip-ssh
 ```bash
 dot update
 ```
-- Pulls latest dotfiles changes with Git
-- Updates Homebrew packages
+- Pulls the latest dotfiles changes with Git
+- Updates Homebrew and automatically upgrades outdated packages
 - Re-stows configuration files
 - Runs `pi update` to update Pi and configured packages
 
@@ -125,7 +129,6 @@ dot doctor
 Comprehensive diagnostics including:
 - ✅ Homebrew installation
 - ✅ Essential tools (git, zed, herdr, node, etc.)
-- ✅ Claude Code installation and functionality
 - ✅ Pi installation and functionality
 - ✅ Fish shell configuration
 - ✅ PATH configuration
@@ -145,6 +148,14 @@ dot retry-failed
 Attempts to reinstall packages that failed during initial setup.
 
 ### Performance & Development Tools
+
+#### `dot summary` - Summarize Recent Commits
+```bash
+dot summary              # Last 3 commits
+dot summary -n 5 -d     # Five commits with changed file names
+dot summary -v          # Show commit details first
+```
+Uses Pi to produce a concise technical summary of recent Git history.
 
 #### `dot benchmark-shell` - Fish Shell Performance Benchmarking
 ```bash
@@ -254,10 +265,9 @@ dot package remove docker base  # Remove docker from base bundle only
 #### Package Files
 
 **`packages/bundle`** - Base packages for all machines:
-- Development tools: Zed, Herdr, Fish, Git
+- Development tools: Zed, Herdr, Fish, shellcheck
 - CLI utilities: ripgrep, fd, fzf, starship
-- Applications: Arc browser, Raycast, OrbStack
-- AI tools: aider
+- Applications: Ghostty, OBS, OrbStack, Raycast
 
 **`packages/bundle.work`** - Work-specific additions:
 - AWS/Kubernetes tools

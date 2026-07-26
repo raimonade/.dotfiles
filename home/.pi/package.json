@@ -15,9 +15,9 @@
     "typecheck:pi-skill-toggle": "npm run typecheck --workspace=pi-skill-toggle"
   },
   "dependencies": {
-    "@earendil-works/pi-ai": "^0.80.3",
-    "@earendil-works/pi-coding-agent": "^0.80.3",
-    "@earendil-works/pi-tui": "^0.80.3",
+    "@earendil-works/pi-ai": "^0.80.8",
+    "@earendil-works/pi-coding-agent": "^0.80.8",
+    "@earendil-works/pi-tui": "^0.80.8",
     "typebox": "^1.1.38"
   }
 }

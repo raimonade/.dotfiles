@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "0.80.6",
+  "lastChangelogVersion": "0.82.1",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.6-sol",
   "defaultThinkingLevel": "high",
@@ -15,31 +15,7 @@
   "extensions": [
     "-extensions/opencode-cloudflare/index.ts"
   ],
-  "skills": [
-    "!adapt",
-    "!animate",
-    "!arrange",
-    "!audit",
-    "!bolder",
-    "!clarify",
-    "!colorize",
-    "!critique",
-    "!delight",
-    "!distill",
-    "!extract",
-    "!grill-me",
-    "!harden",
-    "!normalize",
-    "!onboard",
-    "!optimize",
-    "!overdrive",
-    "!polish",
-    "!quieter",
-    "!simple",
-    "!triage",
-    "!typeset",
-    "!write-a-skill"
-  ],
+  "skills": [],
   "subagents": {
     "agentOverrides": {
       "simple": {

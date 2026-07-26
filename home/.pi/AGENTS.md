@@ -24,7 +24,9 @@ Global Pi config, synced through dotfiles and stowed into `~/.pi`. npm workspace
     │   ├── pi-cloak/           # secret cloaking extension
     │   ├── todos/              # file-backed todo tool
     │   └── *.ts                # standalone extensions
-    └── skills/           # curated global Pi skills
+    └── skills/           # runtime/generated links; ignored by git
+
+Canonical shared skills live in `../.agents/skills/` in this repository and are stowed to `~/.agents/skills/`.
 ```
 
 ## Commands
@@ -46,7 +48,7 @@ npm run test:codex-fast-mode       # codex fast mode tests only
 | Configure MCP servers | `agent/mcp.json` |
 | Create extension | `agent/extensions/<name>/` with `package.json` |
 | Create standalone extension | `agent/extensions/<name>.ts` |
-| Create skill | `agent/skills/<name>/SKILL.md` |
+| Create shared skill | `../.agents/skills/<name>/SKILL.md` |
 | Secret masking | `agent/cloak.json` |
 | Run extension tests | `npm run test:web-tools` (from .pi root) |
 | Type-check | `npm run check` (from .pi root) |
@@ -57,10 +59,10 @@ npm run test:codex-fast-mode       # codex fast mode tests only
 - Prefer packaged integrations in `agent/settings.json` (`npm:pi-mcp-adapter`, etc.) over vendored copies.
 - Extensions as npm workspace packages: each has own `package.json`.
 - Standalone extensions: single `.ts` file in `extensions/`.
-- Skills: `SKILL.md` as entry, optional bundled resources (templates, patches).
+- Shared skills: canonical under `../.agents/skills/`; `SKILL.md` entry with optional bundled resources.
 - ESM only: `"type": "module"` everywhere.
-- Keep runtime state and caches out of git; only config, local extensions, skills, and themes should be tracked.
-- Keep global skills curated. Add broad reusable skills here; put project/vendor-specific skills in ephemeral/project-local config.
+- Keep runtime state and caches out of git; only config, local extensions, shared `.agents` skills, and themes should be tracked.
+- Keep global skills curated under `../.agents/skills/`; put project/vendor-specific skills in ephemeral/project-local config.
 - Do not reintroduce removed gateway/provider experiments unless explicitly requested.
 
 ## Anti-patterns
@@ -68,7 +70,7 @@ npm run test:codex-fast-mode       # codex fast mode tests only
 - Installing deps at workspace root for extension-specific needs (use per-package).
 - Committing `node_modules/` (gitignored per-extension).
 - Editing `agent/settings.json` outside dotfiles repo (stow overwrites).
-- Adding runtime state files to git (most of `agent/*` is gitignored, only extensions/skills/settings un-ignored).
+- Adding runtime state files to git (most of `agent/*` is gitignored; generated `agent/skills/` stays ignored).
 - Writing any private model/provider IDs into tests, fixtures, docs, examples, source comments, tracked configuration, or any other version-controlled file.
 
 ## Gitignore pattern
@@ -76,8 +78,9 @@ npm run test:codex-fast-mode       # codex fast mode tests only
 Most of `agent/` is gitignored by default. Tracked files are explicitly un-ignored:
 - `agent/settings.json`, `agent/cloak.json`, `agent/mcp.json`, `agent/tsconfig.json`, `agent/package.json`
 - `agent/extensions/**` (but `node_modules/` within are re-ignored)
-- `agent/skills/**`
 - `agent/themes/*.json`
+
+Generated `agent/skills/`, `ephemeral/`, and nested `.pi/` runtime directories remain ignored.
 
 ## Notes
 
