@@ -1,6 +1,6 @@
 ---
 name: design
-description: Design and build new UI with the complete ui.sh design guideline system.
+description: Build new UI against the ui.sh design guideline system. Use when creating a page, section, layout, or component in Tailwind from scratch.
 ---
 
 # Design

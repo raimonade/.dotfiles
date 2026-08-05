@@ -1,6 +1,6 @@
 ---
 name: change-brief
-description: Summarize a just-completed change file-by-file — signatures touched, one line of what each did and why, and a risk label — instead of re-reading the whole diff, so wrong turns surface fast and the reader only reads code where risk is high. Use proactively after a change touches a high-risk surface (auth, billing, migrations, money, data loss, concurrency) or when the re-read surprised you, and before opening a PR on a substantial change; also when the user asks to summarize, walk through, or review what was just changed, or "what does this do now".
+description: Summarize a just-completed change file-by-file — signatures touched, what each did and why, and a risk label. Use proactively after touching a high-risk surface (auth, billing, migrations, money, data loss, concurrency), before opening a PR on a substantial change, or when the user asks what was just changed.
 ---
 
 # Change Brief

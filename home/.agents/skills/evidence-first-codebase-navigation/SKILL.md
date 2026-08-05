@@ -1,6 +1,6 @@
 ---
 name: evidence-first-codebase-navigation
-description: "Use when Mandatory for unfamiliar-repository investigation, architecture or SQL review, implementation planning, dependency questions, lint/config audits, cleanup verification, and code changes. Before `rg`, directory listings, guessed file reads, or edits, directly invoke the available repository-aware code-search/context tool for the exact symbol, contract, dependency, convention, or anti-pattern. Use scoped `rg` only when repository-aware search is unavailable or unsuitable, and state why."
+description: "Mandatory for unfamiliar-repository investigation, architecture or SQL review, implementation planning, dependency questions, lint/config audits, cleanup verification, and code changes. Before `rg`, directory listings, guessed file reads, or edits, directly invoke the available repository-aware code-search/context tool for the exact symbol, contract, dependency, convention, or anti-pattern. Use scoped `rg` only when repository-aware search is unavailable or unsuitable, and state why."
 managed-by: tracedecay-automation
 skill-id: "evidence-first-codebase-navigation"
 content-hash: sha256:e7ca658ac0b8cc942a234b6fd3d6533bdf8cbce70692b47c5edb0bd26216a508
