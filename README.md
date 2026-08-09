@@ -80,7 +80,14 @@ From a project directory, run `herdr` to launch or attach its persistent session
 
 ## Agent Workflows
 
-Shared workflows are tracked once under `home/.agents/skills/` and discovered from `~/.agents/skills/` by Pi, Claude Code, Codex, and other compatible agents. Pi-generated `agent/skills/`, `ephemeral/`, and nested runtime directories stay untracked. The curated set follows the current dotfiles workflow collection, with the published TypeScript and Herdr skills synchronized from `dmmulroy/skills`.
+Shared workflow guidance is tracked once under `home/.agents/skills/` and discovered from `~/.agents/skills/` by Pi, Claude Code, Codex, and other compatible agents. Pi reusable orchestration lives in declarative `pi-subagents` chains under `home/.pi/agent/chains/`:
+
+```text
+/run-chain research-plan -- <task>          # external research + local scout → grounded plan
+/run-chain targeted-review -- <review goal> # bounded target discovery → parallel review → verdict
+```
+
+Pi-generated `agent/skills/`, `ephemeral/`, and nested runtime directories stay untracked. The curated skill set follows the current dotfiles workflow collection, with the published TypeScript and Herdr skills synchronized from `dmmulroy/skills`.
 
 ## The `dot` CLI Tool
 

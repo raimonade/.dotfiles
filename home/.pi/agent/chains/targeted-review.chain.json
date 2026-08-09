@@ -1,0 +1,157 @@
+{
+  "name": "targeted-review",
+  "description": "Identify the highest-risk changed areas, review them in parallel, and return one structured read-only verdict.",
+  "chain": [
+    {
+      "agent": "scout",
+      "phase": "Scope",
+      "label": "Select review targets",
+      "as": "targets",
+      "task": "Inspect the current diff and repository instructions for: {task}. Select at most 8 independent, high-value review targets. Return only structured_output matching the schema. Do not edit files.",
+      "output": false,
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "maxItems": 8,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "path",
+                "reason"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "reason": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "progress": true
+    },
+    {
+      "phase": "Review",
+      "label": "Parallel targeted review",
+      "expand": {
+        "from": {
+          "output": "targets",
+          "path": "/items"
+        },
+        "item": "target",
+        "key": "/path",
+        "maxItems": 8
+      },
+      "parallel": {
+        "agent": "reviewer",
+        "label": "Review {target.path}",
+        "task": "Review {target.path} for the requested change. Why it was selected: {target.reason}. Read repository instructions and the actual diff. Check correctness, regressions, boundary cases, tests, security, and unnecessary complexity. Do not edit files. Return only structured_output matching the schema.",
+        "output": false,
+        "outputSchema": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "path",
+            "summary",
+            "findings"
+          ],
+          "properties": {
+            "path": {
+              "type": "string"
+            },
+            "summary": {
+              "type": "string"
+            },
+            "findings": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "severity",
+                  "message",
+                  "evidence"
+                ],
+                "properties": {
+                  "severity": {
+                    "type": "string",
+                    "enum": [
+                      "blocker",
+                      "high",
+                      "medium",
+                      "low"
+                    ]
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "evidence": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "progress": true
+      },
+      "collect": {
+        "as": "reviews"
+      },
+      "concurrency": 4,
+      "failFast": false
+    },
+    {
+      "agent": "reviewer",
+      "phase": "Verdict",
+      "label": "Synthesize findings",
+      "as": "verdict",
+      "task": "Synthesize the targeted reviews for: {task}. Deduplicate findings, reject unsupported claims, preserve exact evidence, and separate blockers, fixes worth doing now, and deferred suggestions. Do not edit files. Return only structured_output matching the schema.\n\n{outputs.reviews}",
+      "output": false,
+      "outputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "verdict",
+          "blockers",
+          "fixes",
+          "deferred"
+        ],
+        "properties": {
+          "verdict": {
+            "type": "string"
+          },
+          "blockers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "fixes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "deferred": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "progress": true
+    }
+  ]
+}

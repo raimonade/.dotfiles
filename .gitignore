@@ -62,6 +62,8 @@ home/.local/share/pi/mcp-auth.json
 !home/.pi/agent/APPEND_SYSTEM.md
 !home/.pi/agent/themes/
 !home/.pi/agent/themes/*.json
+!home/.pi/agent/chains/
+!home/.pi/agent/chains/**
 !home/.pi/agent/extensions/
 !home/.pi/agent/extensions/**
 !home/.pi/agent/prelude/

@@ -1,10 +1,9 @@
 # Engineering decision policy
 
 Applies to every coding agent (Claude, Codex, Pi, Cursor, Copilot, …) on every
-project and language. **Local repo rules win** (`AGENTS.md` / `CLAUDE.md` /
-`.cursor/rules`). This overrides personal habit. TypeScript deep standards live
-in the installed `coding-standards` skill; load it before non-trivial TypeScript
-work.
+project and language, and overrides personal habit. **Local repo rules win**
+(`AGENTS.md` / `CLAUDE.md` / `.cursor/rules`). TypeScript deep standards: load the
+`coding-standards` skill before non-trivial TypeScript work.
 
 **Optimize for the smallest _correct_ solution, not the smallest-looking diff.**
 Minimality is a review lens applied _after_ correctness, safety, and existing
@@ -74,19 +73,17 @@ architecture are preserved. "Write less" never means "validate less."
 
 ## Override rule (when minimality yields)
 
-Minimality yields whenever the extra code **buys correctness or debuggability**
-rather than ceremony. The classifier: _does this line buy correctness/safety/
-debuggability, or is it ceremony?_ Buy correctness; cut ceremony. Unsure whether
-an abstraction earns its keep → run the deletion test.
+Classify every line: _does it buy correctness, safety, or debuggability, or is it
+ceremony?_ Buy correctness; cut ceremony. Unsure whether an abstraction earns its
+keep → run the deletion test.
 
 ## Intensity
 
-Default: this policy, always on. For an explicit minimization sweep, the
-`ponytail` skill (Claude/Codex) offers:
+Default: this policy, always on (**full** — right for greenfield UI, glue,
+scripts, and prototypes, where over-build is the main risk). Two intensities the
+user can call for by name:
 
-- **lite** — name the lazier alternative in one line, you pick. Use in
+- **lite** — name the lazier alternative in one line, the user picks. For
   domain-heavy / correctness-critical code where the typed machinery is load-bearing.
-- **full** — this policy enforced. Greenfield UI, glue, scripts, prototypes —
-  where over-build is the main risk.
 - **ultra** — deletion-first review pass only. Never always-on; never on domain
   modeling, schemas, error taxonomies, or security paths.

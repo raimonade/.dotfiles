@@ -1,92 +1,113 @@
 # `davis7dotsh/my-pi-setup` review
 
-Reviewed latest `main` at [`2657bae6`](https://github.com/davis7dotsh/my-pi-setup/commit/2657bae6e054a2817e4483f6cdce8ab9c9eafcfd) on 2026-07-26.
+Reviewed current `main` at [`2657bae6`](https://github.com/davis7dotsh/my-pi-setup/commit/2657bae6e054a2817e4483f6cdce8ab9c9eafcfd) on 2026-07-26. `git ls-remote` and a fresh checkout match that SHA.
 
 ## Verdict
 
-Keep **our `pi-subagents` 0.34.0 as the orchestration core**. It is stronger for durable async runs, declarative chains, dynamic fanout, saved workflows, scheduling, worktree isolation, forked context, acceptance gates, supervisor/intercom routing, and operational recovery.
+Keep **`pi-subagents` 0.37.0 as the orchestration core**. It now covers nearly every workflow capability worth adopting: declarative saved chains, phase/label metadata, structured outputs, dynamic fanout, persistent FleetView and transcript inspection, durable async lifecycle, steering/recovery, worktrees, acceptance/review gates, public delegation APIs, preflight, and capability ceilings.
 
-Davis's setup is stronger in three areas:
+Davis remains stronger only in three narrow areas:
 
-1. **TUI presentation** — a coherent GitHub-dark theme, responsive two-line footer, rich workflow dashboard, subagent takeover view, and background-terminal inspector.
-2. **Cross-harness delegation** — one manager normalizes Pi, Claude Code, and Codex CLI children.
-3. **Model-authored workflows** — bounded JavaScript orchestration with `phase()`, `agent()`, `parallel()`, structured results, sandboxing, persisted artifacts, and a polished dashboard.
+1. **Model-authored JavaScript workflows** with arbitrary conditions and loops.
+2. **Native Claude Code and Codex harness adapters** alongside Pi children.
+3. **Interactive transcript takeover** with input directly inside the inspector.
 
-Their repository has **no license** (`license: null` in the GitHub API and no `LICENSE` file). Do not copy implementation or theme files verbatim. Obtain permission or reimplement selected behavior clean-room from public Pi APIs and independently chosen design tokens.
+Those advantages do not justify replacing our foundation. Davis's repository still has **no license** (`license: null` in the GitHub API and no `LICENSE`, `COPYING`, or `NOTICE` file in the checkout), so do not copy implementation or theme files. Reproduce selected behavior clean-room from Pi and `pi-subagents` public interfaces only.
 
 ## Adoption status
 
-Implemented independently using Pi's public extension API:
+Implemented independently:
 
-- responsive two-line session footer with a one-line narrow fallback;
-- semantic theme roles, context-pressure states, ANSI-aware truncation, and control-sequence sanitization;
-- Catppuccin Macchiato activation;
-- focused rendering tests at roomy, medium, narrow, and no-color conditions.
+- responsive Pi session footer and Catppuccin Macchiato activation;
+- `research-plan` saved chain: external research and local scouting in parallel, then a grounded plan;
+- `targeted-review` saved chain: structured target discovery, bounded dynamic reviewer fanout, and a read-only verdict;
+- local researcher compatibility mapping to the installed `websearch` and `webfetch` tools;
+- phase labels, progress metadata, structured outputs, bounded fanout, and artifacts through `pi-subagents` rather than a second workflow runtime.
 
-The orchestration core, workflow execution model, and background-process ownership remain unchanged.
+Run the saved workflows with:
 
-## Subagents: ours vs. theirs
+```text
+/run-chain research-plan -- <task>
+/run-chain targeted-review -- <review goal>
+```
 
-| Area | Ours | Davis | Winner |
+The existing `/review-loop`, `/parallel-review`, `/parallel-research`, and `/parallel-cleanup` prompt workflows remain the right parent-controlled tools for iterative work.
+
+## Capability comparison
+
+| Area | Davis current main | `pi-subagents` 0.37.0 | Assessment |
 |---|---|---|---|
-| Backends | Pi children with provider/model selection | Pi + Claude Code SDK + Codex app-server | Davis, if native CLI harnesses matter |
-| Chains/workflows | Sequential, parallel, dynamic expand/collect, saved chains, prompt workflows | Ad-hoc children plus separate inline-JS workflow engine | Ours for repeatability; Davis for expressiveness |
-| Context | Fresh or true persisted-session fork | Fresh isolated child prompts | Ours |
-| Isolation | Optional Git worktrees, setup hooks, patch capture | Shared cwd; trust checked, but no worktree isolation | Ours |
-| Coordination | Supervisor/intercom, attention notices, steer/resume/interrupt | Steer, wait, cancel, interactive takeover | Ours operationally; Davis visually |
-| Durability | Async artifacts, status/events/transcripts, resume, scheduling | Session-scoped children; shutdown aborts them | Ours |
-| Safety | Child tool boundaries, one-writer policy, model scope, acceptance gates | Good bounds/trust checks, but Claude bypasses permissions and Codex uses danger-full-access | Ours |
-| UI | Adaptive fleet widget and transcript status | Full-screen picker/takeover with live transcript and input | Davis |
+| Child runtimes | Pi SDK, Claude Agent SDK, Codex app-server | Pi child sessions with provider/model selection and fallbacks | Davis only when native harness semantics are required |
+| Workflow definition | Inline model-authored JS with `phase()`, `agent()`, `parallel()`, and args | Declarative chains, saved chain files, prompt workflows, static groups, dynamic expand/collect | Davis more expressive; ours safer and inspectable |
+| Conditional logic | Arbitrary branches and loops | Named outputs, fanout, `gateOn`, append-step, parent review loops | Add predicates only after a real chain cannot express a need |
+| Parallelism | Semaphore capped at 4; 32 calls per run | Per-group and global concurrency, spawn limits, fanout caps | Ours is more configurable |
+| Structured results | Optional JSON Schema per child | Schema-bound `outputSchema` across tools, chains, and delegation APIs | Equivalent capability |
+| Phases and labels | Static metadata plus live phase updates | Chain phase/label grouping in progress and results | Already present |
+| Background work | Session-scoped; aborts at shutdown; no resume | Detached durable runs, completion delivery, scheduling, status, steer, stop, resume | Ours substantially stronger |
+| Context | Fresh isolated agents | Fresh or real parent-session fork | Ours stronger |
+| Isolation | Shared cwd; no Git worktrees | Optional per-child worktrees, patches, aggregate handoff manifests | Ours stronger |
+| Fleet/transcript UI | Picker and interactive takeover/input | Persistent FleetView and structured read-only transcript inspector | Davis has the remaining takeover UX advantage |
+| Usage UI | Model, elapsed, tokens/context | Model, context, elapsed, tokens, cost, nested status | Ours already covers it |
+| Artifacts | Script, args, workflow state, bounded transcripts/results | Versioned status/events/results/transcripts, session paths, process-terminal proof | Ours stronger operationally |
+| Controls | Wait, list, cancel, send, takeover | Wait, status, stop, interrupt, acknowledged steer, resume, supervisor channel | Ours has stronger lifecycle guarantees |
+| Acceptance | Child success plus optional schema | Evidence levels, criteria, verification, independent review, effects, watchdog | Ours stronger |
+| Launch safety | Trust/model checks during execution | Side-effect-free preflight, definition/tool/skill digests, capability ceilings | Ours stronger |
+| Permission defaults | Claude bypasses permissions; Codex uses danger-full-access | Strict tool visibility, optional permission policy, model scope, worktrees | Ours materially safer |
+| Public extension seam | Internal workflow/subagent coupling | Delegation v1/v2, async RPC, background-work, preflight, capability ceiling | Ours is the deeper module |
 
-**Decision:** do not replace ours. Borrow the ideas of a richer fleet/takeover surface and, if desired, add optional native Claude/Codex adapters behind our existing safety model rather than adopting Davis's permissive defaults.
+## Why not adopt executable workflow scripts
 
-## Workflows: ours vs. theirs
+Arbitrary workflow JavaScript adds a second orchestration runtime, script sandbox, IPC protocol, lifecycle model, persistence format, and failure surface. It also allows branches and loops that are harder to preview than a declarative chain.
 
-Davis's [`workflow` extension](https://github.com/davis7dotsh/my-pi-setup/blob/2657bae6e054a2817e4483f6cdce8ab9c9eafcfd/extensions/workflows/index.ts) lets the model author JavaScript using `phase`, `agent`, and `parallel`. It caps concurrency at four and calls at 32, returns typed error values, runs source in a permissioned subprocess with authenticated IPC, and persists run artifacts. The dashboard is excellent.
+Our common cases already fit saved chains and prompt workflows:
 
-Our declarative chains are safer, easier to inspect, reusable, and already support dynamic fanout, structured output, async execution, named outputs, review loops, worktrees, scheduling, and acceptance. Arbitrary workflow code adds a larger trust and maintenance surface.
+- sequential work;
+- static parallel review;
+- data-driven bounded fanout;
+- structured handoffs;
+- background execution;
+- parent-controlled review/fix loops;
+- follow-up steps appended after a result or decision.
 
-**Decision:** keep declarative chains. Borrow:
+If a repeated workflow eventually needs conditional branching, prefer a small declarative predicate over structured output. Do not add general JavaScript execution merely for expressiveness.
 
-- phase labels and a richer workflow dashboard;
-- compact per-agent usage/context/elapsed-time rows;
-- persisted bounded transcripts and result artifacts;
-- a restricted expression/branching layer only if real workflows prove chains insufficient.
+## Subagent implementation decision
 
-Do not add arbitrary JS execution merely for novelty.
+Do not replace `pi-subagents`.
 
-## Visual direction
+Davis's normalized Pi/Claude/Codex backend is useful only when a child must run inside a native external harness. Its defaults weaken the trust model: Claude runs with permission bypass and Codex with approvals disabled and full-access sandboxing. Any future native adapter must sit behind our existing preflight, strict tool/extension visibility, capability ceilings, worktree isolation, lifecycle artifacts, and acceptance contracts.
 
-The screenshot's strongest element is the **two-line footer**, not the tall logo:
+`pi-subagents` also provides capabilities Davis lacks:
 
-- row 1: cwd ↔ provider/model/thinking;
-- row 2: context/window, cost, tokens/s ↔ branch, changed files, PR;
-- extension statuses below.
+- true parent-session forks;
+- durable async recovery and scheduling;
+- worktree isolation and patch handoffs;
+- nested-run visibility and supervisor coordination;
+- acceptance and independent-review gates;
+- process-terminal proof;
+- extension-owned delegation APIs;
+- model scope and monotonic capability restrictions.
 
-Adopt this behavior clean-room with semantic theme roles and width-aware truncation. Keep the header responsive: a three-row mark on roomy empty sessions, a one-line `PI · cwd` fallback on short/narrow terminals. The checked-in header is static, not animated. Avoid its brittle private-tree mutation that removes the Themes section.
+## Remaining clean-room candidate
 
-Our tracked `catppuccin-macchiato` theme is now active, and the footer derives its colors from Pi's semantic theme roles rather than hardcoded palette values.
+**Interactive steer from FleetView detail** is the sole small, user-visible gap worth evaluating. Build it only if explicit text commands prove too slow in daily use. The safe design would use the public `pi-subagents` RPC, keep stop/destructive actions separately confirmed, and avoid importing Davis rendering or state-management code.
 
-Accessibility requirements: honor `NO_COLOR`, gate truecolor gradients, sanitize cwd/branch labels, gate OSC-8 links by terminal capability, and maintain contrast on near-black surfaces.
-
-## Ranked adoption candidates
-
-1. **Responsive footer/dashboard** — highest daily value; clean-room implementation.
-2. **Theme consolidation** — activate the existing Catppuccin theme or author a GitHub-dark alternative; do not leave a tracked-but-unused theme.
-3. **Workflow/fleet dashboard UX** — add phase grouping, usage, elapsed time, and transcript takeover to our existing orchestration rather than replacing it.
-4. **`ask_user` multiple-choice UX** — useful for bounded decisions, with a freeform escape hatch.
-5. **`/copy-all` behavior** — small convenience command; implement independently.
-6. **Background-terminal manager** — useful for session-scoped servers/logs and completion notifications, but lower priority because Herdr already owns panes/process visibility.
-7. **Per-turn recaps** — optional; likely visual/cost noise unless explicitly enabled.
-
-Skip Firecrawl (duplicate external search/key), runtime `fd`/`rg` downloads (Homebrew already owns them), wholesale installation into `~/.pi/agent` (conflicts with Stow), and subagent replacement.
+Native Claude/Codex adapters are a separate security-sensitive project and should wait for a concrete requirement. A background-terminal manager remains low priority because Herdr already owns process and pane visibility.
 
 ## Primary sources
 
+### Davis
+
+- [Repository metadata](https://api.github.com/repos/davis7dotsh/my-pi-setup)
+- [Pinned tree](https://github.com/davis7dotsh/my-pi-setup/tree/2657bae6e054a2817e4483f6cdce8ab9c9eafcfd)
 - [README](https://github.com/davis7dotsh/my-pi-setup/blob/2657bae6e054a2817e4483f6cdce8ab9c9eafcfd/README.md)
-- [Setup](https://github.com/davis7dotsh/my-pi-setup/blob/2657bae6e054a2817e4483f6cdce8ab9c9eafcfd/SETUP.md)
-- [Subagents](https://github.com/davis7dotsh/my-pi-setup/tree/2657bae6e054a2817e4483f6cdce8ab9c9eafcfd/extensions/subagents)
-- [Workflows](https://github.com/davis7dotsh/my-pi-setup/tree/2657bae6e054a2817e4483f6cdce8ab9c9eafcfd/extensions/workflows)
-- [UI customization](https://github.com/davis7dotsh/my-pi-setup/blob/2657bae6e054a2817e4483f6cdce8ab9c9eafcfd/extensions/ui-customization/index.ts)
-- [Theme](https://github.com/davis7dotsh/my-pi-setup/blob/2657bae6e054a2817e4483f6cdce8ab9c9eafcfd/themes/github-dark-default.json)
-- [Screenshot](https://github.com/davis7dotsh/my-pi-setup/blob/2657bae6e054a2817e4483f6cdce8ab9c9eafcfd/assets/pi-setup.jpeg)
+- [Workflow extension](https://github.com/davis7dotsh/my-pi-setup/tree/2657bae6e054a2817e4483f6cdce8ab9c9eafcfd/extensions/workflows)
+- [Subagent extension](https://github.com/davis7dotsh/my-pi-setup/tree/2657bae6e054a2817e4483f6cdce8ab9c9eafcfd/extensions/subagents)
+- [Claude backend](https://github.com/davis7dotsh/my-pi-setup/blob/2657bae6e054a2817e4483f6cdce8ab9c9eafcfd/extensions/subagents/src/backends/claude.ts)
+- [Codex backend](https://github.com/davis7dotsh/my-pi-setup/blob/2657bae6e054a2817e4483f6cdce8ab9c9eafcfd/extensions/subagents/src/backends/codex.ts)
+
+### Ours
+
+- Installed `pi-subagents` 0.37.0 `README.md`, `CHANGELOG.md`, and `package.json`
+- Public `pi-subagents` delegation, preflight, background-work, and capability-ceiling interfaces
+- Saved-chain parser and chain validation implementation

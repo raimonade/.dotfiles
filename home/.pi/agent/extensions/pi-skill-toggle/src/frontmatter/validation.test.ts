@@ -6,6 +6,34 @@ import { deriveSkillMetadata, getDuplicateFrontmatterKeys, hasDuplicateDisableMo
 const codec = new SimpleFrontmatterCodec();
 
 describe("frontmatter validation", () => {
+  it("parses literal and folded block scalar descriptions", () => {
+    const literal = codec.parse([
+      "---",
+      "name: discoverable-code",
+      "description: |",
+      "  Rules for writing code that agents can find.",
+      "  Apply when naming exported symbols.",
+      "---",
+    ].join("\n"));
+    const folded = codec.parse([
+      "---",
+      "name: discoverable-code",
+      "description: >-",
+      "  Rules for writing code that agents can find.",
+      "  Apply when naming exported symbols.",
+      "---",
+    ].join("\n"));
+
+    assert.equal(
+      deriveSkillMetadata("/skills/discoverable-code/SKILL.md", literal).description,
+      "Rules for writing code that agents can find.\nApply when naming exported symbols.",
+    );
+    assert.equal(
+      deriveSkillMetadata("/skills/discoverable-code/SKILL.md", folded).description,
+      "Rules for writing code that agents can find. Apply when naming exported symbols.",
+    );
+  });
+
   it("reports duplicate top-level frontmatter keys", () => {
     const doc = codec.parse([
       "---",

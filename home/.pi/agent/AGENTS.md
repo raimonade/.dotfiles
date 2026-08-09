@@ -58,9 +58,10 @@ Execution models are not the default taste models. For taste-heavy frontend work
 - If the task includes user-facing UI/UX/design work — new components/pages, visual polish, layout, typography, color, motion, UX copy, empty/error states, responsive behavior — do not rely on the execution model for design direction.
 - First load applicable design context/skills (`impeccable`, `frontend-design`, local `PRODUCT.md`/`DESIGN.md`, design-system docs).
 - Fable is the primary taste/design model. Give it a self-contained prompt or brief and implement only after its direction is concrete.
+- When launching Claude directly or through Herdr, pin `--model 'claude-opus-5[1m]'`; never pass the floating `opus` alias because it may resolve to Opus 4.8.
 - When Fable is unavailable or down, use Claude Opus:
-  - Read-only design direction/review: `claude -p --model opus --permission-mode plan --output-format text "<self-contained design prompt>"`.
-  - Visual implementation when delegation is appropriate: `claude -p --model opus --permission-mode acceptEdits --output-format text "<self-contained implementation prompt>"`, then inspect the diff locally.
+  - Read-only design direction/review: `claude -p --model 'claude-opus-5[1m]' --permission-mode plan --output-format text "<self-contained design prompt>"`.
+  - Visual implementation when delegation is appropriate: `claude -p --model 'claude-opus-5[1m]' --permission-mode acceptEdits --output-format text "<self-contained implementation prompt>"`, then inspect the diff locally.
 - Delegate prompts must be self-contained: goal, target files/routes, user constraints, design context locations, repo instructions to read (`AGENTS.md` + nearest scoped `AGENTS.md`), exact deliverable, verification command, and required report shape.
 - Ask the design delegate for concrete visual direction, hierarchy/layout, component/API guidance, accessibility constraints, implementation notes, and an anti-slop check. If it edits, require changed files, checks run, failures/blockers, and assumptions.
 - The execution model may implement after a Fable/Opus design pass, explicit mock/screenshot/spec, or a clearly existing design-system pattern. It may freely do mechanical frontend work that preserves an existing visual design.

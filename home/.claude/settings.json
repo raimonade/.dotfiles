@@ -120,7 +120,10 @@
       "Bash(xargs:*)"
     ]
   },
-  "model": "opus[1m]",
+  "env": {
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-5[1m]"
+  },
+  "model": "claude-opus-5[1m]",
   "enabledMcpjsonServers": [
     "context7",
     "grep-app",

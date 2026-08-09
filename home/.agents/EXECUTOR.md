@@ -1,7 +1,7 @@
 # Executor — your integration surface
 
-Third-party integrations (Mobbin, Linear, Axiom, PostHog, Sanity, Vercel,
-Cloudflare, Context7, Better Stack, Google Analytics, grep.app, Payload, ui.sh …)
+Third-party integrations (Mobbin, Linear, Axiom, PostHog, Vercel, Cloudflare,
+Context7, Better Stack, Google Analytics, grep.app, Payload, ui.sh …)
 are configured **once** in Executor and shared across every agent. A single local
 daemon (`~/.executor/data.db`) backs all of them. Do **not** try to reach these
 services with WebFetch/curl — most require auth Executor already holds, so a raw
@@ -32,26 +32,23 @@ Reach order for "what do I have / just call X": `executor tools integrations` /
 ## Local Plane
 
 The self-hosted Spotwise tracker is registered as the official Plane MCP server
-under `spotwise-plane.org.default.*`. Use it for Plane, `WAY-*` issues, and
-Wayfinder maps; never use agent-browser or raw API calls. Load the installed
-`plane` skill for fixed project context and the narrow self-hosted relation
-compatibility tool. Ignore the stale zero-tool `local_plane_*` entries. The
-generated `spotwise-plane.org.default.*` paths are canonical; redundant
-per-user connections were removed.
+under the canonical `spotwise-plane.org.default.*` paths. Use it for Plane,
+`WAY-*` issues, and Wayfinder maps; never agent-browser or raw API calls. Load the
+installed `plane` skill for fixed project context and the narrow self-hosted
+relation compatibility tool. Ignore any stale zero-tool `local_plane_*` entries.
 
 ## Mobbin freshness
 
-Mobbin results can surface older captures. When using Mobbin (`search_screens`,
-`search_flows`, `search_sections`) for UI inspiration or product references,
-default to the newest available screenshots:
+Mobbin results can surface older captures, so `search_screens` / `search_flows` /
+`search_sections` for UI inspiration or product references default to the newest
+available screenshots:
 
 - Put freshness intent in the query when relevant: `latest`, `current`, `recent`,
-  or the current year.
-- Prefer results that look current; if metadata includes capture dates or app/site
-  versions, choose the newest.
-- If results look stale or lack any freshness signal, rerun a narrower,
+  or the current year. Where metadata carries capture dates or app/site versions,
+  choose the newest.
+- Results that look stale or carry no freshness signal → rerun a narrower,
   freshness-biased query before citing or copying the pattern.
-- If an older-looking screenshot is all you have, call that out explicitly.
+- An older-looking screenshot as the only option → call that out explicitly.
 
 ## Claude-only note
 

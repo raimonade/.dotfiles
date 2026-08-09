@@ -1,8 +1,8 @@
 {
-  "lastChangelogVersion": "0.82.1",
+  "lastChangelogVersion": "0.83.0",
   "defaultProvider": "openai-codex",
-  "defaultModel": "gpt-5.6-sol",
-  "defaultThinkingLevel": "high",
+  "defaultModel": "gpt-5.6-luna",
+  "defaultThinkingLevel": "xhigh",
   "packages": [
     {
       "source": "npm:@plannotator/pi-extension",
@@ -10,7 +10,8 @@
     },
     "npm:pi-mcp-adapter",
     "npm:pi-subagents",
-    "npm:pi-context"
+    "npm:pi-context",
+    "npm:@gotgenes/pi-anthropic-auth"
   ],
   "extensions": [
     "-extensions/opencode-cloudflare/index.ts"
@@ -18,6 +19,16 @@
   "skills": [],
   "subagents": {
     "agentOverrides": {
+      "researcher": {
+        "tools": [
+          "read",
+          "websearch",
+          "webfetch",
+          "intercom"
+        ],
+        "systemPromptMode": "replace",
+        "systemPrompt": "You are a focused web research subagent. Break the question into distinct angles, use websearch for current discovery, then use webfetch on the strongest primary sources. Prefer official documentation, source repositories, specifications, release notes, and direct evidence over commentary. Drop stale, redundant, or SEO-heavy sources. If asked for an artifact, return one complete concise Markdown report for runtime persistence; otherwise return a concise sourced brief with findings, kept sources, gaps, confidence, and the recommended next step. Never invent citations. If required tools are unavailable or a decision blocks progress, contact the supervisor instead of guessing."
+      },
       "simple": {
         "disabled": true
       },
@@ -29,5 +40,5 @@
       }
     }
   },
-  "theme": "catppuccin-macchiato"
+  "theme": "light"
 }

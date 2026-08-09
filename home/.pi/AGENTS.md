@@ -15,6 +15,7 @@ Global Pi config, synced through dotfiles and stowed into `~/.pi`. npm workspace
     ├── settings.json     # provider/model/packages/skill disables
     ├── mcp.json          # MCP server definitions consumed by pi-mcp-adapter
     ├── cloak.json        # secret masking patterns
+    ├── chains/           # reusable declarative pi-subagents workflows
     ├── extensions/       # local TypeScript extensions and workspace packages
     │   ├── opencode-cloudflare/ # Cloudflare gateway provider helpers
     │   ├── save-md/            # save markdown helper extension
@@ -48,6 +49,7 @@ npm run test:session-footer        # responsive footer tests only
 | Change default model/provider | `agent/settings.json` |
 | Add pi package | `agent/settings.json` → `packages[]` |
 | Configure MCP servers | `agent/mcp.json` |
+| Create saved subagent workflow | `agent/chains/<name>.chain.json` |
 | Create extension | `agent/extensions/<name>/` with `package.json` |
 | Create standalone extension | `agent/extensions/<name>.ts` |
 | Create shared skill | `../.agents/skills/<name>/SKILL.md` |
@@ -62,6 +64,7 @@ npm run test:session-footer        # responsive footer tests only
 - Extensions as npm workspace packages: each has own `package.json`.
 - Standalone extensions: single `.ts` file in `extensions/`.
 - Shared skills: canonical under `../.agents/skills/`; `SKILL.md` entry with optional bundled resources.
+- Saved workflows: declarative `pi-subagents` chains under `agent/chains/`; prefer phase/label metadata, structured outputs, and bounded fanout over executable workflow scripts.
 - ESM only: `"type": "module"` everywhere.
 - Keep runtime state and caches out of git; only config, local extensions, shared `.agents` skills, and themes should be tracked.
 - Keep global skills curated under `../.agents/skills/`; put project/vendor-specific skills in ephemeral/project-local config.
@@ -80,6 +83,7 @@ npm run test:session-footer        # responsive footer tests only
 Most of `agent/` is gitignored by default. Tracked files are explicitly un-ignored:
 - `agent/settings.json`, `agent/cloak.json`, `agent/mcp.json`, `agent/tsconfig.json`, `agent/package.json`
 - `agent/extensions/**` (but `node_modules/` within are re-ignored)
+- `agent/chains/**`
 - `agent/themes/*.json`
 
 Generated `agent/skills/`, `ephemeral/`, and nested `.pi/` runtime directories remain ignored.

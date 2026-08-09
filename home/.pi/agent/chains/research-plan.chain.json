@@ -1,0 +1,36 @@
+{
+  "name": "research-plan",
+  "description": "Research current external evidence and local code context in parallel, then produce a grounded implementation plan.",
+  "chain": [
+    {
+      "phase": "Research",
+      "label": "External and local evidence",
+      "parallel": [
+        {
+          "agent": "researcher",
+          "label": "External evidence",
+          "task": "Research current primary-source evidence for: {task}. Return concise findings with source links, confidence, gaps, and decision implications. Do not edit project files.",
+          "output": false,
+          "progress": true
+        },
+        {
+          "agent": "scout",
+          "label": "Local context",
+          "task": "Inspect the repository for the implementation context of: {task}. Return exact files and symbols, current architecture, constraints, risks, validation seams, and the best starting point. Do not edit project files.",
+          "output": false,
+          "progress": true
+        }
+      ],
+      "concurrency": 2,
+      "failFast": false
+    },
+    {
+      "agent": "planner",
+      "phase": "Plan",
+      "label": "Grounded implementation plan",
+      "task": "Create the smallest correct implementation plan for: {task}. Reconcile the external evidence and local repository context below. Resolve disagreements explicitly, preserve repository architecture and constraints, name exact files or symbols, and include a runnable validation step for every delivery slice.\n\n{previous}",
+      "output": "implementation-plan.md",
+      "progress": true
+    }
+  ]
+}

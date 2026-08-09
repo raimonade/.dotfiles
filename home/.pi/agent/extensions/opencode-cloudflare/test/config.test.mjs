@@ -29,7 +29,7 @@ test("parses discovery into a deterministic catalog", () => {
 	assert.equal(catalog.value.routes.get("@cf/moonshotai/kimi-k2.6")?.requestModelId, "workers-ai/@cf/moonshotai/kimi-k2.6");
 	assert.ok(ids.has("grok-4.5"));
 	assert.equal(catalog.value.routes.get("grok-4.5")?.backend, "xai");
-	assert.equal(config.routes.xai.baseUrl, "https://opencode.cloudflare.dev/grok");
+	assert.equal(config.routes.xai.baseUrl, "https://gateway.opencode.cloudflare.dev/grok");
 	assert.equal(config.routes.anthropic.headers["anthropic-beta"], "context-1m-2025-08-07,interleaved-thinking-2025-05-14,fine-grained-tool-streaming-2025-05-14");
 });
 
@@ -63,6 +63,7 @@ test("configuration store follows authenticated two-step discovery", async () =>
 	assert.deepEqual(loaded.value.enabledBackends, ["openai"]);
 	assert.equal(requests.length, 2);
 	assert.equal(requests[1].headers.get("cf-access-token"), "context-token");
+	assert.equal(loaded.value.routes.openai.baseUrl, "https://gateway.opencode.cloudflare.dev/openai");
 });
 
 test("configuration store builds fallback state without network access", async () => {
@@ -117,8 +118,12 @@ test("local overlays augment built-in models and preserve typed options", () => 
 						id: "fixture-adaptive-model",
 						name: "Fixture Adaptive Model",
 						reasoning: true,
-						thinkingLevelMap: { xhigh: "xhigh" },
-						compat: { forceAdaptiveThinking: true },
+						thinkingLevelMap: { xhigh: "xhigh", max: "max" },
+						compat: {
+							forceAdaptiveThinking: true,
+							supportsStrictTools: true,
+							supportsToolReferences: true,
+						},
 						limit: { context: 1000000, output: 128000 },
 					},
 				},
@@ -145,6 +150,9 @@ test("local overlays augment built-in models and preserve typed options", () => 
 
 	const adaptive = catalog.value.models.find((model) => model.id === "fixture-adaptive-model");
 	assert.equal(adaptive?.compat?.forceAdaptiveThinking, true);
+	assert.equal(adaptive?.compat?.supportsStrictTools, true);
+	assert.equal(adaptive?.compat?.supportsToolReferences, true);
+	assert.equal(adaptive?.thinkingLevelMap?.max, "max");
 	assert.equal(adaptive?.contextWindow, 1000000);
 	const openaiRoute = catalog.value.routes.get("custom-openai-responses-model");
 	assert.equal(openaiRoute?.backend, "openai");
@@ -182,6 +190,43 @@ test("rejects malformed known fields at the configuration boundary", () => {
 	assert.match(parsed.error.message, /broken\.reasoning/);
 });
 
+test("keeps discovery on the auth origin and inference on the gateway origin", () => {
+	const parsed = parseGatewayDocument({
+		remote_config: {
+			url: "https://opencode.cloudflare.dev/config/opencode.json",
+			headers: { "cf-access-token": "{env:TOKEN}" },
+		},
+		config: {
+			provider: {
+				openai: { options: { baseURL: "https://gateway.opencode.cloudflare.dev/openai" } },
+			},
+		},
+	});
+	assert.equal(parsed.ok, true);
+	assert.equal(parsed.value.remoteConfig?.url, "https://opencode.cloudflare.dev/config/opencode.json");
+	assert.equal(parsed.value.providers.openai?.baseUrl, "https://gateway.opencode.cloudflare.dev/openai");
+});
+
+test("rejects swapping authentication and inference origins", () => {
+	const documents = [
+		{
+			remote_config: { url: "https://gateway.opencode.cloudflare.dev/config/opencode.json" },
+		},
+		{
+			config: {
+				provider: {
+					openai: { options: { baseURL: "https://opencode.cloudflare.dev/openai" } },
+				},
+			},
+		},
+	];
+
+	for (const document of documents) {
+		const parsed = parseGatewayDocument(document);
+		assert.equal(parsed.ok, false);
+	}
+});
+
 test("rejects route URLs that could exfiltrate gateway credentials", () => {
 	const parsed = parseGatewayDocument({
 		config: {
@@ -191,7 +236,7 @@ test("rejects route URLs that could exfiltrate gateway credentials", () => {
 		},
 	});
 	assert.equal(parsed.ok, false);
-	assert.match(parsed.error.message, /a URL on https:\/\/opencode\.cloudflare\.dev/);
+	assert.match(parsed.error.message, /a URL on https:\/\/gateway\.opencode\.cloudflare\.dev/);
 });
 
 test("configuration fetch observes cancellation", async () => {

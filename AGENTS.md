@@ -25,7 +25,7 @@ macOS dev env via GNU Stow. Ghostty + Herdr + Fish + Zed + Git worktrees + pi. W
 │   ├── ghostty/        # Terminal; launch Herdr explicitly per upstream
 │   └── starship.toml   # Prompt
 ├── home/.pi/           # Pi agent workspace (AGENTS.md)
-│   └── agent/extensions/ # TypeScript extensions; runtime skills stay untracked
+│   └── agent/            # Pi extensions and saved chains; runtime skills stay untracked
 ├── home/.local/bin/    # Scripts stowed to ~/.local/bin (on PATH)
 │   ├── agent-repos     # Agent repository helper
 │   └── task-loop       # Autonomous PRD impl loop
@@ -54,6 +54,7 @@ macOS dev env via GNU Stow. Ghostty + Herdr + Fish + Zed + Git worktrees + pi. W
 | Claude settings | `home/.claude/settings.json` |
 | Claude MCP | `home/.claude/mcp.json` |
 | Pi extension | `home/.pi/agent/extensions/<name>/` |
+| Pi saved workflow | `home/.pi/agent/chains/<name>.chain.json` |
 | Shared agent skill | `home/.agents/skills/<name>/SKILL.md` |
 | Pi settings | `home/.pi/agent/settings.json` |
 

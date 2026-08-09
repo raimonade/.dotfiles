@@ -55,16 +55,15 @@ Use skills proportionately: load lightweight/reference skills eagerly; follow th
 
 ## Frontend/design model routing
 
-Execution models are not the default taste models. For taste-heavy frontend work, use Fable as the primary design/frontend delegate when it is available. If Fable is unavailable or down, use Claude Code CLI with Opus as the fallback; do not downgrade design direction or review to Sonnet.
+Execution models are not the default taste models. For taste-heavy frontend work, use Claude Code CLI with Opus for design direction, visual implementation delegation when appropriate, and final visual review. Never use Fable. Do not downgrade design direction or review to Sonnet.
 
 - If the task includes user-facing UI/UX/design work — new components/pages, visual polish, layout, typography, color, motion, UX copy, empty/error states, responsive behavior — do not rely on the execution model for design direction.
 - First load applicable design context/skills (`impeccable`, `frontend-design`, local `PRODUCT.md`/`DESIGN.md`, design-system docs).
-- Fable is the primary taste/design model. Give it a self-contained prompt or brief and implement only after its direction is concrete.
-- When Fable is unavailable or down, use Claude Opus:
-  - Read-only design direction/review: `claude -p --model opus --permission-mode plan --output-format text "<self-contained design prompt>"`.
-  - Visual implementation when delegation is appropriate: `claude -p --model opus --permission-mode acceptEdits --output-format text "<self-contained implementation prompt>"`, then inspect the diff locally.
+- Use Claude Opus as the taste/design model. Give it a self-contained prompt or brief and implement only after its direction is concrete:
+  - Read-only design direction/review: `claude -p --model 'claude-opus-5[1m]' --permission-mode plan --output-format text "<self-contained design prompt>"`.
+  - Visual implementation when delegation is appropriate: `claude -p --model 'claude-opus-5[1m]' --permission-mode acceptEdits --output-format text "<self-contained implementation prompt>"`, then inspect the diff locally.
 - Delegate prompts must be self-contained: goal, target files/routes, user constraints, design context locations, repo instructions to read (`AGENTS.md` + nearest scoped `AGENTS.md`), exact deliverable, verification command, and required report shape.
 - Ask the design delegate for concrete visual direction, hierarchy/layout, component/API guidance, accessibility constraints, implementation notes, and an anti-slop check. If it edits, require changed files, checks run, failures/blockers, and assumptions.
-- The execution model may implement after a Fable/Opus design pass, explicit mock/screenshot/spec, or a clearly existing design-system pattern. It may freely do mechanical frontend work that preserves an existing visual design.
-- If neither Fable nor Claude Opus is available/authenticated, say so and pause instead of shipping taste-heavy UI unaided.
-- Verify user-facing UI with screenshot/browser review when possible; for anything visually meaningful, request/perform a Fable review or Claude Opus fallback review before final handoff.
+- The execution model may implement after an Opus design pass, explicit mock/screenshot/spec, or a clearly existing design-system pattern. It may freely do mechanical frontend work that preserves an existing visual design.
+- If Claude Opus is unavailable or unauthenticated, say so and pause instead of shipping taste-heavy UI unaided.
+- Verify user-facing UI with screenshot/browser review when possible; for anything visually meaningful, request or perform an Opus review before final handoff.
