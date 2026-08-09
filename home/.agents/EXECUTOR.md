@@ -33,7 +33,7 @@ Reach order for "what do I have / just call X": `executor tools integrations` /
 
 The self-hosted Spotwise tracker is registered as the official Plane MCP server
 under the canonical `spotwise-plane.org.default.*` paths. Use it for Plane,
-`WAY-*` issues, and Wayfinder maps; never agent-browser or raw API calls. Load the
+`WAY-*` issues, and Wayfinder maps; never raw API calls. Load the
 installed `plane` skill for fixed project context and the narrow self-hosted
 relation compatibility tool. Ignore any stale zero-tool `local_plane_*` entries.
 

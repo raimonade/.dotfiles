@@ -204,6 +204,7 @@ TOOL_REGISTRY=(
     "Bun               ;; bun  ;; fn:__install_bun          ;; true  ;; -         ;; true"
     "Vite+             ;; vp   ;; fn:__install_vite_plus    ;; true  ;; -         ;; true"
     "pi                ;; pi   ;; fn:__install_pi           ;; true  ;; -         ;; true"
+    "Computer MCP      ;; open-computer-use ;; fn:__install_computer_mcp ;; true  ;; -         ;; true"
     "SSH key           ;; -    ;; fn:__generate_ssh_key     ;; false ;; SKIP_SSH  ;; false"
     "MonoLisa font     ;; -    ;; fn:__install_font         ;; false ;; SKIP_FONT ;; false"
     "Fish shell        ;; -    ;; fn:__setup_fish_shell     ;; false ;; -         ;; false"
@@ -361,6 +362,21 @@ __install_pi() {
         __print_success "pi installed successfully"
     else
         __print_error "Failed to install pi"
+        return 1
+    fi
+}
+
+__install_computer_mcp() {
+    if __command_exists open-computer-use; then
+        __print_success "Open Computer Use is already installed"
+        return 0
+    fi
+
+    __print_info "Installing Open Computer Use MCP..."
+    if vp install -g open-computer-use@latest; then
+        __print_success "Open Computer Use MCP installed successfully"
+    else
+        __print_error "Failed to install Open Computer Use MCP"
         return 1
     fi
 }

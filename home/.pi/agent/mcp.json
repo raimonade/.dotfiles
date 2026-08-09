@@ -19,8 +19,8 @@
       ],
       "lifecycle": "lazy"
     },
-    "agent-browser": {
-      "command": "agent-browser",
+    "computer": {
+      "command": "open-computer-use",
       "args": [
         "mcp"
       ],
