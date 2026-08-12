@@ -1,21 +1,16 @@
 ---
 name: handoff
-description: Write a temporary continuation handoff for another agent.
+description: Compact the current conversation into a handoff document for another agent to pick up.
 argument-hint: "What will the next session be used for?"
 disable-model-invocation: true
 ---
 
-Write the handoff in the operating system's temporary directory, not the repository. Tailor it to the user's stated next-session focus.
+Write a handoff document summarising the current conversation so a fresh agent can continue the work. Save to the temporary directory of the user's OS - not the current workspace.
 
-Capture:
+Include a "suggested skills" section in the document, which suggests skills that the agent should invoke.
 
-- goal, user constraints, and decisions;
-- inspected files, symbols, and relevant source anchors;
-- changed files and current Git state;
-- commands/tests run with outcomes;
-- rejected hypotheses or approaches worth avoiding;
-- external processes, tickets, browser state, or artifacts still active;
-- bounded remaining work, open decisions, risks, and the next executable step;
-- only the skills materially relevant to that next step.
+Do not duplicate content already captured in other artifacts (specs, plans, ADRs, issues, commits, diffs). Reference them by path or URL instead.
 
-Reference existing specs, plans, ADRs, issues, commits, diffs, and reports by path or URL instead of duplicating them. Redact secrets, credentials, personal data, and sensitive captured output.
+Redact any sensitive information, such as API keys, passwords, or personally identifiable information.
+
+If the user passed arguments, treat them as a description of what the next session will focus on and tailor the doc accordingly.

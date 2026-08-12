@@ -1,16 +1,22 @@
 ---
 name: research
-description: Research current facts from trustworthy sources. Use for documentation, API, ecosystem, or technical questions that require external evidence.
+description: Investigate a question against high-trust primary sources and capture the findings as a Markdown file in the repo. Use when the user wants a topic researched, docs or API facts gathered, or reading legwork delegated to a background agent.
+disable-model-invocation: true
 ---
 
-# Research
+Spin up **exactly one background agent** to do the research, so you keep working while it reads.
 
-1. Define the decision or question, required freshness, and acceptable evidence.
-2. Prefer primary sources: official documentation, specifications, maintained source, release notes, and first-party APIs. Use strong secondary analysis when it supplies necessary synthesis or comparison; distinguish it from source facts.
-3. Cite material claims and record version or publication date when it affects the answer.
-4. Separate observed facts, interpretation, and unresolved uncertainty.
-5. Stop when the question is answered at the requested confidence; do not collect sources without decision value.
+## Recursion guard
 
-Answer inline by default. Create a repository note only when the user requested an artifact or the research must remain durable for later implementation. Follow the repository's existing documentation convention and avoid introducing a new one without approval.
+Before spawning, check `RESEARCH_SUBAGENT`:
 
-Delegate independent breadth when it materially shortens the search or provides an adversarial source check; do not require a background agent for a cohesive, bounded question.
+- If `RESEARCH_SUBAGENT=1`, this pane is already the delegated researcher. **Do not spawn any agent or pane.** Perform the research and write the report directly.
+- Otherwise, create one background pane with `herdr pane split ... --env RESEARCH_SUBAGENT=1`, and explicitly tell that agent not to delegate or spawn subagents.
+
+Never create a second research agent as a retry. If the delegated agent stalls or fails, stop/close it and complete the research in the original pane.
+
+The background agent's job:
+
+1. Investigate the question against **primary sources** — official docs, source code, specs, first-party APIs — not a secondary write-up of them. Follow every claim back to the source that owns it.
+2. Write the findings to a single Markdown file, citing each claim's source.
+3. Save it where the repo already keeps such notes; match the existing convention, and if there is none, put it somewhere sensible and say where.

@@ -1,5 +1,0 @@
-interface:
-  display_name: "Recipe Diagrams"
-  short_description: "Render a recipe process diagram"
-policy:
-  allow_implicit_invocation: false

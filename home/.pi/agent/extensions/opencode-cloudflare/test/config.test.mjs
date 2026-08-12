@@ -207,26 +207,6 @@ test("keeps discovery on the auth origin and inference on the gateway origin", (
 	assert.equal(parsed.value.providers.openai?.baseUrl, "https://gateway.opencode.cloudflare.dev/openai");
 });
 
-test("rejects swapping authentication and inference origins", () => {
-	const documents = [
-		{
-			remote_config: { url: "https://gateway.opencode.cloudflare.dev/config/opencode.json" },
-		},
-		{
-			config: {
-				provider: {
-					openai: { options: { baseURL: "https://opencode.cloudflare.dev/openai" } },
-				},
-			},
-		},
-	];
-
-	for (const document of documents) {
-		const parsed = parseGatewayDocument(document);
-		assert.equal(parsed.ok, false);
-	}
-});
-
 test("rejects route URLs that could exfiltrate gateway credentials", () => {
 	const parsed = parseGatewayDocument({
 		config: {

@@ -20,12 +20,18 @@ const BLOCK_REASON =
 	"to inspect it, or run `wrangler types` from the worker project to " +
 	"regenerate it instead.";
 
-const SHELL_COMMAND_SEPARATOR_RE = /(?:&&|\|\||[;&|\n])/;
+const SHELL_COMMAND_SEPARATOR_RE = /(?:&&|\|\||[;|\n])/;
 const SHELL_OUTPUT_REDIRECTION_RE = /^\d*>>?$/;
-const SHELL_INPUT_OR_OUTPUT_REDIRECTION_RE = /^\d*[<>]{1,2}$/;
 const SHELL_DIRECT_MUTATION_COMMANDS = new Set(["rm", "tee", "touch", "truncate"]);
-const SHELL_COPY_COMMANDS = new Set(["cp", "install", "rsync"]);
-const SHELL_COMMAND_WRAPPERS = new Set(["builtin", "command", "exec", "nohup"]);
+const SHELL_COPY_COMMANDS = new Set(["cp", "install", "mv", "rsync"]);
+const SHELL_MUTATION_COMMANDS = new Set([
+	...SHELL_DIRECT_MUTATION_COMMANDS,
+	...SHELL_COPY_COMMANDS,
+	"dd",
+	"git",
+	"perl",
+	"sed",
+]);
 
 /** Definite shell mutation categories recognized by the worker configuration guard. */
 export type WorkerConfigurationMutation =
@@ -110,21 +116,25 @@ function splitShellCommandSegments(tokens: readonly string[]): string[][] {
 	return segments;
 }
 
-function shellCommandIndex(segment: readonly string[]): number | undefined {
-	for (let index = 0; index < segment.length; index += 1) {
-		const token = segment[index];
-		if (token === undefined) continue;
-		if (SHELL_INPUT_OR_OUTPUT_REDIRECTION_RE.test(token)) {
-			index += 1;
-			continue;
-		}
-		if (token.includes("=") || token.startsWith("-")) continue;
+function executableName(token: string): string {
+	return token.split("/").at(-1) ?? token;
+}
 
-		const commandName = normalizeToolPath(token).split("/").at(-1);
-		if (commandName !== undefined && SHELL_COMMAND_WRAPPERS.has(commandName)) continue;
-		return index;
+function shellCommand(segment: readonly string[]): {
+	readonly name: string;
+	readonly operands: readonly string[];
+} | undefined {
+	let index = segment.findIndex((token) => !token.includes("=") && !token.startsWith("-"));
+	if (index < 0) return undefined;
+	if (["command", "sudo", "env"].includes(executableName(segment[index] ?? ""))) {
+		const mutationIndex = segment.findIndex(
+			(token, tokenIndex) => tokenIndex > index && SHELL_MUTATION_COMMANDS.has(executableName(token)),
+		);
+		if (mutationIndex < 0) return undefined;
+		index = mutationIndex;
 	}
-	return undefined;
+	const name = executableName(segment[index] ?? "");
+	return name.length === 0 ? undefined : { name, operands: segment.slice(index + 1) };
 }
 
 /** Finds a definite shell mutation targeting Wrangler's generated worker configuration file. */
@@ -143,28 +153,12 @@ export function findWorkerConfigurationMutation(
 			}
 		}
 
-		const commandIndex = shellCommandIndex(segment);
-		if (commandIndex === undefined) continue;
-		const commandName = normalizeToolPath(segment[commandIndex] ?? "").split("/").at(-1);
-		if (commandName === undefined) continue;
-		const operands = segment.slice(commandIndex + 1);
+		const command = shellCommand(segment);
+		if (command === undefined) continue;
+		const { name: commandName, operands } = command;
 
 		if (
 			SHELL_DIRECT_MUTATION_COMMANDS.has(commandName) &&
-			operands.some(isProtectedPath)
-		) {
-			return "direct-file-command";
-		}
-
-		if (commandName === "mv" && operands.some(isProtectedPath)) {
-			return "direct-file-command";
-		}
-
-		if (
-			commandName === "git" &&
-			operands.some((operand) =>
-				operand === "checkout" || operand === "restore" || operand === "rm"
-			) &&
 			operands.some(isProtectedPath)
 		) {
 			return "direct-file-command";
@@ -183,7 +177,12 @@ export function findWorkerConfigurationMutation(
 
 		if (SHELL_COPY_COMMANDS.has(commandName)) {
 			const paths = operands.filter((operand) => !operand.startsWith("-"));
+			if (commandName === "mv" && paths.some(isProtectedPath)) return "direct-file-command";
 			if (isProtectedPath(paths.at(-1))) return "copy-destination";
+		}
+
+		if (commandName === "git" && operands[0] === "rm" && operands.slice(1).some(isProtectedPath)) {
+			return "direct-file-command";
 		}
 
 		if (

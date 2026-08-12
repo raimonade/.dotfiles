@@ -1,45 +1,75 @@
 ---
 name: use-computer-mcp
-description: Interact with desktop apps or authenticated browser UI through Open Computer Use MCP. Use when deterministic APIs cannot perform or verify the task.
+description: Computer use through Open Computer Use MCP. Use when a task requires interacting with a desktop app or authenticated browser UI, choosing a Helium work/personal profile, or recovering a failed Computer interaction.
 ---
 
-# Computer use
+# Use Computer MCP
 
-Prefer an API or CLI for structured reads and writes. Use Computer for authentication-bound, desktop-only, or genuinely visual interaction, and for visible verification after a deterministic change.
+Drive the UI with a **tight loop**: choose the right identity, snapshot once, chain only against fresh state, and verify the outcome.
 
-## Identity
+## 1. Choose the channel and identity
 
-For Helium (`net.imput.helium`), choose the browser profile before navigation:
+Use an API or CLI for deterministic structured reads and writes. Use Computer for auth-bound, desktop-only, or genuinely visual work; it may verify the UI after a deterministic change.
 
-- company domain or internal service → work;
-- personal account, finance, shopping, or personal service → personal;
-- ambiguous or mixed identity → ask.
+For Helium, resolve the browser profile before navigation:
 
-Confirm the profile from visible browser or account state. For another app, reuse its known bundle identifier; list apps only when identity is unknown or stale.
+- work account, company domain, or internal service → **work**
+- personal account, finance, shopping, or personal service → **personal**
+- ambiguous identity or mixed accounts → ask which profile
 
-## State/action loop
+Target Helium as `net.imput.helium`. Inspect its profile control or **Profiles** menu and switch when needed. Confirm the selected profile from the profile control or signed-in account marker. Profile selection is complete only when the intended profile is visible.
 
-1. Get fresh app state and confirm the intended app, window, account/profile, and next target.
-2. Prefer semantic element actions over coordinates.
-3. Use set-value for settable fields; otherwise focus the editable element, confirm focus, then type literal text.
-4. Continue a short chain only while each next target exists in the latest returned state. Stop and inspect after navigation, submission, modal/window changes, downloads, or uncertainty.
-5. Verify the requested outcome visibly; a successful tool response alone is insufficient.
+For another app, use the name or bundle identifier already known from the current session. Call `computer_list_apps` only when the app identity is unknown or stale, then keep the returned identifier stable.
 
-Element indices belong to one snapshot. Refresh after state changes or failures rather than reusing stale indices. Increase text, tree depth, or node limits only when the default snapshot demonstrably omits required visible content.
+Pi exposes the server tools with the `computer_` prefix. Pass `mcp.args` as a serialized JSON object, as in the example below. List the `computer` server only when its tools are unavailable; describe only an unfamiliar tool, then reuse that schema for the session.
 
-## Recovery
+## 2. Start the turn with fresh state
 
-One failed call ends that strategy. Change a precondition before retrying:
+Begin each assistant turn that interacts with an app by calling `computer_get_app_state`. Start with its defaults. The snapshot's element indices belong only to that state.
 
-- stale element → refresh and select a current element;
-- unfocused field → focus, inspect, then type;
-- app/window missing → list apps once and adopt the returned identifier;
-- tree lacks a rendered target → refresh after scroll, then use coordinates only as a bounded fallback;
-- tool/catalog failure → reconnect once and rediscover the server surface;
-- OS permission failure → report the required permission and pause.
+```text
+mcp({ tool: "computer_get_app_state", args: "{\"app\":\"net.imput.helium\"}" })
+```
 
-## Harness transport
+Use the refreshed state returned by each action to choose the next action. Call `get_app_state` again only after navigation, reload, modal or window changes, a failed action, or evidence that the returned tree is incomplete.
 
-Discover the installed MCP tool names instead of assuming one transport. Claude commonly exposes namespaced Computer tools; Pi calls them through its MCP gateway; Codex may expose MCP tools directly. Describe an unfamiliar tool once, reuse its schema, and keep provider-specific call syntax out of the interaction plan.
+Keep snapshots compact:
 
-Read [REFERENCE.md](REFERENCE.md) only when overriding snapshot budgets or choosing a non-default macOS click method.
+- raise `text_limit` only when truncated semantic text is required; prefer a bounded integer before `"max"`
+- raise `max_tree_nodes` or `max_tree_depth` only when a visible long page, list, or table is missing from the tree after scrolling
+- retain only the few element indices and state facts needed for the next chain
+
+The state is fresh when it identifies the intended app/window/profile and exposes the next target or proves that the target is absent.
+
+## 3. Act in short stable chains
+
+Prefer semantic element actions over coordinates.
+
+- **Click:** use `computer_click` with `element_index`; omit `click_method` so `auto` applies.
+- **Fill:** when the element is marked settable, use `computer_set_value`. Otherwise click the editable element, confirm focus in the refreshed state, then use `computer_type_text` for literal text.
+- **Keys:** use `computer_press_key` for named keys and combinations, not literal prose.
+- **Coordinates:** use them only when the rendered tree has no target. Keep the default `auto` method unless a specific fallback is justified.
+
+Chain multiple calls in one assistant turn only while every next target is present in the latest action result and the window has not changed. Stop the chain at navigation, submission, modal transitions, downloads/uploads, or uncertainty; inspect before continuing.
+
+## 4. Recover by changing the precondition
+
+One failed call ends that strategy:
+
+- stale element or changed page → refresh state and choose a current index
+- no focused editable element → click the field, inspect focus, then type; use `set_value` when the field is settable
+- non-settable element → focus it and type rather than repeating `set_value`
+- app or window not found → call `list_apps` once, adopt its canonical identifier, then refresh state
+- unsupported key or click method → use a supported key name or return to `auto`
+- tool/catalog or connection error → reconnect or reload once, then rediscover the server surface
+- permission error → report the required OS permission and pause for the user
+
+A retry is valid only when the state, target, arguments, or method changed.
+
+## 5. Verify
+
+Use the latest action result when it proves the requested outcome; otherwise refresh state once. Completion requires visible evidence of the outcome, not merely a successful tool response.
+
+## Reference branches
+
+Read [REFERENCE.md](REFERENCE.md) only when overriding snapshot budgets or selecting a non-default macOS click method.

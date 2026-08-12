@@ -1,20 +1,22 @@
 # Skill mechanics
 
+The skill-specific branch of [`writing-for-agents`](SKILL.md): what changes when the document is a skill — frontmatter, the invocation choice, and router skills. Everything else about writing it is the universal reference in `SKILL.md`.
+
 ## Invocation
 
-Choose model invocation only when the agent must discover the skill on its own or another model-invoked workflow needs it.
+Two choices, trading the two loads:
 
-- **Model-invoked:** keep a narrow model-facing `description`; omit `disable-model-invocation`.
-- **User-only:** set `disable-model-invocation: true`; make `description` a short human-facing label without trigger stuffing.
+- A **model-invoked** skill keeps a `description`, so the agent can fire it autonomously — and other skills can reach it. You can still type its name: model-invocation always _includes_ user reach; a description only ever adds agent discovery, never removes the human's. The description is the skill's top-level context pointer, forced to stay loaded at all times — permanent context load in exchange for discoverability. A model-invoked skill whose content is all reference is also one home for shared reference: another skill can invoke it, so reference needed by several skills lives in one place. Mechanics: omit `disable-model-invocation`, and write a model-facing description carrying the trigger branches (the pointer-writing rules in `SKILL.md` apply in full).
+- A **user-invoked** skill strips the description from the agent's reach: only the human typing its name can invoke it, and no other skill can. Zero context load, but it spends cognitive load — you are the index that must remember it exists. Mechanics: set `disable-model-invocation: true`; the `description` becomes human-facing — a one-line summary, trigger lists stripped.
 
-User-only skills spend no always-loaded description budget but depend on the user remembering them. Convert operational, destructive, credential-writing, or deliberately heavyweight workflows to user-only unless autonomous invocation is essential.
+Pick model-invocation only when the agent must reach the skill on its own, or another skill must. If it only ever fires by hand, make it user-invoked and pay no context load.
 
-Invocation mechanics differ across harnesses. Verify the installed harness documentation before claiming cross-skill calls, discovery roots, or frontmatter fields are portable.
+Shared reference that two user-invoked skills both need can live in neither — with no descriptions, neither can fire the other. Push it to a plain file outside the skill system: external reference any skill can point at.
 
-## Progressive disclosure
+## Splitting by invocation
 
-Keep universal steps in `SKILL.md`. Put optional modes and substantial reference material in sibling files with an explicit condition for loading each one. Shared material needed by several user-only skills belongs in a plain reference file that each can link directly.
+The invocation cut of splitting (the sequence cut lives in `SKILL.md`): split off a model-invoked skill when you have a distinct leading word that should trigger it on its own — a trigger word you actually use in your prompts — or another skill must reach it. You pay context load for the new always-loaded description, so that independent reach has to be worth it.
 
 ## Router skills
 
-When several user-only skills form one memorable family, a small user-only router may list when to invoke each. The router guides the human; do not claim it can automatically invoke skills whose harness hides them from model discovery.
+When user-invoked skills multiply past what you can remember, that piled-up cognitive load is cured by a **router skill**: one user-invoked skill that names the others and when to reach for each, so the human has one skill to remember instead of many. It can only hint, never fire them: user-invoked skills have no description, so nothing but the human can reach them.

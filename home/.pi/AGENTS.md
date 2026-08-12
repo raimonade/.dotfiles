@@ -14,18 +14,20 @@ Global Pi config, synced through dotfiles and stowed into `~/.pi`. npm workspace
 └── agent/
     ├── settings.json     # provider/model/packages/skill disables
     ├── mcp.json          # MCP server definitions consumed by pi-mcp-adapter
+    ├── cloudflare-deployment-allowlist.json # explicit deploy policy; deny-all by default
     ├── cloak.json        # secret masking patterns
     ├── chains/           # reusable declarative pi-subagents workflows
     ├── extensions/       # local TypeScript extensions and workspace packages
+    │   ├── cfpaste/            # Cloudflare Markdown paste commands
+    │   ├── codex-fast-variants/ # priority-tier Codex model variants
     │   ├── opencode-cloudflare/ # Cloudflare gateway provider helpers
     │   ├── save-md/            # save markdown helper extension
-    │   ├── web-tools/          # webfetch/websearch tools
     │   ├── pi-ephemeral/       # project-local ephemeral resource picker
     │   ├── pi-skill-toggle/    # interactive skill frontmatter toggler
     │   ├── pi-cloak/           # secret cloaking extension
     │   ├── session-footer/     # responsive session telemetry footer
     │   ├── todos/              # file-backed todo tool
-    │   └── *.ts                # standalone extensions
+    │   └── *.ts                # standalone extensions and deployment guards
     └── skills/           # runtime/generated links; ignored by git
 
 Canonical shared skills live in `../.agents/skills/` in this repository and are stowed to `~/.agents/skills/`.
@@ -36,9 +38,9 @@ Canonical shared skills live in `../.agents/skills/` in this repository and are 
 ```bash
 npm install                        # refresh extension workspace deps
 npm run check                      # typecheck/test local Pi extensions
-npm run test:web-tools             # web-tools tests only
+npm run test:cfpaste               # cfpaste tests only
 npm run test:save-md               # save-md tests only
-npm run test:codex-fast-mode       # codex fast mode tests only
+npm run test:codex-fast-mode       # Codex Fast variant tests only
 npm run test:session-footer        # responsive footer tests only
 ```
 
@@ -54,20 +56,20 @@ npm run test:session-footer        # responsive footer tests only
 | Create standalone extension | `agent/extensions/<name>.ts` |
 | Create shared skill | `../.agents/skills/<name>/SKILL.md` |
 | Secret masking | `agent/cloak.json` |
-| Run extension tests | `npm run test:web-tools` (from .pi root) |
+| Run extension tests | `npm run check` (from .pi root) |
 | Type-check | `npm run check` (from .pi root) |
 
 ## Conventions
 
 - Use `@earendil-works/*` Pi packages, not old `@mariozechner/*` imports.
-- Prefer packaged integrations in `agent/settings.json` (`npm:pi-mcp-adapter`, etc.) over vendored copies.
+- Prefer packaged integrations in `agent/settings.json` (`npm:pi-mcp-adapter`, `git:github.com/dmmulroy/pi-web-tools`, etc.) over vendored copies.
 - Extensions as npm workspace packages: each has own `package.json`.
 - Standalone extensions: single `.ts` file in `extensions/`.
 - Shared skills: canonical under `../.agents/skills/`; `SKILL.md` entry with optional bundled resources.
 - Saved workflows: declarative `pi-subagents` chains under `agent/chains/`; prefer phase/label metadata, structured outputs, and bounded fanout over executable workflow scripts.
 - ESM only: `"type": "module"` everywhere.
 - Keep runtime state and caches out of git; only config, local extensions, shared `.agents` skills, and themes should be tracked.
-- Keep global skills curated under `../.agents/skills/`; put project/vendor-specific skills in ephemeral/project-local config.
+- Keep the global upstream-aligned skill catalog under `../.agents/skills/`; put project/vendor-specific skills in ephemeral/project-local config.
 - Do not reintroduce removed gateway/provider experiments unless explicitly requested.
 
 ## Anti-patterns
@@ -81,7 +83,7 @@ npm run test:session-footer        # responsive footer tests only
 ## Gitignore pattern
 
 Most of `agent/` is gitignored by default. Tracked files are explicitly un-ignored:
-- `agent/settings.json`, `agent/cloak.json`, `agent/mcp.json`, `agent/tsconfig.json`, `agent/package.json`
+- `agent/settings.json`, `agent/cloak.json`, `agent/mcp.json`, `agent/cloudflare-deployment-allowlist.json`, `agent/tsconfig.json`, `agent/package.json`
 - `agent/extensions/**` (but `node_modules/` within are re-ignored)
 - `agent/chains/**`
 - `agent/themes/*.json`

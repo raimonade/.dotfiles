@@ -23,20 +23,24 @@ Run workspace checks:
 
 ```bash
 npm run check
-npm run test:web-tools
-npm run test:save-md
+npm run test:cfpaste
 npm run test:codex-fast-mode
+npm run test:save-md
 npm run typecheck:pi-ephemeral
 npm run typecheck:pi-skill-toggle
 ```
 
 Current workspace-managed extensions:
 
+- `agent/extensions/cfpaste`
+- `agent/extensions/codex-fast-variants`
 - `agent/extensions/opencode-cloudflare`
 - `agent/extensions/save-md`
-- `agent/extensions/web-tools`
+- `agent/extensions/session-footer`
 - `agent/extensions/pi-ephemeral`
 - `agent/extensions/pi-skill-toggle`
+
+Standalone extensions include the fail-closed Cloudflare deployment allowlist and worker-configuration guard. Deployments remain blocked until `~/.pi/agent/cloudflare-deployment-allowlist.json` explicitly lists an allowed Worker/environment pair. Pi Web Tools is installed from `git:github.com/dmmulroy/pi-web-tools` through `agent/settings.json` rather than maintained locally; Fish supplies its public Exa endpoint from `~/.config/fish/conf.d/pi-web-tools.fish`.
 
 MCP support is provided by the installed `npm:pi-mcp-adapter` package and configured in `agent/mcp.json`.
 

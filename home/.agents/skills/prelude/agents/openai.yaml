@@ -1,5 +1,0 @@
-interface:
-  display_name: "TypeScript Prelude"
-  short_description: "Create a repository prelude"
-policy:
-  allow_implicit_invocation: false

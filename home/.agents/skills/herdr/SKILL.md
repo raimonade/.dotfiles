@@ -1,6 +1,7 @@
 ---
 name: herdr
-description: 'Control Herdr, a terminal multiplexer for coding agents: inspect or drive panes, tabs, workspaces, run commands, and start or monitor background processes such as dev servers; also when the user or another skill explicitly asks for Herdr-run subagents. Requires HERDR_ENV=1.'
+description: "Control Herdr, a terminal multiplexer for coding agents. Use only when the user explicitly mentions Herdr or asks to use Herdr to inspect or control panes, tabs, workspaces, commands, or another agent. Do not use merely because a task could benefit from a background terminal, delegation, or parallel work. Requires HERDR_ENV=1."
+disable-model-invocation: true
 ---
 
 # Herdr
@@ -115,12 +116,6 @@ Use the kind requested by the user. Run `herdr agent` to inspect the installed k
 
 ```bash
 herdr agent start reviewer --kind codex --pane <returned-pane-id> -- <agent-args...>
-```
-
-For Claude Opus sessions, pin the full model ID; never pass the floating `opus` alias because it may resolve to Opus 4.8:
-
-```bash
-herdr agent start reviewer --kind claude --pane <returned-pane-id> -- --model 'claude-opus-5[1m]'
 ```
 
 `agent start` returns only after Herdr detects the expected agent in the same pane and considers it ready for interactive input. It defaults to a 30-second startup timeout.

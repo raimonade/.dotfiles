@@ -107,7 +107,7 @@ wtr <directory>       # Upstream: remove worktree and delete branch
 | Zed wait adapter | `zed-wait.sh` | Blocking editor command for Git and terminal tools |
 | Git | `config` | SSH signing, rebase-oriented workflow |
 | Starship | `starship.toml` | 2s timeout for slower shims, custom.scm after dir |
-| Pi | `settings.json` | Catppuccin theme and configured extensions/skills |
+| Pi | `settings.json` | Zenbones theme and configured extensions/skills |
 
 ## UNIQUE STYLES
 

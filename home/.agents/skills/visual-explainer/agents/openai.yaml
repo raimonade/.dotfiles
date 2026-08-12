@@ -1,5 +1,0 @@
-interface:
-  display_name: "Visual Explainer"
-  short_description: "Generate an HTML visual explanation"
-policy:
-  allow_implicit_invocation: false

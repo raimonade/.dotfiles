@@ -1,74 +1,83 @@
 ---
 name: coding-standards
-description: Correct-by-construction TypeScript guidance. Use for non-trivial TypeScript implementation or review.
+description: Correct-by-construction TypeScript and Effect standards. Use for TypeScript engineering, Effect code, or when another skill needs the user's coding standards.
+disable-model-invocation: true
 ---
 
-# TypeScript standards
+# TypeScript and Effect Coding Standards
 
-Repository architecture and conventions come first unless they weaken correctness, safety, or an explicit task requirement. Improve the behavior in scope; translate incompatible legacy patterns at the nearest boundary rather than migrating unrelated code.
+Build **correct by construction**: parse data into meaningful types, make expected failures explicit, keep effects behind cohesive services, and test through real interfaces.
 
-## Model the contract
+## Decision priority
 
-- Parse external input once at an entrypoint or adapter into an owned application/domain type.
-- Make realistic illegal states unrepresentable with discriminated unions, precise operation inputs, and branded/refined values where they prevent misuse.
-- Push optionality outward. A function that requires a value should accept that value, not a nullable bag.
-- Use `Partial<T>` only when arbitrary partiality is the real contract; otherwise define the allowed update shape.
-- Replace behavior-changing boolean parameters with named options or domain variants.
-- Keep protocol records, database rows, framework values, and SDK objects inside their boundary.
+When rules pull in different directions:
 
-Do not use `Record<string, unknown>`, `Record<string, any>`, unknown-valued index signatures, or rename-only aliases as intermediate representations for external objects. Parse the complete owned shape, or write a purpose-specific parser for the value actually needed. Reserve `Record<K, V>` for a real mapping with a meaningful key and value contract.
+1. Preserve correctness, safety, and debuggability.
+2. Apply these standards to new code and the complete behavior being changed.
+3. Follow compatible repository architecture and conventions.
+4. Contain incompatible older patterns at the nearest existing edge.
+5. Keep unrelated behavior unchanged unless a broader migration was requested.
+6. Record meaningful trade-offs with comments or ADRs.
 
-Runtime `typeof` is appropriate for primitives and functions. `typeof value === "object"` is not object parsing: it admits `null`, arrays, and class instances.
+## Core principles
 
-## Failures
+- Expected failures are values; defects may throw or panic.
+- Parse external and serialized data into domain/application types at the edge.
+- Make illegal states unrepresentable where practical.
+- Start meaningful services from explicit interfaces.
+- Prefer composition, a functional core, and an imperative shell.
+- Design deep, cohesive modules with low caller burden.
+- Make every abstraction pass the deletion test.
+- Test behavior through real interfaces using real or faithful implementations rather than module mocks.
+- Prefer the simplest correct design and the least code.
 
-Represent expected failures in the return type when callers must classify, recover, retry, render, or translate them. Reuse the repository's established Effect/Result/tagged-union pattern; do not add a result dependency for one change.
+## 1. Establish the local rules
 
-Use precise error variants with stable tags and safe structured context. Preserve an external `cause: unknown` when useful, but keep secrets and personal data out of messages, logs, traces, and snapshots. Translate framework, vendor, persistence, and network failures inside the owning adapter.
+Read the nearest `AGENTS.md`, package configuration, architecture docs, and the changed area's conventions for errors, schemas, services, tests, observability, and files.
 
-Throw or reject for defects and framework-required control flow. Do not turn impossible invariants into routine result branches, and do not hide expected failures behind generic `AppError` or unclassified exceptions.
+Apply the decision priority above when local conventions conflict with these standards.
 
-At entrypoints, translate outcomes into the protocol's valid result: HTTP response, CLI exit, retry/dead-letter decision, startup message, or rendered state.
+**Complete when:** the governing files and runtime/library versions have been identified, and every compatible or incompatible local pattern touching the changed behavior is accounted for.
 
-## Modules and effects
+## 2. Trace the behavior and load applicable references
 
-Keep intrinsic calculations, invariants, and state transitions deterministic. Put authorization, operation policy, and effect sequencing in the application capability that owns them. Put protocol, runtime, persistence, and vendor translation at adapters or entrypoints. Apply these roles within the repository's existing structure; do not create layers to satisfy a taxonomy.
+Trace each caller-visible operation from input through every decision and effect to its observable result. Classify each changed concern as domain behavior, application policy, technology/framework mechanics, or composition/resource wiring.
 
-Dependencies should be explicit at composition. Avoid import-time I/O, scattered environment reads, mutable global state, and constructors that silently acquire resources. Parse configuration at startup into typed, redacted values and make cleanup ownership explicit.
+Read every applicable reference completely before designing the change:
 
-Use `codebase-design` when module depth, seam placement, or interface shape is the decision.
+- [`references/effect.md`](references/effect.md) — whenever Effect code changes; follow its branch pointers before editing.
+- [`references/effect-alchemy.md`](references/effect-alchemy.md) — when an Alchemy Worker, Durable Object, Workflow, binding-backed service, or two-phase runtime composition changes.
+- [`references/errors.md`](references/errors.md) — when behavior can fail or absence may be ordinary.
+- [`references/sensitive-data-and-observability.md`](references/sensitive-data-and-observability.md) — when behavior handles secrets, personal data, logging, tracing, metrics, or error reporting.
+- [`references/parsing-and-schemas.md`](references/parsing-and-schemas.md) — when data crosses an external/serialized edge, a schema changes, or protocol/persistence representations are designed.
+- [`references/domain-types-and-state.md`](references/domain-types-and-state.md) — when IDs, units, constrained values, optional inputs, entities, lifecycle states, or operation options change.
+- [`references/modules-services-and-adapters.md`](references/modules-services-and-adapters.md) — when behavior owns domain rules, coordinates effects, uses dependencies, crosses technology boundaries, or changes module/service design.
+- [`references/persistence.md`](references/persistence.md) — when behavior reads or writes a database, cache, durable object, ORM model, transaction, or persisted record.
+- [`references/workflows-transactions-and-idempotency.md`](references/workflows-transactions-and-idempotency.md) — when work spans boundaries, retries, resumes, receives redelivery, delays, compensates, or may execute more than once.
+- [`references/configuration-and-resources.md`](references/configuration-and-resources.md) — when behavior reads configuration, creates/closes resources, performs startup work, uses time/randomness, or touches global state.
+- [`references/testing.md`](references/testing.md) — whenever behavior, public inference, tests, or test implementations change.
+- [`references/typescript-safety.md`](references/typescript-safety.md) — when types, signatures, mutable values, casts, non-null assumptions, or compiler settings change.
+- [`references/imports-exports-and-files.md`](references/imports-exports-and-files.md) — when imports, exports, entrypoints, helper placement, or file organization change.
+- [`references/comments-and-jsdoc.md`](references/comments-and-jsdoc.md) — when exported symbols, comments, JSDoc, user-facing text, or rendered errors change.
 
-## Type safety
+**Complete when:** every changed input, output, failure, dependency, effect, state transition, external representation, and test surface maps to an owning module and an applicable reference.
 
-Keep the repository's strictness; do not weaken compiler or lint settings to land a change. Prefer readonly values and exhaustive discriminated-union handling.
+## 3. Design from the public types inward
 
-Avoid `any`, non-null assertions, and unchecked casts. At an interop or generic boundary where TypeScript cannot express a proven invariant, isolate the cast and add a short `SAFETY:` comment explaining the runtime proof. `as const` and type-position assertions derived from checked schemas are fine when they preserve—not invent—information.
+Define or confirm the caller-facing input, output, expected errors, and service interfaces before implementing them. Parse less-trusted data before it reaches inner code. Keep domain calculations pure. Put application policy and effect order in the owning service. Keep framework/provider types private to their owner.
 
-Await every promise unless detached work is an explicit, observed lifecycle owned by the runtime. Handle rejection at the boundary that can classify it.
+Check existing modules, services, clients, Adapters, schemas, errors, and helpers before adding one. Apply the deletion test: an abstraction earns its place when removing it would spread meaningful complexity into callers. For each new abstraction, record the existing owner or direct implementation considered and why it does not fit.
 
-## Names and files
+**Complete when:** caller-facing inputs, outputs, expected errors, and service interfaces are explicit; every changed dependency and effect has one owner; each new abstraction has deletion-test evidence for the final report; and framework/provider types remain private to their owner.
 
-Use the repository's domain vocabulary. Names should reveal the owned behavior or value, especially where similar IDs, units, states, or operations coexist. Prefer stable, searchable error tags and event names.
+## 4. Implement the complete changed behavior
 
-Name boundary types by their actual role (`CreateUserRequest`, `UserRecord`, `StripeCustomerResponse`), not `DTO`. A function returning a refined value parses or constructs it; do not call it `validate` and discard the learned type.
+Implement every path required by the caller-visible operation, including expected failures, external translations, diagnostics, and resource behavior. Keep unrelated old behavior unchanged. Preserve existing compatible telemetry and error-reporting hooks.
 
-Follow local file conventions. Split files when responsibilities or reasons to change diverge, not to satisfy a size rule. Avoid pass-through barrels and vague `utils` modules when a precise owner exists; do not fragment cohesive code merely to improve filenames.
+**Complete when:** every traced path is implemented through its owning interface; expected failures use explicit error values; external data reaches inner code as parsed types; and public application/domain contracts expose application/domain types.
 
-Comments explain invariants, trade-offs, domain rules, and safety proofs. Document exported APIs to the level the repository expects; do not require ceremonial JSDoc for self-explanatory internal or framework-shaped exports.
+## 5. Verify through public interfaces
 
-## Tests and verification
+Add or update the tests required by [`references/testing.md`](references/testing.md). Run the repository's required verification commands, adding individual typecheck, test, build, or lint commands only when they are not already covered. Re-read each applicable reference and check every changed symbol against it. Fix each exception or report it with concrete evidence.
 
-Test behavior through stable interfaces and real dependencies where practical. Use behaviorally honest local substitutes for remote, destructive, nondeterministic, or expensive boundaries. Avoid module mocks and spy assertions when the outcome can be observed directly, but do not ban a substitute that protects a legitimate boundary.
-
-Use `tdd` when the user requests test-first work. Otherwise leave one runnable check for non-trivial logic and run the smallest affected typecheck/tests plus any relevant build mode. Confirm the test or changed path actually executed.
-
-## Completion
-
-Before finishing TypeScript work, confirm:
-
-- external values are parsed into owned types;
-- states, units, IDs, optionality, and failures match the real contract;
-- effects and resources have explicit owners;
-- no compiler/lint weakening or unproved escape hatch was introduced;
-- names and errors are searchable and use local vocabulary;
-- focused behavioral verification ran and its result is reported.
+**Complete when:** every required check passes or has a reported failure with concrete evidence; every applicable reference rule has been checked; every caller-visible feature has its required coverage; every added or changed export is intentional and has the documentation required by [`references/comments-and-jsdoc.md`](references/comments-and-jsdoc.md); each abstraction, helper, and cast in the changed behavior is required and conforms to its applicable reference; and all changes remain within the requested scope.

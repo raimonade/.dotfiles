@@ -87,7 +87,7 @@ Shared workflow guidance is tracked once under `home/.agents/skills/`. Pi and Co
 /run-chain targeted-review -- <review goal> # bounded target discovery → parallel review → verdict
 ```
 
-Pi-generated `agent/skills/`, `ephemeral/`, and nested runtime directories stay untracked. The curated set is maintained locally; only the untouched Cloudflare composition, Effect service-design, and Herdr skills remain update-managed from `dmmulroy/skills`.
+Pi-generated `agent/skills/`, `ephemeral/`, and nested runtime directories stay untracked. The shared catalog follows the upstream dotfiles skill set, with a small local supplement for design, database, TraceDecay, merge-resolution, cleanup, and anti-slop workflows.
 
 ## The `dot` CLI Tool
 
