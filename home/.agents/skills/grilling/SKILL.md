@@ -1,22 +1,27 @@
 ---
 name: grilling
-description: Grill the user relentlessly about a plan, decision, or idea. Use when the user wants to stress-test their thinking, or uses any 'grill' trigger phrases.
+description: Stress-test a plan, decision, or idea through a structured interview. Use when the user asks to be grilled.
 ---
 
-Interview the user relentlessly until you reach a shared understanding. Map this as a **design tree**: every decision branches into the decisions that hang off it.
+# Grilling
 
-Work the tree in **rounds**. The **frontier** is every decision whose prerequisites are already settled — the questions you can ask _now_ without guessing at answers you haven't heard yet. Ask the whole frontier in one round: number each question and give your recommended answer. Then wait for the user's answers before the next round.
+Map the decision as a tree: prerequisites first, dependent choices later. Retrieve facts from the repository, tools, or trustworthy sources yourself; ask the user for judgment, priorities, constraints, and authority decisions.
 
-Each question should be formatted like so:
+## Rounds
 
-```
-❓ **Q1** - **<question title>**: <question body, might be multiple paragraphs, including multiple choices>
+The frontier is the set of unanswered decisions whose prerequisites are settled. In each round:
 
-➡️ <your recommended answer>
-```
+1. Ask up to five closely related frontier questions.
+2. Ask only one when its answer will materially reshape every remaining branch or when the decision is high-stakes.
+3. Number each question, explain why it matters, offer concrete options when useful, and give your recommended answer with the trade-off.
+4. Wait for the user's answers, update the tree, and recompute the frontier.
 
-Each round the user answers reshapes the tree — settled decisions push the frontier outward and unblock questions that depended on them. Recompute the frontier and ask the next round. A question whose answer depends on another question still open in this round belongs to a _later_ round, not this one.
+Delegate only independent fact-finding that materially improves throughput; ordinary repository lookup stays in the current thread.
 
-Finding _facts_ is your job, never the user's. When a frontier question needs a fact from the environment (filesystem, tools, etc.), dispatch a sub-agent to find it — don't ask the user for anything you could look up yourself. Don't block on it: a running exploration is an unsettled prerequisite, so only the questions downstream of it wait for the sub-agent to report — ask the rest of the frontier now. The _decisions_ are the user's — put each to them and wait.
+## Pressure-test
 
-The session is done when the frontier is empty: every branch of the design tree visited, nothing left silently assumed. Do not act on it until the user confirms you have reached a shared understanding.
+Challenge ambiguous terms, hidden assumptions, unhappy paths, reversibility, operational ownership, success measures, and what is deliberately out of scope. Do not manufacture questions after the meaningful frontier is empty.
+
+When the user explicitly wants decisions persisted, inspect existing glossary and ADR conventions first. Update them only for resolved domain language or hard-to-reverse trade-offs; do not introduce a documentation convention without approval.
+
+Finish with a concise statement of settled decisions, assumptions, unresolved risks, and the proposed next action. Act only after the user confirms the shared understanding or separately authorizes implementation.

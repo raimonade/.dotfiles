@@ -1,5 +1,5 @@
 // LOCAL RESULT FALLBACK — enable only when the project uses neither Effect nor
-// better-result, as directed by the bootstrap-prelude skill.
+// better-result and demonstrated callers need a local result type.
 //
 // /** The result of an operation that can fail with an expected error. */
 // export type Result<T, E extends Error> =

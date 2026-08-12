@@ -1,135 +1,43 @@
 ---
 name: react-best-practices
-description: React and TanStack Start performance patterns. Use when writing or reviewing React components, route loaders, data fetching, or bundle size.
+description: React and TanStack Start performance guidance. Use for measured performance work, route loaders or data fetching, bundle analysis, or when effects and state synchronization are in scope.
 ---
 
-# React Best Practices
+# React performance
 
-## Overview
+Start with the project's pinned React, Router, Start, and Query versions. Framework APIs change; verify version-specific syntax in installed source or current official documentation before applying a rule.
 
-Performance optimization guide for React and TanStack Start applications, ordered by impact. Apply these patterns when writing or reviewing code to maximize performance gains.
+## Triage by evidence
 
-## When to Apply
+1. Identify the user-visible problem or risk: waterfall, bundle weight, server latency, duplicate fetching, excessive renders, hydration, or effect misuse.
+2. Inspect the owning component or route, its data flow, and available profiling/build evidence.
+3. Load only the relevant files under `references/rules/`.
+4. Prefer structural fixes with measured impact over memoization and JavaScript micro-optimizations.
+5. Verify the changed path with the repository's tests plus the relevant profiler, bundle report, network trace, or runtime measurement.
 
-Reference these guidelines when:
-- Writing new React components or TanStack routes
-- Implementing data fetching (loaders or server functions)
-- Reviewing code for performance issues
-- Refactoring existing React/TanStack code
-- Optimizing bundle size or load times
+## Priority
 
-## Priority-Ordered Guidelines
+1. Remove sequential waits between independent operations.
+2. Keep heavy or server-only code out of the client bundle.
+3. Use the framework's loader, cache, streaming, and request-deduplication primitives correctly.
+4. Reduce subscription breadth and unnecessary render work.
+5. Optimize hot JavaScript only after profiling identifies it.
 
-Rules are prioritized by impact:
+Do not add a dependency for scheduling, memoization, or convenience that the platform and installed stack already express clearly. Treat performance claims and impact labels as hypotheses until measured in the target application.
 
-| Priority | Category | Impact |
-|----------|----------|--------|
-| 1 | Eliminating Waterfalls | CRITICAL |
-| 2 | Bundle Size Optimization | CRITICAL |
-| 3 | Server-Side Performance | HIGH |
-| 4 | Client-Side Data Fetching | MEDIUM-HIGH |
-| 5 | Re-render Optimization | MEDIUM |
-| 6 | Rendering Performance | MEDIUM |
-| 7 | JavaScript Performance | LOW-MEDIUM |
-| 8 | Advanced Patterns | LOW |
+## Effects
 
-## Quick Reference
+Effects synchronize React with an external system. For derived values, event responses, state resets, or chained state updates, load `references/rules/react-effects-decision-tree.md` and prefer render logic, event handlers, component keys, or the framework's data layer.
 
-### Critical Patterns (Apply First)
+## Rule groups
 
-**Eliminate Waterfalls:**
-- Use `Promise.all()` for independent async operations
-- Start promises early, await late
-- Use `defer()` + `<Await>` for non-critical data streaming
-- Use `ensureQueryData` + `useSuspenseQuery` for TanStack Query
+- `async-*`: waterfalls and promise scheduling
+- `bundle-*`: client bundle boundaries and deferred loading
+- `server-*`: server caching and serialization
+- `client-*`: client data fetching
+- `rerender-*`: subscriptions, state, and memoization
+- `rendering-*`: DOM and hydration behavior
+- `tanstack-*`: version-sensitive Router and Start patterns
+- `js-*`, `advanced-*`: lower-priority patterns; require profiling evidence
 
-**Reduce Bundle Size:**
-- Avoid barrel file imports (import directly from source)
-- Use `lazyRouteComponent` or `React.lazy` for heavy components
-- Defer non-critical third-party libraries
-- Preload based on user intent
-
-### High-Impact TanStack Patterns
-
-- Use `beforeLoad` for auth guards (throw redirect, not return)
-- Use server function pipeline: `.middleware().inputValidator().handler()`
-- Use `VITE_*` prefix for client-accessible env vars
-- Keep secrets in server functions only
-
-### Medium-Impact Client Patterns
-
-- Use TanStack Query for automatic request deduplication
-- Defer state reads to usage point
-- Use derived state subscriptions
-- Apply `startTransition` for non-urgent updates
-- Use passive event listeners for scroll/touch
-- Version and minimize localStorage data
-
-### Re-render Optimization
-
-- Derive state during render, not in effects
-- Use functional setState for stable callbacks
-- Hoist default non-primitive props outside component
-- Put interaction logic in event handlers, not effects
-- Avoid memo for simple primitive expressions
-- Use refs for transient frequently-changing values
-
-### JavaScript Performance
-
-- Group CSS changes via classes or cssText
-- Check array length before expensive comparisons
-- Use loop for min/max instead of sort
-- Use toSorted() for immutable sorting
-
-### Re-render Optimization (cont.)
-
-- `useMemo` is a perf hint, not a guarantee — use `useState` when correctness requires persistence
-- Wrap state updates in `startTransition()` for `<ViewTransition>` to animate
-
-### Rendering Performance
-
-- Animate div wrapper, not SVG element directly
-- Use useTransition for loading states
-- Use inline script to prevent hydration flicker
-- Use `useId()` for unique DOM IDs — never hardcode IDs that collide across instances
-- Context over `cloneElement` — cloneElement breaks with RSC/lazy/`"use cache"`
-- `ownerDocument.defaultView` for correct `window` in portals/iframes
-- DOM side-effects (injected `<style>`) need cleanup via `useLayoutEffect` return for `<Activity>`
-
-### Server-Side Performance (cont.)
-
-- `taintUniqueValue`/`taintObjectReference` to prevent server secrets reaching client
-
-## References
-
-Full documentation with code examples is available in:
-
-- `references/react-performance-guidelines.md` - Complete guide with all patterns
-- `references/rules/` - Individual rule files organized by category
-
-To look up a specific pattern, grep the rules directory:
-```
-grep -l "suspense" references/rules/
-grep -l "barrel" references/rules/
-grep -l "swr" references/rules/
-```
-
-## Rule Categories in `references/rules/`
-
-- `tanstack-*` - TanStack Start/Router specific patterns
-- `async-*` - Waterfall elimination patterns
-- `bundle-*` - Bundle size optimization
-- `server-*` - Server-side performance
-- `client-*` - Client-side data fetching
-- `rerender-*` - Re-render optimization
-- `rendering-*` - DOM rendering performance
-- `js-*` - JavaScript micro-optimizations
-- `advanced-*` - Advanced patterns
-
-### TanStack-Specific Rules
-
-- `tanstack-defer-streaming` - Use `defer()` + `<Await>` for non-critical data
-- `tanstack-ensure-suspense` - Use `ensureQueryData` + `useSuspenseQuery` pattern
-- `tanstack-beforeload-security` - Auth guards with `beforeLoad` + `throw redirect()`
-- `tanstack-server-function-pipeline` - Full `.middleware().inputValidator().handler()` pattern
-- `tanstack-env-security` - `VITE_*` vs `process.env` security
+Rules are references, not a checklist. Repository conventions and measured behavior win.

@@ -352,13 +352,15 @@ __install_vite_plus() {
 }
 
 __install_pi() {
-    if __command_exists pi; then
+    local pi_bin="$DOTFILES_DIR/home/.pi/node_modules/.bin/pi"
+
+    if [[ -x "$pi_bin" ]]; then
         __print_success "pi is already installed"
         return 0
     fi
 
     __print_info "Installing pi..."
-    if vp install -g @earendil-works/pi-coding-agent; then
+    if npm install --prefix "$DOTFILES_DIR/home/.pi"; then
         __print_success "pi installed successfully"
     else
         __print_error "Failed to install pi"
@@ -1413,7 +1415,7 @@ cmd_summary() {
 
     if ! __command_exists pi; then
         __print_error "Pi is not installed"
-        __print_info "Install it with: vp install -g @earendil-works/pi-coding-agent"
+        __print_info "Install it with: npm install --prefix \"$DOTFILES_DIR/home/.pi\""
         return 1
     fi
 

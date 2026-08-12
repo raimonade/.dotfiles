@@ -56,7 +56,7 @@ For open-ended code navigation, call/impact analysis, cross-project context, or 
 Execution models are not the default taste models. For taste-heavy frontend work, use Fable as the primary design/frontend delegate when it is available. If Fable is unavailable or down, use Claude Code CLI with Opus as the fallback; do not downgrade design direction or review to Sonnet.
 
 - If the task includes user-facing UI/UX/design work — new components/pages, visual polish, layout, typography, color, motion, UX copy, empty/error states, responsive behavior — do not rely on the execution model for design direction.
-- First load applicable design context/skills (`impeccable`, `frontend-design`, local `PRODUCT.md`/`DESIGN.md`, design-system docs).
+- First load applicable design context/skills (`impeccable`, local `PRODUCT.md`/`DESIGN.md`, design-system docs).
 - Fable is the primary taste/design model. Give it a self-contained prompt or brief and implement only after its direction is concrete.
 - When launching Claude directly or through Herdr, pin `--model 'claude-opus-5[1m]'`; never pass the floating `opus` alias because it may resolve to Opus 4.8.
 - When Fable is unavailable or down, use Claude Opus:

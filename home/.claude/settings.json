@@ -210,7 +210,7 @@
   "enabledPlugins": {
     "plannotator@plannotator": true,
     "codex@openai-codex": true,
-    "posthog@claude-plugins-official": true
+    "posthog@claude-plugins-official": false
   },
   "extraKnownMarketplaces": {
     "plannotator": {

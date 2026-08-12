@@ -35,4 +35,8 @@ If an MCP call fails while the daemon socket still exists, fall back to the CLI 
 - Another registered repo/workspace: `tracedecay_project_list` or `tracedecay_project_search`, then pass its selector to context/search tools.
 - Past decisions or transcript recovery: `tracedecay_message_search` and fact/memory tools.
 
-Use returned node IDs for narrow follow-ups and pass `seen_node_ids` when supported. Narrow a truncated result before retrieving more; do not repeat a broad semantic query. Repository instructions and explicit user constraints always outrank this routing.
+Use returned node IDs for narrow follow-ups and pass `seen_node_ids` when supported. Narrow a truncated result before retrieving more; do not repeat a broad semantic query.
+
+For unfamiliar repositories, let the first useful TraceDecay result choose the files to inspect. Before editing, identify the owning module, source contract, affected callers and tests, local precedent, and narrowest verifier. Refine an incomplete query instead of inferring absence. If source is generated, minified, redacted, or otherwise transformed, search stable structural anchors and corroborate the conclusion through an independent surface. Use scoped shell search when the repository is unavailable to TraceDecay or the question concerns an exact filesystem/generated-text artifact; state that fallback briefly.
+
+Repository instructions and explicit user constraints always outrank this routing.

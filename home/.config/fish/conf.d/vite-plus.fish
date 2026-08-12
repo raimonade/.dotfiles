@@ -5,6 +5,12 @@
 # completions/vp.fish and completions/vpr.fish register those completions lazily.
 fish_add_path --global --move --path "$HOME/.vite-plus/bin"
 
+# Vite+ global package directories contain `#`, which Jiti treats as a URL
+# fragment while loading Pi extensions. Prefer the repo-owned npm install.
+if test -x "$HOME/.pi/node_modules/.bin/pi"
+    fish_add_path --global --move --path "$HOME/.pi/node_modules/.bin"
+end
+
 function vp --description "Run Vite+ and apply environment changes to this shell"
     if test (count $argv) -ge 2; and test "$argv[1]" = "env"; and test "$argv[2]" = "use"
         if contains -- -h $argv; or contains -- --help $argv

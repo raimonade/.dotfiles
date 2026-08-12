@@ -58,7 +58,7 @@ Use skills proportionately: load lightweight/reference skills eagerly; follow th
 Execution models are not the default taste models. For taste-heavy frontend work, use Claude Code CLI with Opus for design direction, visual implementation delegation when appropriate, and final visual review. Never use Fable. Do not downgrade design direction or review to Sonnet.
 
 - If the task includes user-facing UI/UX/design work — new components/pages, visual polish, layout, typography, color, motion, UX copy, empty/error states, responsive behavior — do not rely on the execution model for design direction.
-- First load applicable design context/skills (`impeccable`, `frontend-design`, local `PRODUCT.md`/`DESIGN.md`, design-system docs).
+- First load applicable design context/skills (`impeccable`, local `PRODUCT.md`/`DESIGN.md`, design-system docs).
 - Use Claude Opus as the taste/design model. Give it a self-contained prompt or brief and implement only after its direction is concrete:
   - Read-only design direction/review: `claude -p --model 'claude-opus-5[1m]' --permission-mode plan --output-format text "<self-contained design prompt>"`.
   - Visual implementation when delegation is appropriate: `claude -p --model 'claude-opus-5[1m]' --permission-mode acceptEdits --output-format text "<self-contained implementation prompt>"`, then inspect the diff locally.

@@ -35,4 +35,4 @@ export async function GET(request: Request) {
 }
 ```
 
-For operations with more complex dependency chains, use `better-all` to automatically maximize parallelism (see Dependency-Based Parallelization).
+For partial dependency chains, start independent promises immediately and derive dependent work from the promise it needs (see Dependency-Based Parallelization).

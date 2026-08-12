@@ -29,20 +29,20 @@ _Avoid_: Client, buyer, account
 - **Only include terms specific to this project's context.** General programming concepts (timeouts, error types, utility patterns) don't belong even if the project uses them extensively. Before adding a term, ask: is this a concept unique to this context, or a general programming concept? Only the former belongs.
 - **Group terms under subheadings** when natural clusters emerge. If all terms belong to a single cohesive area, a flat list is fine.
 
-## Single vs multi-context repos
+## Single vs multi-context repositories
 
-**Single context (most repos):** One `CONTEXT.md` at the repo root.
+Follow the repository's existing glossary and context structure. When the user approves `CONTEXT.md` for a new convention, a single context may live at the root; multiple contexts may use a root `CONTEXT-MAP.md` pointing to scoped glossaries.
 
-**Multiple contexts:** A `CONTEXT-MAP.md` at the repo root lists the contexts, where they live, and how they relate to each other:
+Example only—the paths must match the actual repository:
 
 ```md
 # Context Map
 
 ## Contexts
 
-- [Ordering](./src/ordering/CONTEXT.md) — receives and tracks customer orders
-- [Billing](./src/billing/CONTEXT.md) — generates invoices and processes payments
-- [Fulfillment](./src/fulfillment/CONTEXT.md) — manages warehouse picking and shipping
+- `src/ordering/CONTEXT.md` — receives and tracks customer orders
+- `src/billing/CONTEXT.md` — generates invoices and processes payments
+- `src/fulfillment/CONTEXT.md` — manages warehouse picking and shipping
 
 ## Relationships
 
@@ -50,11 +50,5 @@ _Avoid_: Client, buyer, account
 - **Fulfillment → Billing**: Fulfillment emits `ShipmentDispatched` events; Billing consumes them to generate invoices
 - **Ordering ↔ Billing**: Shared types for `CustomerId` and `Money`
 ```
-
-The skill infers which structure applies:
-
-- If `CONTEXT-MAP.md` exists, read it to find contexts
-- If only a root `CONTEXT.md` exists, single context
-- If neither exists, create a root `CONTEXT.md` lazily when the first term is resolved
 
 When multiple contexts exist, infer which one the current topic relates to. If unclear, ask.

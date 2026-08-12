@@ -1,0 +1,5 @@
+interface:
+  display_name: "Tech Spec"
+  short_description: "Write a typed architecture handoff"
+policy:
+  allow_implicit_invocation: false

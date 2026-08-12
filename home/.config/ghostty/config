@@ -1,5 +1,5 @@
-# Ghostty theme
-theme = Catppuccin Latte
+# Zenbones follows the macOS light/dark appearance.
+theme = light:Zenbones Light,dark:Zenbones Dark
 
 # Updates
 auto-update-channel = tip
@@ -9,17 +9,13 @@ shell-integration = fish
 quit-after-last-window-closed = true
 
 # Font family
-font-family = JetBrains Mono
+font-family = IBM Plex Mono
 font-style = Regular
-font-style-italic = Regular Italic
+font-style-italic = Italic
 font-style-bold = Bold
 font-style-bold-italic = Bold Italic
-
-# Font features (programming ligatures)
-font-feature = calt
-
-# Font size
-font-size = 13
+font-size = 14
+adjust-cell-height = 15%
 
 # Opacity of split windows
 unfocused-split-opacity = 0.97
@@ -28,7 +24,10 @@ unfocused-split-opacity = 0.97
 background-opacity = 1.0
 
 # Cursor style
-cursor-style-blink = true
+cursor-style = block
+cursor-style-blink = false
+cursor-color = #dd0455
+cursor-text = #ffffff
 
 # Clipboard settings
 clipboard-read = allow
@@ -47,8 +46,8 @@ window-padding-color = background
 window-padding-balance = true
 window-width = 90
 window-height = 30
-window-padding-x = 0
-window-padding-y = 0
+window-padding-x = 8
+window-padding-y = 4,8
 
 # Decrease scroll sensitivity
 mouse-scroll-multiplier = 0.4

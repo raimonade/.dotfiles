@@ -9,7 +9,6 @@ Rankings are defaults, not limits. Higher = better. `cost` means effective cost/
 | model | cost | intelligence | taste |
 | --- | ---: | ---: | ---: |
 | GPT-5.6 Sol | 9 | 10 | 6 |
-| sonnet-5 | 5 | 5 | 7 |
 | opus-5 | 4 | 9 | 9 |
 
 How to apply:
@@ -19,7 +18,7 @@ How to apply:
 - Opus 5 is the orchestrator/synthesis model for hard judgment, at **high effort** — escalate to xhigh/max/extra only after a high-value task failed at high effort.
 - Bulk/mechanical execution belongs to **GPT-5.6 Sol via Codex**: clear-spec implementation, migrations, repetitive edits, test writing, data analysis, broad codebase spelunking, and other token-hungry work. Discovery-heavy implementation → let Codex own discovery through verification instead of making Opus read the same surface first.
 - Computer use, browser/UI verification, screenshots, and hands-on UX checks also belong to Codex first; report the findings back to Opus 5 for final judgment.
-- User-facing work (UI, copy, API design, product decisions) needs taste >= 7: opus-5 or sonnet-5; Codex executes only once the direction is clear.
+- User-facing work (UI, copy, API design, product decisions) gets direction and final judgment from opus-5; GPT-5.6 Sol via Codex executes once the direction is clear.
 - Reviews of plans/implementations: opus-5 for final judgment, optionally GPT-5.6 Sol/Codex as an independent extra reviewer.
 
 ## Cross-model implementation handoff

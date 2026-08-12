@@ -246,3 +246,4 @@ Omit sections that truly do not apply, but do not omit typed contracts, seams, c
 - Avoid speculative abstraction; every seam earns its existence through invariants, locality, leverage, testing, or a real boundary.
 - Keep a single source of truth; do not restate the same rule in multiple sections unless one section points to the other.
 - Unknowns stay open questions. Do not invent product requirements, domain rules, APIs, or call stacks to make the spec feel complete.
+- Return the spec as the requested artifact. Publish it to an issue tracker only when the user explicitly asks; use the repository's existing tracker integration and preserve the typed contracts and file map rather than converting them into a generic issue template.

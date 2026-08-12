@@ -14,7 +14,7 @@ macOS dev env via GNU Stow. Ghostty + Herdr + Fish + Zed + Git worktrees + pi. W
 │   └── skills/         # Skills discovered by Pi, Claude, Codex, and other agents
 ├── home/.claude/       # Stowed to ~/.claude/
 │   ├── agents/         # Subagents: oracle, librarian, reviewer, planner, security
-│   ├── commands/       # Slash commands: code-review, clean, ...
+│   ├── commands/       # Harness-specific slash commands
 │   └── skills/         # Claude-specific skills and compatibility links
 ├── home/.config/       # Stowed to ~/.config/
 │   ├── fish/           # Shell (AGENTS.md)
@@ -124,4 +124,4 @@ wtr <directory>       # Upstream: remove worktree and delete branch
 - Start the upstream workspace flow with `cd <repo> && herdr`; Ghostty does not add local launch automation
 - Starship `command_timeout = 2000` because some node shims are slow
 - `secrets.fish` is gitignored — contains env tokens for work services
-- `.pi/agent/*` mostly gitignored; extensions + skills explicitly un-ignored
+- `.pi/agent/*` mostly gitignored; extensions and customization files are selectively unignored, while generated Pi skill links stay untracked

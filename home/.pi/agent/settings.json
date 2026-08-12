@@ -1,8 +1,12 @@
 {
   "lastChangelogVersion": "0.84.1",
+  "quietStartup": true,
+  "collapseChangelog": true,
+  "showHardwareCursor": true,
+  "editorPaddingX": 0,
   "defaultProvider": "openai-codex",
-  "defaultModel": "gpt-5.6-luna",
-  "defaultThinkingLevel": "xhigh",
+  "defaultModel": "gpt-5.6-sol",
+  "defaultThinkingLevel": "medium",
   "packages": [
     {
       "source": "npm:@plannotator/pi-extension",
@@ -40,5 +44,8 @@
       }
     }
   },
-  "theme": "light"
+  "theme": "zenbones-ansi",
+  "markdown": {
+    "codeBlockIndent": ""
+  }
 }

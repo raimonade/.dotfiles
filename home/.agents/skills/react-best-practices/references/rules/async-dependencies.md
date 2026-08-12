@@ -1,36 +1,23 @@
 ---
-title: Dependency-Based Parallelization
-impact: CRITICAL
-impactDescription: 2-10× improvement
-tags: async, parallelization, dependencies, better-all
+title: Start partially dependent work early
+impact: HIGH
+tags: async, parallelization, dependencies
 ---
 
-## Dependency-Based Parallelization
+## Start partially dependent work early
 
-For operations with partial dependencies, use `better-all` to maximize parallelism. It automatically starts each task at the earliest possible moment.
-
-**Incorrect (profile waits for config unnecessarily):**
+Represent the dependency graph with ordinary promises. Start independent work immediately and derive dependent work from the promise it needs.
 
 ```typescript
-const [user, config] = await Promise.all([
-  fetchUser(),
-  fetchConfig()
+const userPromise = fetchUser()
+const configPromise = fetchConfig()
+const profilePromise = userPromise.then((user) => fetchProfile(user.id))
+
+const [user, config, profile] = await Promise.all([
+  userPromise,
+  configPromise,
+  profilePromise,
 ])
-const profile = await fetchProfile(user.id)
 ```
 
-**Correct (config and profile run in parallel):**
-
-```typescript
-import { all } from 'better-all'
-
-const { user, config, profile } = await all({
-  async user() { return fetchUser() },
-  async config() { return fetchConfig() },
-  async profile() {
-    return fetchProfile((await this.$.user).id)
-  }
-})
-```
-
-Reference: [https://github.com/shuding/better-all](https://github.com/shuding/better-all)
+Here `fetchConfig()` runs alongside both user and profile work, while profile still waits for the user it requires. Keep the graph explicit; do not add a scheduling dependency for a small promise chain.

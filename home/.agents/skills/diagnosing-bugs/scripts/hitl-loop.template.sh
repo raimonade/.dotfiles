@@ -11,6 +11,11 @@
 #   capture VAR "<question>"      → show question, read response into VAR
 #
 # At the end, captured values are printed as KEY=VALUE for the agent to parse.
+#
+# `capture` prints its value back to the terminal, where the agent reads it.
+# Capture only observations the user has redacted first. Never capture credentials,
+# tokens, auth headers, raw requests, personal data, or other sensitive payloads;
+# leave authentication and sensitive actions to the user as a `step`.
 
 set -euo pipefail
 
@@ -32,7 +37,7 @@ step "Open the app at http://localhost:3000 and sign in."
 
 capture ERRORED "Click the 'Export' button. Did it throw an error? (y/n)"
 
-capture ERROR_MSG "Paste the error message (or 'none'):"
+capture ERROR_MSG "Paste the redacted error message; replace sensitive values with <REDACTED> (or enter 'none'):"
 
 # --- edit above ---------------------------------------------------------
 

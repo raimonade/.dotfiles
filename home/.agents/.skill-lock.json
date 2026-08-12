@@ -1,0 +1,38 @@
+{
+  "version": 3,
+  "skills": {
+    "cloudflare-composition-root": {
+      "source": "dmmulroy/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/dmmulroy/skills.git",
+      "skillPath": "cloudflare-composition-root/SKILL.md",
+      "skillFolderHash": "558bde8c2caf321816db660da0ab6673f7bd341f",
+      "installedAt": "2026-08-03T18:45:34.054Z",
+      "updatedAt": "2026-08-03T18:45:34.054Z"
+    },
+    "effect-service-design": {
+      "source": "dmmulroy/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/dmmulroy/skills.git",
+      "skillPath": "effect-service-design/SKILL.md",
+      "skillFolderHash": "253b307ebd7256944db3fdf1831d427adbc741dc",
+      "installedAt": "2026-08-03T18:45:34.054Z",
+      "updatedAt": "2026-08-03T18:45:34.054Z"
+    },
+    "herdr": {
+      "source": "dmmulroy/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/dmmulroy/skills.git",
+      "skillPath": "herdr/SKILL.md",
+      "skillFolderHash": "bca758ce8e9b4fec8bebb16e0bdf483fe12e88ee",
+      "installedAt": "2026-07-15T10:55:02.115Z",
+      "updatedAt": "2026-08-03T18:45:34.054Z"
+    }
+  },
+  "dismissed": {
+    "findSkillsPrompt": true
+  },
+  "lastSelectedAgents": [
+    "claude-code"
+  ]
+}

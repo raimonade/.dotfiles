@@ -1,11 +1,12 @@
 ---
 name: prelude
-description: Prelude bootstrapping for TypeScript. Use when creating or rebuilding a prelude.ts from ambient generic helpers and types.
+description: Create or rebuild a TypeScript prelude from demonstrated repository needs.
+disable-model-invocation: true
 ---
 
 # Bootstrap a TypeScript Prelude
 
-A prelude is an explicitly imported module for **ambient** helpers and types: ubiquitous, domain-neutral building blocks that have no more precise owner. Use the bundled [`prelude.ts`](prelude.ts) as the foundation, then adapt it to evidence from the target repository. Apply [`../coding-standards/SKILL.md`](../coding-standards/SKILL.md) throughout.
+A prelude is an explicitly imported module for **ambient** helpers and types: ubiquitous, domain-neutral building blocks that have no more precise owner. Build it from demonstrated repository needs; use bundled [`prelude.ts`](prelude.ts) only as a catalog of candidate implementations. Apply [`../coding-standards/SKILL.md`](../coding-standards/SKILL.md) throughout.
 
 Ambient describes a helper's role, not a TypeScript global. Keep prelude exports behind ordinary imports; do not add global declarations or global augmentation.
 
@@ -19,9 +20,9 @@ Read repository instructions, package manifests, TypeScript configuration, sourc
 - established libraries for results, schemas, redaction, branding, collections, and exhaustive matching;
 - every caller of plausible ambient helpers.
 
-Search by both filenames and concepts. Use the ubiquitous generic helper/type categories in the coding standards as seed search terms, then inspect definitions and callers rather than classifying from names alone.
+Search by both filenames and concepts within the requested packages and their callers. Expand the scope only when imports or duplication evidence cross that boundary; inspect definitions and callers rather than classifying from names alone.
 
-**Completion criterion:** Every plausible ambient definition found by repository-wide filename, symbol, and duplication scans is inventoried with its owner, callers, dependencies, and current behavior.
+**Completion criterion:** Every plausible ambient definition in the agreed scope is inventoried with its owner, callers, dependencies, and current behavior.
 
 ## 2. Classify every candidate
 
@@ -39,21 +40,15 @@ Record one decision for every candidate: use the established library, keep the c
 
 **Completion criterion:** Every inventoried candidate has one decision grounded in its semantics and callers; no candidate remains classified only by its filename or name.
 
-## 3. Seed from the template
+## 3. Select from the template
 
-Read the bundled [`prelude.ts`](prelude.ts) completely. Copy it to the project's established shared-module location as the starting point. If a prelude already exists, merge deliberately instead of overwriting it.
+Read the bundled [`prelude.ts`](prelude.ts) as a catalog. Create or merge the target file from approved candidates only; do not copy unused foundational helpers first.
 
-Choose exactly one expected-failure foundation:
+Use the project's established expected-failure strategy. If it uses Effect or `better-result`, reuse that dependency. Otherwise retain an existing local result type only when demonstrated callers need it. Propose a new dependency only when the user explicitly asked to adopt one.
 
-1. When the project uses Effect, use Effect's result/error facilities and remove the template's local `Result` fallback.
-2. When the project uses `better-result`, use it and remove the local fallback.
-3. When the project uses neither, ask whether to install `better-result`.
-   - If accepted, install it and remove the local fallback.
-   - If declined, enable the template's local `Result` types and helpers.
+Preserve compatible behavior when merging equivalent helpers; surface semantic conflicts rather than silently choosing one implementation.
 
-Retain each other template export only when repository usage, the coding standards, or the requested foundation justifies it. Preserve compatible existing behavior when merging equivalent helpers; surface semantic conflicts rather than silently choosing one implementation.
-
-**Completion criterion:** The target file is founded on the template, has exactly one result strategy, and every retained template export has an explicit justification.
+**Completion criterion:** Every target export has a demonstrated repository use or an explicitly requested foundational reason, with one expected-failure strategy.
 
 ## 4. Consolidate ambient helpers and types
 

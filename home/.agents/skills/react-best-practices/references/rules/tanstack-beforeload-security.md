@@ -1,93 +1,31 @@
 ---
-title: Auth Guards with beforeLoad
+title: Authenticate before route loaders
 impact: HIGH
-impactDescription: prevents data leakage, security checkpoint
+impactDescription: prevents unauthorized route data loading
+source: https://tanstack.com/router/latest/docs/framework/react/guide/authenticated-routes
+sourceChecked: "2026-08-11"
 tags: tanstack, security, auth, beforeLoad, redirect
 ---
 
-## Auth Guards with beforeLoad
+## Authenticate before route loaders
 
-Use `beforeLoad` for auth checks instead of `loader`. When `beforeLoad` throws, loaders never execute—preventing data leakage.
-
-**Incorrect: auth check in loader (parallel execution risk)**
+For the pinned TanStack Router version, verify the current `beforeLoad` and `redirect` contract in official documentation. Current Router guidance throws `redirect()` from `beforeLoad`; this stops child route loading before loaders run.
 
 ```tsx
-export const Route = createFileRoute('/admin')({
-  loader: async ({ context }) => {
-    if (!context.user) {
-      redirect({ to: '/login' }) // Wrong: doesn't throw, loader continues
-    }
-    return fetchAdminData() // May execute before redirect!
-  },
-})
-```
-
-**Incorrect: auth check in loader with return**
-
-```tsx
-export const Route = createFileRoute('/admin')({
-  loader: async ({ context }) => {
-    if (!context.user) {
-      return redirect({ to: '/login' }) // Wrong: return doesn't stop execution
-    }
-    return fetchAdminData() // Still executes, data may leak
-  },
-})
-```
-
-**Correct: auth check in beforeLoad with throw**
-
-```tsx
-import { createFileRoute, redirect } from '@tanstack/react-router'
-
-export const Route = createFileRoute('/admin')({
-  beforeLoad: async ({ context }) => {
-    if (!context.user) {
-      throw redirect({ to: '/login' }) // MUST throw, not return
-    }
-  },
-  loader: () => fetchAdminData(), // Only runs if auth passes
-})
-```
-
-**Correct: authenticated route group pattern**
-
-```tsx
-// src/routes/_authenticated.tsx
-import { createFileRoute, redirect, Outlet } from '@tanstack/react-router'
-
 export const Route = createFileRoute('/_authenticated')({
   beforeLoad: async ({ context, location }) => {
-    const session = await getSession()
-    if (!session) {
+    const user = await context.auth.currentUser()
+    if (!user) {
       throw redirect({
         to: '/login',
-        search: { redirect: location.href }, // Preserve intended destination
+        search: { redirect: location.href },
       })
     }
-    return { user: session.user } // Add to context for children
+    return { user }
   },
-  component: () => <Outlet />,
 })
-
-// src/routes/_authenticated/dashboard.tsx
-export const Route = createFileRoute('/_authenticated/dashboard')({
-  component: Dashboard,
-})
-
-function Dashboard() {
-  const { user } = Route.useRouteContext() // Access user from parent
-  return <h1>Welcome, {user.name}</h1>
-}
 ```
 
-**Key rules:**
-- Always `throw redirect()`, never `return redirect()`
-- Put auth checks in `beforeLoad`, not `loader`
-- Use route groups (`_authenticated`) for shared auth logic
-- Pass auth context to children via `beforeLoad` return value
+Returning from a JavaScript function does stop subsequent statements, but a returned redirect object is not the documented Router redirect protocol. Follow the pinned version's API instead of relying on that incidental control flow.
 
-**Why this matters:**
-- `beforeLoad` runs serially before loaders
-- Throwing stops all downstream execution
-- Loaders run in parallel—checking auth there risks data leakage
+A route guard protects route UI and loader sequencing; it is not a data authorization boundary. Every server function, API route, or other endpoint returning private data must independently authenticate and authorize the request.

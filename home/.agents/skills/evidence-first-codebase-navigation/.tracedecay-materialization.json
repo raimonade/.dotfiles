@@ -1,9 +1,0 @@
-{
-  "files": {
-    "SKILL.md": "sha256:0e17296c40d804f0cb878b31fdf35e98982438a548e8bc6dd8eeb3a6533ce36a"
-  },
-  "managed_by": "tracedecay-automation",
-  "materialized_by": "f50128fff0b2fc992107c8e64ee5ddab",
-  "package_hash": "sha256:e7ca658ac0b8cc942a234b6fd3d6533bdf8cbce70692b47c5edb0bd26216a508",
-  "skill_id": "evidence-first-codebase-navigation"
-}

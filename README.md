@@ -80,14 +80,14 @@ From a project directory, run `herdr` to launch or attach its persistent session
 
 ## Agent Workflows
 
-Shared workflow guidance is tracked once under `home/.agents/skills/` and discovered from `~/.agents/skills/` by Pi, Claude Code, Codex, and other compatible agents. Pi reusable orchestration lives in declarative `pi-subagents` chains under `home/.pi/agent/chains/`:
+Shared workflow guidance is tracked once under `home/.agents/skills/`. Pi and Codex discover the canonical `~/.agents/skills/` link directly; Claude Code uses a thin compatibility overlay under `~/.claude/skills/`. Pi reusable orchestration lives in declarative `pi-subagents` chains under `home/.pi/agent/chains/`:
 
 ```text
 /run-chain research-plan -- <task>          # external research + local scout → grounded plan
 /run-chain targeted-review -- <review goal> # bounded target discovery → parallel review → verdict
 ```
 
-Pi-generated `agent/skills/`, `ephemeral/`, and nested runtime directories stay untracked. The curated skill set follows the current dotfiles workflow collection, with the published TypeScript and Herdr skills synchronized from `dmmulroy/skills`.
+Pi-generated `agent/skills/`, `ephemeral/`, and nested runtime directories stay untracked. The curated set is maintained locally; only the untouched Cloudflare composition, Effect service-design, and Herdr skills remain update-managed from `dmmulroy/skills`.
 
 ## The `dot` CLI Tool
 
@@ -416,8 +416,8 @@ npm install -g @anthropic-ai/claude-code
 # Start Pi and configure providers/models from the built-in UI or settings
 pi
 
-# Reinstall/update Pi through Vite+ if needed
-vp install -g @earendil-works/pi-coding-agent
+# Reinstall Pi's repo-owned npm dependencies if needed
+npm install --prefix "$HOME/.dotfiles/home/.pi"
 ```
 
 ### Getting Help

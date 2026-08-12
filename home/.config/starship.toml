@@ -3,29 +3,37 @@
 # avoid probing Node in repos that merely contain JS/TS files.
 command_timeout = 2000
 
-# Put custom.scm right after directory
-format = "$directory${custom.scm}$all"
+# Zenbones: a restrained path, branch/status, jobs, and prompt marker.
+format = "$directory$git_branch$git_status$jobs$character"
 
 [buf]
 disabled = true
 
 [character]
-error_symbol = "[󰘧](bold red)"
-success_symbol = "[󰘧](bold green)"
+error_symbol = "[→](magenta)"
+success_symbol = "[→](magenta)"
 
 [directory]
+format = "[$path]($style) "
+style = "blue"
 truncate_to_repo = false
 
 [dotnet]
 detect_files = ["global.json", "Directory.Build.props", "Directory.Build.targets", "Packages.props"]
 
 [git_branch]
-# disabled = true
-symbol = " "
+format = "[$branch]($style)"
+style = "yellow"
+symbol = ""
 truncation_length = 18
 
 [git_status]
-# disabled = true
+format = "[$all_status$ahead_behind]($style) "
+style = "yellow"
+
+[jobs]
+format = "[☆ $number ]($style)"
+style = "magenta"
 
 [git_commit]
 # disabled = true

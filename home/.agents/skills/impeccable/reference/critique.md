@@ -1,213 +1,81 @@
-> **Additional context needed**: what the interface is trying to accomplish.
+# Critique
 
-### Gather Assessments
+A design review: what works, what fails, and what to do about it. Critique reports; it does not edit. If the user wants the fixes applied, finish the report first, then route to [refine.md](refine.md).
 
-Launch two independent assessments. **Neither may see the other's output** — this isolation is what makes the combined score honest. Running both in one head silently anchors them to each other; do not shortcut it for cost, speed, or context-size reasons.
+Inspect the real thing — the rendered surface at its real sizes, on the actual interaction path, with real content — not only the source. Judge against the product's own goals and the visitor mode, never against a generic ideal.
 
-Delegate each assessment to a separate sub-agent (Claude Code's `Agent` tool, Codex's subagent spawning, etc.). Each returns structured findings as text. Do NOT output findings to the user yet.
+## 1. Specificity verdict
 
-Fall back to sequential in-head work only if the environment genuinely cannot spawn sub-agents.
+Lead with this, because it is the finding most reviews miss.
 
-**Tab isolation**: When browser automation is available, each assessment MUST create its own new tab. Never reuse an existing tab, even if one is already open at the correct URL. This prevents the two assessments from interfering with each other's page state.
+Does the result feel authored for this product, or is it category-interchangeable? Name the evidence: structural sameness, choices that could belong to any competitor, an identity that evaporates when the logo is removed, missed opportunities for product character. Then say which parts *are* specific and why they work.
 
-#### Assessment A: LLM Design Review
+A surface can score well on every heuristic and still fail here. Both verdicts ship.
 
-Read the relevant source files (HTML, CSS, JS/TS) and, if browser automation is available, visually inspect the live page. **Create a new tab** for this; do not reuse existing tabs. After navigation, label the tab by setting the document title:
-```javascript
-document.title = '[LLM] ' + document.title;
-```
-Think like a design director. Evaluate:
+## 2. Heuristic scoring
 
-**AI Slop Detection (CRITICAL)**: Does this look like every other AI-generated interface? Review against ALL **DON'T** guidelines from the parent impeccable skill (already loaded in this context). Check for AI color palette, gradient text, dark glows, glassmorphism, hero metric layouts, identical card grids, generic fonts, and all other tells. **The test**: If someone said "AI made this," would you believe them immediately?
+Score each of Nielsen's ten heuristics 0–4. Be honest: 4 means genuinely excellent, and most real interfaces land 20–32 of 40.
 
-**Holistic Design Review**: visual hierarchy (eye flow, primary action clarity), information architecture (structure, grouping, cognitive load), emotional resonance (does it match brand and audience?), discoverability (are interactive elements obvious?), composition (balance, whitespace, rhythm), typography (hierarchy, readability, font choices), color (purposeful use, cohesion, accessibility), states & edge cases (empty, loading, error, success), microcopy (clarity, tone, helpfulness).
+| # | Heuristic | What a low score looks like |
+|---|---|---|
+| 1 | Visibility of system status | The user cannot tell what happened, what is loading, or where they are |
+| 2 | Match with the real world | Internal jargon, invented metaphors, ordering that follows the database |
+| 3 | User control and freedom | No undo, no exit, destructive actions without recovery |
+| 4 | Consistency and standards | The same action looks or behaves differently in two places |
+| 5 | Error prevention | Easy to make an irreversible mistake; constraints not expressed in the UI |
+| 6 | Recognition over recall | The user must remember values or state from a previous screen |
+| 7 | Flexibility and efficiency | No shortcuts, no defaults, no path for the practiced user |
+| 8 | Aesthetic and minimalist design | Everything at equal weight; nothing recedes |
+| 9 | Error recovery | Messages name a code, not the problem or the way out |
+| 10 | Help and documentation | Help absent where it is needed, or only available as a wall of text |
 
-**Cognitive Load** (consult [cognitive-load](cognitive-load.md)):
-- Run the 8-item cognitive load checklist. Report failure count: 0-1 = low (good), 2-3 = moderate, 4+ = critical.
-- Count visible options at each decision point. If >4, flag it.
-- Check for progressive disclosure: is complexity revealed only when needed?
+Present as a table with a one-line key issue per row and a total. Heuristics 7 and 10 — or any other that genuinely cannot apply to the surface — may be scored `n/a` with a one-line reason on a Persuade or Experience surface; renormalize the maximum (`24/32`, not `24/40`) and read the band as a percentage.
 
-**Emotional Journey**:
-- What emotion does this interface evoke? Is that intentional?
-- **Peak-end rule**: Is the most intense moment positive? Does the experience end well?
-- **Emotional valleys**: Check for anxiety spikes at high-stakes moments (payment, delete, commit). Are there design interventions (progress indicators, reassurance copy, undo options)?
+**Bands:** 90%+ excellent, minor polish only · 70%+ good, address weak areas · 50%+ acceptable, significant work needed · 30%+ poor, major overhaul · below that, redesign.
 
-**Nielsen's Heuristics** (consult [heuristics-scoring](heuristics-scoring.md)):
-Score each of the 10 heuristics 0-4. This scoring will be presented in the report.
+## 3. Cognitive load
 
-Return structured findings covering: AI slop verdict, heuristic scores, cognitive load assessment, what's working (2-3 items), priority issues (3-5 with what/why/fix), minor observations, and provocative questions.
+Extraneous load — effort caused by the design rather than the task — is pure waste; eliminate it. Intrinsic load (the task's own complexity) gets structured, not removed. Germane load (learning the system) is the good kind; support it with consistency and progressive disclosure.
 
-#### Assessment B: Automated Detection
+Check eight items, and count failures: 0–1 is low load, 2–3 moderate, 4+ critical.
 
-Run the bundled deterministic detector, which flags 25 specific patterns (AI slop tells + general design quality).
+- **Single focus** — the primary task completes without competing elements.
+- **Chunking** — information arrives in groups of roughly four or fewer.
+- **Grouping** — related items are visually together, by proximity before decoration.
+- **Hierarchy** — what matters most is immediately obvious.
+- **One thing at a time** — a single decision resolves before the next appears.
+- **Minimal choices** — roughly four visible options at any decision point.
+- **Working memory** — nothing must be carried from a previous screen to act here.
+- **Progressive disclosure** — complexity appears only when needed.
 
-**CLI scan**:
-```bash
-npx impeccable --json [--fast] [target]
-```
+Working memory is limited. At each decision point, count the options a user must compare and look for evidence of hesitation, misclicks, or abandonment. Prefer one clear primary action and a small set of meaningful alternatives; group or disclose the rest when the task does not require simultaneous comparison. Treat numeric thresholds as heuristics to test, not universal limits.
 
-- Pass HTML/JSX/TSX/Vue/Svelte files or directories as `[target]` (anything with markup). Do not pass CSS-only files.
-- For URLs, skip the CLI scan (it requires Puppeteer). Use browser visualization instead.
-- For large directories (200+ scannable files), use `--fast` (regex-only, skips jsdom)
-- For 500+ files, narrow scope or ask the user
-- Exit code 0 = clean, 2 = findings
+The recurring violations worth naming by name: the wall of options; the memory bridge (step 1's data needed at step 3); hidden navigation with no sense of place; the jargon barrier; the visual noise floor where every element weighs the same; the inconsistent pattern; the multi-task demand; the context switch that scatters one decision across screens.
 
-**Browser visualization** — **required** when browser automation tools are available AND the target is a viewable page. The `[Human]` overlay tab is the user-facing deliverable; the critique is incomplete without it. Skip only if the target is not a viewable page (CSS-only file, non-browser target).
+## 4. Personas
 
-The overlay is a **visual aid for the user**. It highlights issues directly in their browser. Do NOT scroll through the page to screenshot overlays. Instead, read the console output to get the results programmatically.
+Pick the smallest set that exposes this surface's real failure modes, walk the primary action as each, and report what specifically broke—named elements and interactions, never a generic profile.
 
-1. **Start the live detection server**:
-   ```bash
-   npx impeccable live &
-   ```
-   Note the port printed to stdout (auto-assigned). Use `--port=PORT` to fix it.
-2. **Create a new tab** and navigate to the page (use dev server URL for local files, or direct URL). Do not reuse existing tabs.
-3. **Label the tab** via `javascript_tool` so the user can distinguish it:
-   ```javascript
-   document.title = '[Human] ' + document.title;
-   ```
-4. **Scroll to top** to ensure the page is scrolled to the very top before injection
-5. **Inject** via `javascript_tool` (replace PORT with the port from step 1):
-   ```javascript
-   const s = document.createElement('script'); s.src = 'http://localhost:PORT/detect.js'; document.head.appendChild(s);
-   ```
-6. Wait 2-3 seconds for the detector to render overlays
-7. **Read results from console** using `read_console_messages` with pattern `impeccable`. The detector logs all findings with the `[impeccable]` prefix. Do NOT scroll through the page to take screenshots of the overlays.
-8. **Cleanup**: Stop the live server when done:
-   ```bash
-   npx impeccable live stop
-   ```
+- **Alex, the impatient power user.** Uses it daily, keyboard-first, skims. Breaks on: no shortcuts, no bulk actions, unskippable onboarding, a primary action buried in clicks, confirmations for reversible things.
+- **Jordan, the confused first-timer.** No product vocabulary, no patience for a manual. Breaks on: icon-only navigation, jargon, unlabeled state, error text naming a code, no visible way to get help.
+- **Sam, the accessibility-dependent user.** Screen reader, keyboard, high zoom, or all three. Breaks on: missing labels and landmarks, invisible focus, illogical tab order, color as the only signal, contrast failures, motion without a reduced path.
+- **Riley, the deliberate stress tester.** Long strings, empty data, double submits, back button mid-flow, offline. Breaks on: layouts that only fit ideal content, states that were never designed, silent failures, lost work.
+- **Casey, the distracted mobile user.** One thumb, bad light, interrupted mid-task. Breaks on: small targets, hover-dependent affordances, horizontal overflow, state lost on return, forms that fight the keyboard.
 
-For multi-view targets, inject on 3-5 representative pages. If injection fails, continue with CLI results only.
+By surface: landing pages want Jordan, Riley, Casey; dashboards and analytics want Alex and Sam; checkout wants Casey, Riley, Jordan; onboarding wants Jordan and Casey; forms want Jordan, Sam, Casey. When `PRODUCT.md` describes a real audience, derive one more persona from it rather than inventing details.
 
-Return: CLI findings (JSON), browser console findings (if applicable), and any false positives noted.
+## 5. Report
 
-### Generate Combined Critique Report
+Structure the report as a design director would, in the chat response itself:
 
-Synthesize both assessments into a single report. Do NOT simply concatenate. Weave the findings together, noting where the LLM review and detector agree, where the detector caught issues the LLM missed, and where detector findings are false positives.
+1. **Specificity verdict** — the lead.
+2. **Design health score** — the heuristics table and band.
+3. **Overall impression** — what works, what does not, the single biggest opportunity.
+4. **What's working** — the strongest evidence-backed successes, with why they work.
+5. **Priority issues** — the three to five most impactful problems, each tagged P0–P3, with *what*, *why it matters to users*, and a concrete *fix*.
+6. **Persona red flags** — specific breakages per selected persona.
+7. **Minor observations** and **questions to consider** — smaller notes, and the provocative questions that might unlock a better solution.
 
-Structure your feedback as a design director would:
+**Severity:** **P0** blocking — prevents task completion, fix now. **P1** major — significant difficulty or a WCAG AA violation, fix before release. **P2** minor — annoyance with a workaround. **P3** polish — no real user impact. If unsure between two, ask whether a user would contact support; if yes, at least P1.
 
-#### Design Health Score
-> *Consult [heuristics-scoring](heuristics-scoring.md)*
-
-Present the Nielsen's 10 heuristics scores as a table:
-
-| # | Heuristic | Score | Key Issue |
-|---|-----------|-------|-----------|
-| 1 | Visibility of System Status | ? | [specific finding or "n/a" if solid] |
-| 2 | Match System / Real World | ? | |
-| 3 | User Control and Freedom | ? | |
-| 4 | Consistency and Standards | ? | |
-| 5 | Error Prevention | ? | |
-| 6 | Recognition Rather Than Recall | ? | |
-| 7 | Flexibility and Efficiency | ? | |
-| 8 | Aesthetic and Minimalist Design | ? | |
-| 9 | Error Recovery | ? | |
-| 10 | Help and Documentation | ? | |
-| **Total** | | **??/40** | **[Rating band]** |
-
-Be honest with scores. A 4 means genuinely excellent. Most real interfaces score 20-32.
-
-#### Anti-Patterns Verdict
-
-**Start here.** Does this look AI-generated?
-
-**LLM assessment**: Your own evaluation of AI slop tells. Cover overall aesthetic feel, layout sameness, generic composition, missed opportunities for personality.
-
-**Deterministic scan**: Summarize what the automated detector found, with counts and file locations. Note any additional issues the detector caught that you missed, and flag any false positives.
-
-**Visual overlays** (if browser was used): Tell the user that overlays are now visible in the **[Human]** tab in their browser, highlighting the detected issues. Summarize what the console output reported.
-
-#### Overall Impression
-A brief gut reaction: what works, what doesn't, and the single biggest opportunity.
-
-#### What's Working
-Highlight 2-3 things done well. Be specific about why they work.
-
-#### Priority Issues
-The 3-5 most impactful design problems, ordered by importance.
-
-For each issue, tag with **P0-P3 severity** (consult [heuristics-scoring](heuristics-scoring.md) for severity definitions):
-- **[P?] What**: Name the problem clearly
-- **Why it matters**: How this hurts users or undermines goals
-- **Fix**: What to do about it (be concrete)
-- **Suggested command**: Which command could address this (from: $impeccable adapt, $impeccable animate, $impeccable audit, $impeccable bolder, $impeccable clarify, $impeccable colorize, $impeccable critique, $impeccable delight, $impeccable distill, $impeccable document, $impeccable harden, $impeccable layout, $impeccable onboard, $impeccable optimize, $impeccable overdrive, $impeccable polish, $impeccable quieter, $impeccable shape, $impeccable typeset)
-
-#### Persona Red Flags
-> *Consult [personas](personas.md)*
-
-Auto-select 2-3 personas most relevant to this interface type (use the selection table in the reference). If `AGENTS.md` contains a `## Design Context` section from `impeccable teach`, also generate 1-2 project-specific personas from the audience/brand info.
-
-For each selected persona, walk through the primary user action and list specific red flags found:
-
-**Alex (Power User)**: No keyboard shortcuts detected. Form requires 8 clicks for primary action. Forced modal onboarding. High abandonment risk.
-
-**Jordan (First-Timer)**: Icon-only nav in sidebar. Technical jargon in error messages ("404 Not Found"). No visible help. Will abandon at step 2.
-
-Be specific. Name the exact elements and interactions that fail each persona. Don't write generic persona descriptions; write what broke for them.
-
-#### Minor Observations
-Quick notes on smaller issues worth addressing.
-
-#### Questions to Consider
-Provocative questions that might unlock better solutions:
-- "What if the primary action were more prominent?"
-- "Does this need to feel this complex?"
-- "What would a confident version of this look like?"
-
-**Remember**:
-- Be direct. Vague feedback wastes everyone's time.
-- Be specific. "The submit button," not "some elements."
-- Say what's wrong AND why it matters to users.
-- Give concrete suggestions, not just "consider exploring..."
-- Prioritize ruthlessly. If everything is important, nothing is.
-- Don't soften criticism. Developers need honest feedback to ship great design.
-
-### Ask the User
-
-**After presenting findings**, use targeted questions based on what was actually found. ask the user directly to clarify what you cannot infer. These answers will shape the action plan.
-
-Ask questions along these lines (adapt to the specific findings; do NOT ask generic questions):
-
-1. **Priority direction**: Based on the issues found, ask which category matters most to the user right now. For example: "I found problems with visual hierarchy, color usage, and information overload. Which area should we tackle first?" Offer the top 2-3 issue categories as options.
-
-2. **Design intent**: If the critique found a tonal mismatch, ask whether it was intentional. For example: "The interface feels clinical and corporate. Is that the intended tone, or should it feel warmer/bolder/more playful?" Offer 2-3 tonal directions as options based on what would fix the issues found.
-
-3. **Scope**: Ask how much the user wants to take on. For example: "I found N issues. Want to address everything, or focus on the top 3?" Offer scope options like "Top 3 only", "All issues", "Critical issues only".
-
-4. **Constraints** (optional; only ask if relevant): If the findings touch many areas, ask if anything is off-limits. For example: "Should any sections stay as-is?" This prevents the plan from touching things the user considers done.
-
-**Rules for questions**:
-- Every question must reference specific findings from the report. Never ask generic "who is your audience?" questions.
-- Keep it to 2-4 questions maximum. Respect the user's time.
-- Offer concrete options, not open-ended prompts.
-- If findings are straightforward (e.g., only 1-2 clear issues), skip questions and go directly to Recommended Actions.
-
-### Recommended Actions
-
-**After receiving the user's answers**, present a prioritized action summary reflecting the user's priorities and scope from Ask the User.
-
-#### Action Summary
-
-List recommended commands in priority order, based on the user's answers:
-
-1. **`$command-name`**: Brief description of what to fix (specific context from critique findings)
-2. **`$command-name`**: Brief description (specific context)
-...
-
-**Rules for recommendations**:
-- Only recommend commands from: $impeccable adapt, $impeccable animate, $impeccable audit, $impeccable bolder, $impeccable clarify, $impeccable colorize, $impeccable critique, $impeccable delight, $impeccable distill, $impeccable document, $impeccable harden, $impeccable layout, $impeccable onboard, $impeccable optimize, $impeccable overdrive, $impeccable polish, $impeccable quieter, $impeccable shape, $impeccable typeset
-- Order by the user's stated priorities first, then by impact
-- Each item's description should carry enough context that the command knows what to focus on
-- Map each Priority Issue to the appropriate command
-- Skip commands that would address zero issues
-- If the user chose a limited scope, only include items within that scope
-- If the user marked areas as off-limits, exclude commands that would touch those areas
-- End with `$impeccable polish` as the final step if any fixes were recommended
-
-After presenting the summary, tell the user:
-
-> You can ask me to run these one at a time, all at once, or in any order you prefer.
->
-> Re-run `$impeccable critique` after fixes to see your score improve.
+Be direct and specific: "the submit button", not "some elements". Say what is wrong *and* why it matters. Give concrete fixes and cut "consider exploring". Prioritize ruthlessly — if everything is important, nothing is. Do not soften criticism, and do not skip the positive findings.

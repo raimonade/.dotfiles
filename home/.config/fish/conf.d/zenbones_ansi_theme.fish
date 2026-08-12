@@ -1,0 +1,27 @@
+# Zenbones uses Ghostty's ANSI palette so shell colors follow light/dark mode.
+set fish_color_normal normal
+set fish_color_command blue
+set fish_color_param normal
+set fish_color_keyword magenta
+set fish_color_quote green
+set fish_color_redirection cyan
+set fish_color_end yellow
+set fish_color_comment brblack
+set fish_color_error red
+set fish_color_gray brblack
+set fish_color_selection --background=brblack
+set fish_color_search_match --background=brblack
+set fish_color_option green
+set fish_color_operator blue
+set fish_color_escape cyan
+set fish_color_autosuggestion brblack
+set fish_color_cancel red
+set fish_color_cwd blue
+set fish_color_user cyan
+set fish_color_host blue
+set fish_color_host_remote green
+set fish_color_status red
+set fish_pager_color_progress brblack
+set fish_pager_color_prefix blue
+set fish_pager_color_completion normal
+set fish_pager_color_description brblack

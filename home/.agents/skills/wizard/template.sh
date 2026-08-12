@@ -14,21 +14,21 @@ set -euo pipefail
 
 if [[ -t 1 ]] && command -v tput >/dev/null 2>&1 && [[ "$(tput colors 2>/dev/null || echo 0)" -ge 8 ]]; then
   BOLD=$(tput bold); DIM=$(tput dim); RESET=$(tput sgr0)
-  BLUE=$(tput setaf 4); GREEN=$(tput setaf 2); YELLOW=$(tput setaf 3); RED=$(tput setaf 1)
+  BLUE=$(tput setaf 4); GREEN=$(tput setaf 2); YELLOW=$(tput setaf 3)
 else
-  BOLD=""; DIM=""; RESET=""; BLUE=""; GREEN=""; YELLOW=""; RED=""
+  BOLD=""; DIM=""; RESET=""; BLUE=""; GREEN=""; YELLOW=""
 fi
 
-# Author sets these two at the top of the stages section.
+# Author sets these at the top of the stages section.
 TOTAL_STAGES=0
-TOTAL_MINUTES=0
+GH_REPO="${GH_REPO:-}" # Required for set_secret/set_var, e.g. owner/repository.
 
 _STAGE_INDEX=0
-_MINUTES_ELAPSED=0
 ENV_FILE="${ENV_FILE:-.env}"
 WRITTEN_ENV=()    # KEYs written to ENV_FILE this run
 WRITTEN_SECRET=() # secret NAMEs set this run
 SKIPPED=()        # things we couldn't do (e.g. gh missing)
+_GH_TARGET_CONFIRMED=0
 
 # _clear — wipe the terminal so only the current step is on screen. No-op when
 # output isn't a terminal, so piped logs stay readable.
@@ -37,28 +37,24 @@ _clear() {
   if command -v tput >/dev/null 2>&1; then tput clear; else printf '\033[2J\033[3J\033[H'; fi
 }
 
-# banner "Title" — opening frame: what this wizard does and how long it takes.
+# banner "Title" — opening frame: what this wizard does.
 banner() {
   _clear
   printf '\n%s%s  %s%s\n' "$BOLD" "$BLUE" "$1" "$RESET"
-  printf '%s  %s stages · about %s minutes%s\n\n' \
-    "$DIM" "$TOTAL_STAGES" "$TOTAL_MINUTES" "$RESET"
+  printf '%s  %s stages%s\n\n' "$DIM" "$TOTAL_STAGES" "$RESET"
   printf '%s  You drive the browser; this wizard tells you exactly what to do and\n' "$DIM"
   printf '  captures the values you copy back. Stop any time with Ctrl-C and re-run\n'
   printf '  later — it remembers values already saved.%s\n' "$RESET"
   pause "Ready to start?"
 }
 
-# stage "Name" <minutes> — clear the screen, then announce a stage and show
-# progress + time remaining. Clearing keeps only the current step on screen.
+# stage "Name" — clear the screen, then announce a stage and show progress.
+# Clearing keeps only the current step on screen.
 stage() {
   _clear
   _STAGE_INDEX=$((_STAGE_INDEX + 1))
-  local remaining=$((TOTAL_MINUTES - _MINUTES_ELAPSED))
-  (( remaining < 0 )) && remaining=0
-  _MINUTES_ELAPSED=$((_MINUTES_ELAPSED + ${2:-0}))
-  printf '\n%s%s▸ Stage %s/%s · %s%s  %s(~%s min left)%s\n' \
-    "$BOLD" "$BLUE" "$_STAGE_INDEX" "$TOTAL_STAGES" "$1" "$RESET" "$DIM" "$remaining" "$RESET"
+  printf '\n%s%s▸ Stage %s/%s · %s%s\n' \
+    "$BOLD" "$BLUE" "$_STAGE_INDEX" "$TOTAL_STAGES" "$1" "$RESET"
 }
 
 # say "..." — a plain instruction line.
@@ -144,32 +140,40 @@ write_env() {
   printf '  %s✓ wrote%s %s → %s\n' "$GREEN" "$RESET" "$key" "$ENV_FILE"
 }
 
-# set_secret NAME VALUE — set a GitHub Actions repo secret via gh. Falls back
-# to a warning (and records it) if gh is unavailable or unauthenticated.
-set_secret() {
-  local name="$1" value="$2"
-  if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
-    if printf '%s' "$value" | gh secret set "$name" >/dev/null 2>&1; then
-      WRITTEN_SECRET+=("$name")
-      printf '  %s✓ set%s GitHub secret %s\n' "$GREEN" "$RESET" "$name"
-      return
-    fi
-  fi
-  SKIPPED+=("GitHub secret $name (set it manually: gh secret set $name)")
-  warn "skipped GitHub secret $name — gh not ready; set it later"
+# _confirm_github_target — pin and confirm account/repository before writes.
+_confirm_github_target() {
+  [[ "$_GH_TARGET_CONFIRMED" -eq 1 ]] && return 0
+  [[ -n "$GH_REPO" ]] || { warn "GH_REPO is unset — refusing GitHub writes"; return 1; }
+  command -v gh >/dev/null 2>&1 || { warn "gh is unavailable"; return 1; }
+  gh auth status >/dev/null 2>&1 || { warn "gh is not authenticated"; return 1; }
+  local account
+  account=$(gh api user --jq .login 2>/dev/null) || { warn "couldn't identify the GitHub account"; return 1; }
+  confirm "Write GitHub values to $GH_REPO as $account?" || return 1
+  _GH_TARGET_CONFIRMED=1
 }
 
-# set_var NAME VALUE — set a GitHub Actions repo variable (non-secret).
+# set_secret NAME VALUE — set a GitHub Actions repository secret at the
+# explicitly pinned GH_REPO target.
+set_secret() {
+  local name="$1" value="$2"
+  if _confirm_github_target && printf '%s' "$value" | gh secret set "$name" --repo "$GH_REPO" >/dev/null 2>&1; then
+    WRITTEN_SECRET+=("$name")
+    printf '  %s✓ set%s GitHub secret %s in %s\n' "$GREEN" "$RESET" "$name" "$GH_REPO"
+    return
+  fi
+  SKIPPED+=("GitHub secret $name (set manually with --repo $GH_REPO)")
+  warn "skipped GitHub secret $name"
+}
+
+# set_var NAME VALUE — set a GitHub Actions repository variable at GH_REPO.
 set_var() {
   local name="$1" value="$2"
-  if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
-    if gh variable set "$name" --body "$value" >/dev/null 2>&1; then
-      printf '  %s✓ set%s GitHub variable %s\n' "$GREEN" "$RESET" "$name"
-      return
-    fi
+  if _confirm_github_target && gh variable set "$name" --repo "$GH_REPO" --body "$value" >/dev/null 2>&1; then
+    printf '  %s✓ set%s GitHub variable %s in %s\n' "$GREEN" "$RESET" "$name" "$GH_REPO"
+    return
   fi
-  SKIPPED+=("GitHub variable $name")
-  warn "skipped GitHub variable $name — gh not ready; set it later"
+  SKIPPED+=("GitHub variable $name (set manually with --repo $GH_REPO)")
+  warn "skipped GitHub variable $name"
 }
 
 # finish — clear, then a closing summary of everything configured.
@@ -187,16 +191,15 @@ finish() {
 
 # ──────────────────────────────────────────────────────────────────────────
 # STAGES — author this section. One stage() per step the human takes.
-# Replace the example below. Set the two totals to match the stages you write.
+# Replace the example below. Set TOTAL_STAGES to match the stages you write.
 # ──────────────────────────────────────────────────────────────────────────
 
 TOTAL_STAGES=1
-TOTAL_MINUTES=5
 
 banner "Stripe setup"
 
 # ── Example stage: replace with your real steps ───────────────────────────
-stage "Stripe — API keys" 5
+stage "Stripe — API keys"
 say "We'll grab your Stripe test keys and store them for local dev + CI."
 open_url "https://dashboard.stripe.com/test/apikeys"
 step "On the API keys page, copy the Publishable key (starts pk_test_)."
