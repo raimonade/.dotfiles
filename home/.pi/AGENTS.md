@@ -23,6 +23,7 @@ Global Pi config, synced through dotfiles and stowed into `~/.pi`. npm workspace
     │   ├── save-md/            # save markdown helper extension
     │   ├── pi-ephemeral/       # project-local ephemeral resource picker
     │   ├── pi-skill-toggle/    # interactive skill frontmatter toggler
+    │   ├── pi-worktrees/       # interactive canonical worktree manager
     │   ├── pi-cloak/           # secret cloaking extension
     │   ├── session-footer/     # responsive session telemetry footer
     │   ├── todos/              # file-backed todo tool
@@ -40,6 +41,7 @@ npm run check                      # typecheck/test local Pi extensions
 npm run test:cfpaste               # cfpaste tests only
 npm run test:save-md               # save-md tests only
 npm run test:session-footer        # responsive footer tests only
+npm run check --workspace=pi-worktrees-extension # worktree manager checks only
 ```
 
 ## Where to look

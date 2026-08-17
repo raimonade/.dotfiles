@@ -103,7 +103,7 @@ prompt_new_workspace_name = true
 accent = "#0951AF"
 
 show_agent_labels_on_pane_borders = false
-agent_panel_sort = "spaces"
+agent_panel_sort = "priority"
 [ui.toast]
 delivery = "herdr"
 delay_seconds = 1

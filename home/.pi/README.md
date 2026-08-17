@@ -37,12 +37,15 @@ Current workspace-managed extensions:
 - `agent/extensions/session-footer`
 - `agent/extensions/pi-ephemeral`
 - `agent/extensions/pi-skill-toggle`
+- `agent/extensions/pi-worktrees`
 
 Standalone extensions include the fail-closed Cloudflare deployment allowlist and worker-configuration guard. Deployments remain blocked until `~/.pi/agent/cloudflare-deployment-allowlist.json` explicitly lists an allowed Worker/environment pair. Pi Web Tools is installed from `git:github.com/dmmulroy/pi-web-tools` through `agent/settings.json` rather than maintained locally; Fish supplies its public Exa endpoint from `~/.config/fish/conf.d/pi-web-tools.fish`.
 
 MCP support is provided by the installed `npm:pi-mcp-adapter` package and configured in `agent/mcp.json`.
 
 After changing extension code or package settings, reload pi with `/reload`.
+
+`pi-worktrees` adds `/worktrees` for listing, creating, fetching, and safely removing worktrees in the canonical `.bare` layout. The existing Fish `wt*` helpers remain available for `.bare`, `WT_DIR`, and sibling-directory workflows.
 
 ## Skill management
 
