@@ -24,7 +24,6 @@ Run workspace checks:
 ```bash
 npm run check
 npm run test:cfpaste
-npm run test:codex-fast-mode
 npm run test:save-md
 npm run typecheck:pi-ephemeral
 npm run typecheck:pi-skill-toggle
@@ -33,7 +32,6 @@ npm run typecheck:pi-skill-toggle
 Current workspace-managed extensions:
 
 - `agent/extensions/cfpaste`
-- `agent/extensions/codex-fast-variants`
 - `agent/extensions/opencode-cloudflare`
 - `agent/extensions/save-md`
 - `agent/extensions/session-footer`

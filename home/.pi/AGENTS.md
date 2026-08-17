@@ -19,7 +19,6 @@ Global Pi config, synced through dotfiles and stowed into `~/.pi`. npm workspace
     ├── chains/           # reusable declarative pi-subagents workflows
     ├── extensions/       # local TypeScript extensions and workspace packages
     │   ├── cfpaste/            # Cloudflare Markdown paste commands
-    │   ├── codex-fast-variants/ # priority-tier Codex model variants
     │   ├── opencode-cloudflare/ # Cloudflare gateway provider helpers
     │   ├── save-md/            # save markdown helper extension
     │   ├── pi-ephemeral/       # project-local ephemeral resource picker
@@ -40,7 +39,6 @@ npm install                        # refresh extension workspace deps
 npm run check                      # typecheck/test local Pi extensions
 npm run test:cfpaste               # cfpaste tests only
 npm run test:save-md               # save-md tests only
-npm run test:codex-fast-mode       # Codex Fast variant tests only
 npm run test:session-footer        # responsive footer tests only
 ```
 
