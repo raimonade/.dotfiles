@@ -28,10 +28,10 @@ Global Pi config, synced through dotfiles and stowed into `~/.pi`. npm workspace
     │   ├── session-footer/     # responsive session telemetry footer
     │   ├── todos/              # file-backed todo tool
     │   └── *.ts                # standalone extensions and deployment guards
-    └── skills/           # runtime/generated links; ignored by git
-
-Canonical shared skills live in `../.agents/skills/` in this repository and are stowed to `~/.agents/skills/`.
+    └── skills/           # unique Pi-owned links only; ignored by git
 ```
+
+Canonical shared skills live in `../.agents/skills/` in this repository and are stowed to `~/.agents/skills/`. Pi discovers them there directly; do not add duplicate links under `agent/skills/`.
 
 ## Commands
 
@@ -65,7 +65,7 @@ npm run test:session-footer        # responsive footer tests only
 - Prefer packaged integrations in `agent/settings.json` (`npm:pi-mcp-adapter`, `git:github.com/dmmulroy/pi-web-tools`, etc.) over vendored copies.
 - Extensions as npm workspace packages: each has own `package.json`.
 - Standalone extensions: single `.ts` file in `extensions/`.
-- Shared skills: canonical under `../.agents/skills/`; `SKILL.md` entry with optional bundled resources.
+- Shared skills: canonical under `../.agents/skills/`; `SKILL.md` entry with optional bundled resources; no Pi compatibility links.
 - Saved workflows: declarative `pi-subagents` chains under `agent/chains/`; prefer phase/label metadata, structured outputs, and bounded fanout over executable workflow scripts.
 - ESM only: `"type": "module"` everywhere.
 - Keep runtime state and caches out of git; only config, local extensions, shared `.agents` skills, and themes should be tracked.
@@ -77,7 +77,8 @@ npm run test:session-footer        # responsive footer tests only
 - Installing deps at workspace root for extension-specific needs (use per-package).
 - Committing `node_modules/` (gitignored per-extension).
 - Editing `agent/settings.json` outside dotfiles repo (stow overwrites).
-- Adding runtime state files to git (most of `agent/*` is gitignored; generated `agent/skills/` stays ignored).
+- Adding runtime state files to git (most of `agent/*` is gitignored; `agent/skills/` stays ignored).
+- Mirroring shared skills under `agent/skills/`; keep only unique Pi-owned integrations there.
 - Writing any private model/provider IDs into tests, fixtures, docs, examples, source comments, tracked configuration, or any other version-controlled file.
 
 ## Gitignore pattern
@@ -88,7 +89,7 @@ Most of `agent/` is gitignored by default. Tracked files are explicitly un-ignor
 - `agent/chains/**`
 - `agent/themes/*.json`
 
-Generated `agent/skills/`, `ephemeral/`, and nested `.pi/` runtime directories remain ignored.
+Unique `agent/skills/` links, `ephemeral/`, and nested `.pi/` runtime directories remain ignored.
 
 ## Notes
 

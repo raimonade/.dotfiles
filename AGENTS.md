@@ -15,7 +15,7 @@ macOS dev env via GNU Stow. Ghostty + Herdr + Fish + Zed + Git worktrees + pi. W
 ├── home/.claude/       # Stowed to ~/.claude/
 │   ├── agents/         # Subagents: oracle, librarian, reviewer, planner, security
 │   ├── commands/       # Harness-specific slash commands
-│   └── skills/         # Claude-specific skills and compatibility links
+│   └── skills/         # Thin compatibility links to shared skills
 ├── home/.config/       # Stowed to ~/.config/
 │   ├── fish/           # Shell (AGENTS.md)
 │   ├── zed/            # Primary editor; includes blocking CLI adapter
@@ -48,7 +48,7 @@ macOS dev env via GNU Stow. Ghostty + Herdr + Fish + Zed + Git worktrees + pi. W
 | Upstream worktree helpers | `home/.config/fish/functions/{wt,wtd,wtcd,wtl,wtp,wtr}.fish` |
 | Starship prompt | `home/.config/starship.toml` |
 | Git config | `home/.config/git/config` |
-| Claude skill | `home/.claude/skills/<name>/` |
+| Claude compatibility skill | `home/.claude/skills/<name>` |
 | Claude command | `home/.claude/commands/<name>.md` |
 | Claude agent | `home/.claude/agents/<name>.md` |
 | Claude settings | `home/.claude/settings.json` |
@@ -69,7 +69,7 @@ macOS dev env via GNU Stow. Ghostty + Herdr + Fish + Zed + Git worktrees + pi. W
 - Private helpers: prefix `__` (e.g., `__git.default_branch`)
 - VCS: Git worktrees for normal project flow
 - Pi extensions: TypeScript, npm workspaces under `home/.pi/`
-- Shared skills: canonical under `home/.agents/skills/`, Markdown-first (`SKILL.md`), optional bundled resources
+- Shared skills: canonical under `home/.agents/skills/`; Pi and Codex discover that tree directly, while Claude gets thin symlinks under `home/.claude/skills/`
 
 ## ANTI-PATTERNS
 
@@ -78,7 +78,8 @@ macOS dev env via GNU Stow. Ghostty + Herdr + Fish + Zed + Git worktrees + pi. W
 - Hardcode paths (use `$DOTFILES_DIR`, `$HOME`)
 - Nested git repos in stowed dirs (creates symlink issues)
 - node_modules in stowed dirs (Pi extensions exception — gitignored)
-- Track generated Pi skill/runtime directories (`home/.pi/agent/skills`, `home/.pi/ephemeral`, nested `home/.pi/.pi`)
+- Copy shared skill contents into host-specific directories; Claude compatibility entries are symlinks only
+- Track generated Pi runtime directories (`home/.pi/agent/skills`, `home/.pi/ephemeral`, nested `home/.pi/.pi`)
 
 ## COMMANDS
 

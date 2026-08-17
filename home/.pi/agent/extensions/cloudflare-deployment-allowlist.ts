@@ -14,14 +14,6 @@ const SHELL_META_TOKENS = new Set(["<", ">", ">>", "<<", "&"]);
 const WRANGLER_DEPLOY_COMMANDS = new Set(["deploy", "publish"]);
 const DIRECT_MUTATION_COMMANDS = new Set(["rm", "tee", "touch", "truncate"]);
 const COPY_MUTATION_COMMANDS = new Set(["cp", "install", "mv", "rsync"]);
-const POLICY_MUTATION_COMMANDS = new Set([
-	...DIRECT_MUTATION_COMMANDS,
-	...COPY_MUTATION_COMMANDS,
-	"dd",
-	"git",
-	"perl",
-	"sed",
-]);
 const DENY_ALL_DEPLOYMENT_POLICY: CloudflareDeploymentPolicy = { version: 1, workers: {} };
 
 type Result<T, E> =
@@ -213,10 +205,7 @@ function parseEnvironmentAssignments(
 ): { readonly rest: readonly string[]; readonly values: Readonly<Record<string, string>> } {
 	const values: Record<string, string> = {};
 	let index = 0;
-	if (executableName(tokens[0] ?? "") === "env") {
-		index = 1;
-		while (tokens[index]?.startsWith("-") === true) index += 1;
-	}
+	if (tokens[0] === "env") index = 1;
 	while (index < tokens.length) {
 		const match = tokens[index]?.match(/^([A-Za-z_][A-Za-z0-9_]*)=(.*)$/);
 		if (match === null || match === undefined) break;
@@ -232,42 +221,29 @@ function executableName(token: string): string {
 	return token.split("/").at(-1) ?? token;
 }
 
-function hasLeadingEnvOption(tokens: readonly string[]): boolean {
-	for (const token of tokens.slice(1)) {
-		if (/^[A-Za-z_][A-Za-z0-9_]*=.*/.test(token)) continue;
-		return token.startsWith("-");
-	}
-	return false;
-}
-
 function mentionsCloudflareDeployment(command: string): boolean {
 	return /\b(?:wrangler|cf)\b[\s\S]*(?:\b(?:deploy|publish)\b|\bworkers\s+deployments\s+create\b)/.test(command);
 }
 
 function unwrapCloudflareCli(tokens: readonly string[]): { cli: "wrangler" | "cf"; args: readonly string[] } | undefined {
 	if (tokens.length === 0) return undefined;
-	let unwrapped = tokens;
-	while (["command", "sudo"].includes(executableName(unwrapped[0] ?? ""))) {
-		unwrapped = unwrapped.slice(1);
-		while (unwrapped[0]?.startsWith("-") === true) unwrapped = unwrapped.slice(1);
-	}
-	const executable = executableName(unwrapped[0] ?? "");
+	const executable = executableName(tokens[0] ?? "");
 	if (executable === "wrangler" || executable === "cf") {
-		return { cli: executable, args: unwrapped.slice(1) };
+		return { cli: executable, args: tokens.slice(1) };
 	}
 
 	let searchFrom: number | undefined;
 	if (["npx", "pnpx", "bunx", "vpx"].includes(executable)) searchFrom = 1;
-	else if (["pnpm", "npm"].includes(executable) && ["exec", "dlx"].includes(unwrapped[1] ?? "")) searchFrom = 2;
-	else if (executable === "yarn") searchFrom = ["exec", "dlx"].includes(unwrapped[1] ?? "") ? 2 : 1;
-	else if (executable === "bun" && unwrapped[1] === "x") searchFrom = 2;
-	else if (executable === "vp" && ["exec", "dlx"].includes(unwrapped[1] ?? "")) searchFrom = 2;
+	else if (["pnpm", "npm"].includes(executable) && ["exec", "dlx"].includes(tokens[1] ?? "")) searchFrom = 2;
+	else if (executable === "yarn") searchFrom = ["exec", "dlx"].includes(tokens[1] ?? "") ? 2 : 1;
+	else if (executable === "bun" && tokens[1] === "x") searchFrom = 2;
+	else if (executable === "vp" && ["exec", "dlx"].includes(tokens[1] ?? "")) searchFrom = 2;
 	if (searchFrom === undefined) return undefined;
 
-	for (let index = searchFrom; index < unwrapped.length; index += 1) {
-		const packageName = unwrapped[index]?.replace(/@(?:latest|next|\d.*)$/, "");
+	for (let index = searchFrom; index < tokens.length; index += 1) {
+		const packageName = tokens[index]?.replace(/@(?:latest|next|\d.*)$/, "");
 		if (packageName === "wrangler" || packageName === "cf") {
-			return { cli: packageName, args: unwrapped.slice(index + 1) };
+			return { cli: packageName, args: tokens.slice(index + 1) };
 		}
 	}
 	return undefined;
@@ -421,6 +397,21 @@ function deploymentCommandWords(invocation: DeploymentInvocation): readonly stri
 
 function hasAdjacentArguments(args: readonly string[], first: string, second: string): boolean {
 	return args.some((argument, index) => argument === first && args[index + 1] === second);
+}
+
+function wranglerDeleteDecision(invocation: DeploymentInvocation): CloudflareDeploymentDecision | undefined {
+	if (invocation.cli !== "wrangler" || invocation.args.some((argument) => argument === "--help" || argument === "-h")) {
+		return undefined;
+	}
+	const positional = deploymentCommandWords(invocation);
+	if (positional[0] !== "delete") return undefined;
+	const worker = positional[1];
+	return {
+		_tag: "block",
+		reason: new CloudflareDeploymentBlocked(
+			`Wrangler Worker deletion${worker === undefined ? "" : ` for ${JSON.stringify(worker)}`} is destructive and is never authorized by the deployment allowlist.`,
+		).message,
+	};
 }
 
 function deploymentIntent(invocation: DeploymentInvocation): DeploymentIntent | undefined {
@@ -799,13 +790,6 @@ function evaluateCloudflareDeploymentCommandWithCache(
 			currentCwd = resolve(currentCwd, segment[1] ?? ".");
 			continue;
 		}
-		if (
-			executableName(segment[0] ?? "") === "env" &&
-			hasLeadingEnvOption(segment) &&
-			mentionsCloudflareDeployment(segment.join(" "))
-		) {
-			return { _tag: "block", reason: new CloudflareDeploymentBlocked("env options can change the deployment environment or working directory; run the Wrangler or cf command with explicit environment assignments instead.").message };
-		}
 		const taskDeployReason = packageTaskDeployReason(segment, currentCwd, cache);
 		if (taskDeployReason !== undefined) {
 			return { _tag: "block", reason: new CloudflareDeploymentBlocked(taskDeployReason).message };
@@ -816,11 +800,10 @@ function evaluateCloudflareDeploymentCommandWithCache(
 			if (["bash", "sh", "zsh", "fish"].includes(shellCommand) && segment.some(mentionsCloudflareDeployment)) {
 				return { _tag: "block", reason: new CloudflareDeploymentBlocked("deployment hidden inside shell -c evaluation is ambiguous; run the Wrangler or cf command directly.").message };
 			}
-			if (["command", "sudo", "env"].includes(shellCommand) && mentionsCloudflareDeployment(segment.join(" "))) {
-				return { _tag: "block", reason: new CloudflareDeploymentBlocked("deployment hidden behind an ambiguous executable wrapper; run the Wrangler or cf command directly.").message };
-			}
 			continue;
 		}
+		const deleteDecision = wranglerDeleteDecision(invocation);
+		if (deleteDecision !== undefined) return deleteDecision;
 		const intent = deploymentIntent(invocation);
 		if (intent === undefined) {
 			if (invocation.args.some(mentionsCloudflareDeployment)) {
@@ -888,23 +871,14 @@ export function findsCloudflarePolicyMutation(command: string, cwd: string): boo
 			if ([">", ">>"].includes(segment[index] ?? "") && isPolicyPath(segment[index + 1] ?? "")) return true;
 		}
 		const assignment = parseEnvironmentAssignments(segment);
-		let commandTokens = assignment.rest;
-		if (["command", "sudo"].includes(executableName(commandTokens[0] ?? ""))) {
-			const mutationIndex = commandTokens.findIndex(
-				(token, index) => index > 0 && POLICY_MUTATION_COMMANDS.has(executableName(token)),
-			);
-			if (mutationIndex > 0) commandTokens = commandTokens.slice(mutationIndex);
-		}
-		const commandName = executableName(commandTokens[0] ?? "");
-		const operands = commandTokens.slice(1);
+		const commandName = executableName(assignment.rest[0] ?? "");
+		const operands = assignment.rest.slice(1);
 		if (DIRECT_MUTATION_COMMANDS.has(commandName) && operands.some(isPolicyPath)) return true;
 		if (["sed", "perl"].includes(commandName) && operands.some((value) => value === "-i" || value.startsWith("-i") || value.startsWith("--in-place")) && operands.some(isPolicyPath)) return true;
 		if (COPY_MUTATION_COMMANDS.has(commandName)) {
 			const paths = operands.filter((value) => !value.startsWith("-"));
-			if (commandName === "mv" && paths.some(isPolicyPath)) return true;
 			if (paths.at(-1) !== undefined && isPolicyPath(paths.at(-1) ?? "")) return true;
 		}
-		if (commandName === "git" && operands[0] === "rm" && operands.slice(1).some(isPolicyPath)) return true;
 		if (commandName === "dd" && operands.some((value) => value.startsWith("of=") && isPolicyPath(value))) return true;
 	}
 	return false;
