@@ -1,10 +1,9 @@
 # Safe, worktree-aware garbage-collect for tracedecay branch DBs.
 #
-# WHY NOT `tracedecay branch gc`: its native gc mis-detects branches that are
-# checked out in linked git worktrees (Conductor workspaces) as "deleted" and
-# removes LIVE branch DBs. This instead trusts `git show-ref`, which sees the
-# shared refs/heads store across all worktrees, so it only prunes branches whose
-# ref is genuinely gone.
+# WHY NOT `tracedecay branch gc`: its native gc can remove branches checked out
+# in linked worktrees. This keeps current/default/serving branches plus every
+# branch actually checked out in a Git worktree. Other branch DBs are derived
+# caches and are pruned even if a stale local refs/heads entry remains.
 #
 # Usage:  tdgc            prune stale branch DBs in the current project
 #         tdgc --dry-run  show what would be pruned, remove nothing
@@ -93,8 +92,9 @@ for branch in branches_payload["branches"]:
     end
     set -l pruned 0
     for b in $candidates
-        # keep if the ref still exists in git (worktrees share refs/heads)
-        git show-ref --verify --quiet "refs/heads/$b"; and continue
+        # Keep branches actively checked out in any linked worktree. A plain
+        # local ref is insufficient: its derived DB can be rebuilt if needed.
+        git worktree list --porcelain | grep -Fqx -- "branch refs/heads/$b"; and continue
         if set -q dry[1]
             echo "would prune  $b"
         else

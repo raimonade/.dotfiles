@@ -5,13 +5,6 @@
       "lifecycle": "lazy",
       "directTools": true
     },
-    "tracedecay": {
-      "command": "/opt/homebrew/bin/tracedecay",
-      "args": [
-        "serve"
-      ],
-      "lifecycle": "lazy"
-    },
     "executor": {
       "command": "executor",
       "args": [

@@ -48,6 +48,7 @@ bounded remaining todo with exact checks per item.
 - Switch models only when expected savings exceed cache invalidation, repeated reads, handoff, review, and quality risk. Different provider prices, local models, and multi-session scale can change that decision; if uncertain, keep the current agent.
 - Preserve plan review when the user asks for it, ambiguity needs a decision, or work is irreversible, security-sensitive, migration-heavy, or a long-running program whose spec/tickets are durable artifacts. Read-only research, design direction, and review are also valid terminal tasks, not failed implementation handoffs.
 - A first edit proves the approach touched reality; it does not prove correctness. Keep proportionate independent review and final behavioral verification. Benchmark rules against finding a known answer do not imply banning legitimate external research in real work.
+- **Plannotator:** proactively offer its local review surface when a non-trivial plan contains user-facing choices, meaningful scope tradeoffs, or multiple implementation phases, and when a substantial diff is ready for human review. Use `plannotator annotate <file-or-dir>` for plans/specs and `plannotator review --git` for local diffs. Keep tiny, routine, or explicitly urgent work inline. Offer; do not block execution unless the user asks for approval-gated review.
 
 ## Grounding
 
@@ -135,6 +136,13 @@ bounded remaining todo with exact checks per item.
 - Make local commits freely, including WIP, to protect work — but never push or create/update PRs unless explicitly requested
 - **Never** add AI/assistant attribution or list the agent as a contributor in PRs, commits, messages, or PR descriptions
 - When work copies, ports, or adapts someone else's implementation or design, do not mention that provenance or inspiration in commit messages, PR titles, or PR descriptions. Preserve attribution required by licenses, NOTICE files, or source headers.
+
+## Plannotator review surfaces
+
+- Bring up Plannotator before implementation when the plan benefits from inline human annotations: product/UX choices, architecture or migration decisions, broad refactors, security-sensitive work, or several independently adjustable phases.
+- Bring it up again before commit/handoff when a substantial diff benefits from line-level review, suggestions, or selective staging.
+- Prefer a concrete invitation naming the artifact and command: `plannotator annotate <path>` or `plannotator review --git`. Do not use a generic “want to review?” prompt.
+- Skip the interruption for tiny/routine changes, read-only investigation, or when the user already asked for immediate execution. Plannotator remains optional unless approval gating was requested.
 
 ## Plans
 

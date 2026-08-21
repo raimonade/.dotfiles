@@ -460,7 +460,9 @@ __stow_dotfiles() {
 
     __print_info "Stowing files from ${HOME_DIR} to ${HOME}..."
 
-    if stow -R -v -d "${DOTFILES_DIR}" -t "${HOME}" home; then
+    if stow -R -v -d "${DOTFILES_DIR}" -t "${HOME}" \
+        --ignore='^\.config/fish/completions/(docker|kubectl|orbctl)\.fish$' \
+        home; then
         __print_success "Dotfiles stowed successfully"
     else
         __print_error "Failed to stow dotfiles"

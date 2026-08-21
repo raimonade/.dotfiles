@@ -76,7 +76,7 @@ git -C $sandbox/repo pull
 brew update
 brew outdated
 brew upgrade --yes
-stow -R -v -d $sandbox/repo -t $sandbox/home home
+stow -R -v -d $sandbox/repo -t $sandbox/home --ignore=^\.config/fish/completions/(docker|kubectl|orbctl)\.fish$ home
 pi update
 EOF
 )

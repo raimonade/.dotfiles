@@ -1,6 +1,6 @@
-# tracedecay auto-init + auto-gc: index each git repo the first time you enter it,
-# and (for already-indexed repos) run a throttled <=1/day worktree-aware branch gc.
-# All zero-touch and backgrounded so the prompt never blocks.
+# Optional tracedecay auto-init + auto-gc: when explicitly enabled, index each git
+# repo the first time you enter it and run throttled worktree-aware branch cleanup.
+# Disabled by default because automatic indexing can consume substantial disk/RAM.
 #
 # Fully traceable:
 #   tdtrace                     -> indexed projects + disk + recent auto-inits
@@ -8,11 +8,11 @@
 #   ~/.tracedecay/auto-init.log -> timestamped START/DONE/SKIP per repo
 #   du -sh ~/.tracedecay/projects
 #
-# Pause:  set -Ux TRACEDECAY_AUTOINIT 0     Resume:  set -e TRACEDECAY_AUTOINIT
+# Enable:  set -Ux TRACEDECAY_AUTOINIT 1     Disable:  set -e TRACEDECAY_AUTOINIT
 
 function __tracedecay_autoinit --on-variable PWD
     status is-interactive; or return
-    test "$TRACEDECAY_AUTOINIT" = 0; and return
+    test "$TRACEDECAY_AUTOINIT" = 1; or return
     type -q tracedecay; or return
 
     # only at a real git repo root; never index $HOME itself
