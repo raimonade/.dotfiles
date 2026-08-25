@@ -46,6 +46,8 @@ Always-on subset of `~/.agents/CONDUCT.md` (read it for the full set: identity, 
 
 Skills are active project memory, not optional decoration. At the start of non-trivial work, scan available skill names/descriptions and load (`read` the `SKILL.md`) any model-invoked skill whose description materially overlaps the task before planning or editing. Re-check skills when the task changes shape.
 
+Before final handoff of any non-trivial code change, load the `meaningful-contribution` skill and satisfy its proof gate.
+
 Use skills proportionately: load lightweight/reference skills eagerly; follow their reading order and reference links; do not surprise-run heavy user-invoked workflows or broad scans unless asked. If a relevant skill exists but is unavailable in the current harness, say so briefly and follow local repo rules. Local repo instructions and inspected code still win over skills.
 
 ## TypeScript boundary hygiene

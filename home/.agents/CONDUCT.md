@@ -81,6 +81,7 @@ bounded remaining todo with exact checks per item.
 ## Skills
 
 - Treat skills as active project memory, not optional decoration: at the start of non-trivial work, scan available skill names/descriptions and load (`read` the `SKILL.md`) any model-invoked skill whose description materially overlaps the task before planning or editing
+- Before final handoff of any non-trivial code change, load the `meaningful-contribution` skill and satisfy its proof gate
 - Re-check skills when the task changes shape (debug → refactor, API → UI, TypeScript → Cloudflare, etc.)
 - Follow a loaded skill's reading order and reference links, but keep use proportional: load lightweight/reference skills eagerly; run heavy user-invoked workflows and broad scans only when asked
 - If a relevant skill exists but is unavailable in the current harness, say so briefly and follow local repo rules
