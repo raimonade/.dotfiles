@@ -7,9 +7,10 @@ description: Use TraceDecay for open-ended codebase exploration, symbol/call tra
 
 ## Availability gate
 
-Before connecting, check whether `~/.tracedecay/daemon.sock` exists. If absent, TraceDecay is intentionally contained because startup ingestion can cause sustained CPU use at large repository scale:
+Before connecting, check whether `~/.tracedecay/daemon.sock` exists **and** whether `~/.pi/agent/state/tracedecay-daemon-contained` exists. The containment marker wins even when a stale socket is still present: treat TraceDecay as unavailable and use normal code tools. Startup ingestion can cause sustained CPU use at large repository scale, and a contained daemon may accept connections without producing a response:
 
 - do not install, start, or restart the daemon;
+- do not call TraceDecay through MCP or CLI while the containment marker exists;
 - use the host's normal code tools instead;
 - do not repeatedly retry MCP or CLI calls.
 
