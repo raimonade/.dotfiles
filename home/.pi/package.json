@@ -7,7 +7,7 @@
     "agent/extensions/*"
   ],
   "scripts": {
-    "check": "npm run check --workspace=pi-extension-opencode-cloudflare && npm run check --workspace=pi-cfpaste-extension && npm run check --workspace=pi-save-md-extension && npm run check --workspace=pi-session-footer-extension && npm run check --workspace=pi-worktrees-extension && npm run check --workspace=pi-handoff-extension && npm run typecheck:pi-ephemeral && npm run typecheck:pi-skill-toggle && npm run test:pi-skill-toggle && npm run test:worker-configuration-guard && npm run test:cloudflare-deployment-allowlist"
+    "check": "npm run check --workspace=pi-extension-opencode-cloudflare && npm run check --workspace=pi-cfpaste-extension && npm run check --workspace=pi-save-md-extension && npm run check --workspace=pi-session-footer-extension && npm run check --workspace=pi-worktrees-extension && npm run check --workspace=pi-handoff-extension && npm run typecheck:pi-ephemeral && npm run typecheck:pi-skill-toggle && npm run test:pi-skill-toggle && npm run test:worker-configuration-guard && npm run test:cloudflare-deployment-allowlist",
     "test:cfpaste": "npm run test --workspace=pi-cfpaste-extension",
     "test:save-md": "npm run test --workspace=pi-save-md-extension",
     "test:worker-configuration-guard": "node --import tsx --test agent/extensions/tests/worker-configuration-guard.test.ts",
