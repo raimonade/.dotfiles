@@ -15,7 +15,7 @@
     "callFlow": false
   },
   "theme": {
-    "mode": "light",
+    "mode": "dark",
     "light": "plannotator",
     "dark": "plannotator"
   }

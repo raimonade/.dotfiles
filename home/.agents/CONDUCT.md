@@ -89,7 +89,7 @@ bounded remaining todo with exact checks per item.
 
 ## Frontend/design model routing
 
-- Execution models are not the default taste models. Taste-heavy frontend work goes to Claude Code CLI with Opus for design direction, for visual implementation delegation where appropriate, and for the final visual review. Never use Fable; Sonnet does neither direction nor review.
+- Execution models are not the default taste models. Taste-heavy frontend work goes to Claude Code CLI with Opus for design direction, for visual implementation delegation where appropriate, and for the final visual review. Never use Fable, as session model or as a subagent model (no `model: "fable"` on the Agent tool, no Fable model in workflow `agent()` calls); Sonnet does neither direction nor review.
 - Load applicable design context and skills first. Give Opus a self-contained brief: goal, routes/files, constraints, design context, repo instructions, accessibility, exact deliverable, verification, and report shape.
 - The execution model may implement after an Opus design pass, an explicit mock/spec, or a clearly established design-system pattern. Mechanical work that preserves the existing visual design does not require taste delegation.
 - If Claude Opus is unavailable or unauthenticated, pause instead of shipping taste-heavy UI unaided.

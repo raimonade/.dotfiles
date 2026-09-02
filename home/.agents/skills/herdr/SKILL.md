@@ -1,6 +1,6 @@
 ---
 name: herdr
-description: "Control Herdr panes, tabs, workspaces, commands, dev servers, other background processes, and agents. Use for subagents when the user or another skill explicitly asks for or requires them. Requires HERDR_ENV=1."
+description: "Explicit-only control of an active Herdr session. Load only when the user names Herdr or an already-invoked workflow requires Herdr; never offer it as generic agent, terminal, or background-process orchestration. Requires HERDR_ENV=1."
 ---
 
 # Herdr

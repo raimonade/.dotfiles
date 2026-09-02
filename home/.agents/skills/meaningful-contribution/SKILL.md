@@ -1,6 +1,6 @@
 ---
 name: meaningful-contribution
-description: "Proof gate for non-trivial code changes. Use before declaring an implementation, bug fix, refactor, migration, or PR-ready change complete, and before commit or PR handoff. Requires observed behavior, durable automated proof, counterfactual failure when practical, edge-case accounting, honest types and names, and an evidence report. Skip read-only work and trivial docs or config edits."
+description: "Proof gate for non-trivial code changes. Use before declaring an implementation, bug fix, refactor, migration, or PR-ready change complete, and before commit or PR handoff. Requires a task-owned stopwatch and laboratory, observed behavior, durable automated proof, counterfactual failure when practical, edge-case accounting, honest types and names, and an evidence report. Skip read-only work and trivial docs or config edits."
 ---
 
 # Meaningful Contribution
@@ -8,6 +8,15 @@ description: "Proof gate for non-trivial code changes. Use before declaring an i
 A code change is complete when evidence supports its behavioral claim and its abstractions tell the truth. Generated volume, a plausible diff, and green static checks are not completion evidence.
 
 Apply this gate proportionately to task-owned changes. Repository instructions define the required checks and override this generic floor.
+
+## Feedback loop
+
+Before implementation, identify:
+
+- **Stopwatch:** the observable evaluator that distinguishes improvement from regression: a focused test, benchmark, trace, screenshot comparison, contract fixture, query plan, or other real boundary signal.
+- **Laboratory:** the cheap, repeatable loop the agent can run without asking the user to inspect each attempt.
+
+Prefer an existing evaluator. When none can support the claim, add the smallest task-owned instrument that can. Comparative claims need a baseline. Test one hypothesis or coherent change at a time so the signal remains attributable; keep the change only when the stopwatch improves without breaking inherited behavior.
 
 ## Proof gate
 

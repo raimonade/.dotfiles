@@ -13,7 +13,7 @@ Rankings are defaults, not limits. Higher = better. `cost` means effective cost/
 
 How to apply:
 
-- **Never use Fable**; never Haiku unless the user explicitly asks. Opus 5 owns design direction, taste-heavy synthesis, and final visual review.
+- **Never use Fable** — session model or subagent: no `model: "fable"` on the Agent tool, no Fable model in workflow `agent()` calls, no Fable-backed agent type; never Haiku unless the user explicitly asks. Opus 5 owns design direction, taste-heavy synthesis, and final visual review.
 - A cheaper model's output missing the bar → rerun or redo with a smarter model without asking. Judge output quality, not price; cost is a tie-breaker only. For anything that ships, intelligence > taste > cost.
 - Opus 5 is the orchestrator/synthesis model for hard judgment, at **high effort** — escalate to xhigh/max/extra only after a high-value task failed at high effort.
 - Bulk/mechanical execution belongs to **GPT-5.6 Sol via Codex**: clear-spec implementation, migrations, repetitive edits, test writing, data analysis, broad codebase spelunking, and other token-hungry work. Discovery-heavy implementation → let Codex own discovery through verification instead of making Opus read the same surface first.
