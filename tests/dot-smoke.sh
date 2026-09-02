@@ -77,7 +77,7 @@ brew update
 brew outdated
 brew upgrade --yes
 stow -R -v -d $sandbox/repo -t $sandbox/home --ignore=^\.config/fish/completions/(docker|kubectl|orbctl)\.fish$ home
-pi update
+pi update --all
 EOF
 )
 [[ "$(cat "$log")" == "$expected_update" ]] || fail "unexpected update command order"
