@@ -4,9 +4,9 @@
   "collapseChangelog": true,
   "showHardwareCursor": true,
   "editorPaddingX": 0,
-  "defaultProvider": "openai-codex",
-  "defaultModel": "gpt-5.6-sol",
-  "defaultThinkingLevel": "medium",
+  "defaultProvider": "cursor",
+  "defaultModel": "grok-4.6:fast",
+  "defaultThinkingLevel": "high",
   "packages": [
     {
       "source": "npm:@plannotator/pi-extension",
@@ -16,10 +16,12 @@
     "npm:pi-subagents",
     "npm:pi-context",
     "npm:@gotgenes/pi-anthropic-auth",
-    "git:github.com/dmmulroy/pi-web-tools"
+    "git:github.com/dmmulroy/pi-web-tools",
+    "npm:pi-cursor-sdk@0.3.6"
   ],
   "extensions": [],
   "skills": [],
+  "enableSkillCommands": true,
   "subagents": {
     "agentOverrides": {
       "researcher": {

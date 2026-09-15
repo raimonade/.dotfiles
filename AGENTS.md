@@ -84,8 +84,8 @@ macOS dev env via GNU Stow. Ghostty + Herdr + Fish + Zed + Git worktrees + pi. W
 ## COMMANDS
 
 ```bash
-dot init              # Full setup (brew, stow, bun, Vite+, Pi, ssh, font, fish)
-dot update            # Pull + brew upgrade + restow + pi update
+dot init              # Full setup (brew, stow, Herdr plugins, Pi, CUA Driver, ssh, font, fish)
+dot update            # Pull + brew upgrade + restow + Herdr/Pi updates
 dot doctor            # Health check
 dot stow              # Resymlink only
 dot package add X     # Add + install package
@@ -103,7 +103,7 @@ wtr <directory>       # Upstream: remove worktree and delete branch
 |------|-------|-------|
 | Fish | `config.fish` | Terminal editor + lazy workflow functions |
 | Zed | `settings.json` | Primary graphical project editor |
-| Herdr | `config.toml` | Persistent workspaces/tabs/panes + native worktrees/agent state |
+| Herdr | `config.toml` + `plugins.txt` | Workspaces, native worktrees, agent state, and managed plugins |
 | Ghostty | `config` | Terminal; run `herdr` from the desired project directory |
 | Zed wait adapter | `zed-wait.sh` | Blocking editor command for Git and terminal tools |
 | Git | `config` | SSH signing, rebase-oriented workflow |
@@ -123,6 +123,7 @@ wtr <directory>       # Upstream: remove worktree and delete branch
 
 - `dot update` handles WARP VPN brew API issues automatically
 - Start the upstream workspace flow with `cd <repo> && herdr`; Ghostty does not add local launch automation
+- Herdr Annotate provides terminal comments and Plannotator TUI review; Computer MCP uses CUA Driver
 - Starship `command_timeout = 2000` because some node shims are slow
 - `secrets.fish` is gitignored — contains env tokens for work services
 - `.pi/agent/*` mostly gitignored; extensions and customization files are selectively unignored, while generated Pi skill links stay untracked

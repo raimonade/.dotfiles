@@ -13,9 +13,16 @@
       "lifecycle": "lazy"
     },
     "computer": {
-      "command": "open-computer-use",
+      "command": "cua-driver",
       "args": [
         "mcp"
+      ],
+      "lifecycle": "lazy"
+    },
+    "tracedecay": {
+      "command": "tracedecay",
+      "args": [
+        "serve"
       ],
       "lifecycle": "lazy"
     }

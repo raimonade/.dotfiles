@@ -13,13 +13,13 @@ Rankings are defaults, not limits. Higher = better. `cost` means effective cost/
 
 How to apply:
 
-- **Never use Fable** — session model or subagent: no `model: "fable"` on the Agent tool, no Fable model in workflow `agent()` calls, no Fable-backed agent type; never Haiku unless the user explicitly asks. Opus 5 owns design direction, taste-heavy synthesis, and final visual review.
+- Opus 5 owns design direction, taste-heavy synthesis and final visual review by default. Exception: when the session model is Fable 5.1 (a tier above Opus) it does those in-session — no separate Opus pass. Subagents always get an explicit model: opus for judgement, sonnet for mechanical; never Haiku unless the user explicitly asks.
 - A cheaper model's output missing the bar → rerun or redo with a smarter model without asking. Judge output quality, not price; cost is a tie-breaker only. For anything that ships, intelligence > taste > cost.
 - Opus 5 is the orchestrator/synthesis model for hard judgment, at **high effort** — escalate to xhigh/max/extra only after a high-value task failed at high effort.
 - Bulk/mechanical execution belongs to **GPT-5.6 Sol via Codex**: clear-spec implementation, migrations, repetitive edits, test writing, data analysis, broad codebase spelunking, and other token-hungry work. Discovery-heavy implementation → let Codex own discovery through verification instead of making Opus read the same surface first.
 - Computer use, browser/UI verification, screenshots, and hands-on UX checks also belong to Codex first; report the findings back to Opus 5 for final judgment.
-- User-facing work (UI, copy, API design, product decisions) gets direction and final judgment from opus-5; GPT-5.6 Sol via Codex executes once the direction is clear.
-- Reviews of plans/implementations: opus-5 for final judgment, optionally GPT-5.6 Sol/Codex as an independent extra reviewer.
+- User-facing work (UI, copy, API design, product decisions) gets direction and final judgment from the session's top Claude (Fable 5.1, else opus-5); GPT-5.6 Sol via Codex executes once the direction is clear.
+- Reviews of plans/implementations: the session's top Claude (Fable in-session, else opus-5) for final judgment, optionally GPT-5.6 Sol/Codex as an independent extra reviewer.
 
 ## Cross-model implementation handoff
 

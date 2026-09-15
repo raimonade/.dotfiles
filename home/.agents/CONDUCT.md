@@ -71,6 +71,22 @@ bounded remaining todo with exact checks per item.
 - Write tests that verify semantically correct behavior, and confirm relevant tests actually execute rather than silently skip
 - Failing tests are acceptable when they expose genuine bugs and test correct behavior; do not change, skip, or delete tests just to make the suite pass
 
+## Delivery invariants
+
+Distilled from a 2026-09-14 audit of two months of sessions; each line names a miss that recurred across sessions.
+
+- **Source of truth first.** Before porting, extending, or measuring anything found on disk (a fork, worktree, donor copy, screenshot, old pitch), confirm it is the authoritative artifact; name it in the first status line and treat every other copy as abandoned until told otherwise.
+- **Reference means parity.** When the user names a reference (a donor file, a screenshot, a product like Linear/Cloudflare/sim, a component they supplied), reproduce it exactly and cite file:line; a deviation is a question to the user, never a taste decision.
+- **Visible outcome before plumbing.** Ship the change the user can see or run (the page layout, the working endpoint) first; componentization, abstractions, and cleanup follow it, never precede it.
+- **Done means observed.** "Done" is a live-data check, a screenshot, or a command output the user can read; anything else is reported as unverified, with the exact step not run.
+- **Resolve the referent before acting.** A collective noun (backlog, hanging PRs, the app, everything left) resolves to a concrete list, path, or filter, echoed back in one line, before any edit or subagent spawn.
+- **Read the mode.** A description, complaint, or thinking-aloud turn gets an assessment; "plan" or "review" gets a document and zero edits; an explicit implement ask gets the full change without permission questions for reversible steps.
+- **Environment before diagnosis.** On any incident, state prod vs dev, org/tenant, and the repro you will use before reading logs or code.
+- **Never idle, always narrate.** One line before each step and after each result; when a background agent or command finishes, read its output and continue immediately; a harness "continue" while work is in flight gets a status line, never an empty reply.
+- **Resume with the plan.** After a limits reset, compaction, or bare "continue", restate the next item, its proof, and the stop condition in one line before acting; carry standing user rules (subagent policy, model routing, forbidden paths) into every compaction summary and progress file.
+- **Parallel lanes are fenced and capped.** Fan out only over independent tickets: one owner per lane, one worktree per branch, no two lanes on one file, at most six concurrent, typecheck and CI serialized behind them. A coupled problem (red main, a migration, a design decision) gets one owner. Before spawning, check the active roster so no task runs twice; verifier lanes fan out freely, cross-vendor builder lanes do not.
+- **Merging red is a named debt.** When asked to skip a check or merge red, comply, and record in the PR or handoff which check is red and who owns the fix.
+
 ## Error message design
 
 - Write error messages to help the reader understand and recover: what happened, why if known, the impact, and what to do next — specific and concrete over vague or generic
@@ -89,11 +105,12 @@ bounded remaining todo with exact checks per item.
 
 ## Frontend/design model routing
 
-- Execution models are not the default taste models. Taste-heavy frontend work goes to Claude Code CLI with Opus for design direction, for visual implementation delegation where appropriate, and for the final visual review. Never use Fable, as session model or as a subagent model (no `model: "fable"` on the Agent tool, no Fable model in workflow `agent()` calls); Sonnet does neither direction nor review.
-- Load applicable design context and skills first. Give Opus a self-contained brief: goal, routes/files, constraints, design context, repo instructions, accessibility, exact deliverable, verification, and report shape.
-- The execution model may implement after an Opus design pass, an explicit mock/spec, or a clearly established design-system pattern. Mechanical work that preserves the existing visual design does not require taste delegation.
-- If Claude Opus is unavailable or unauthenticated, pause instead of shipping taste-heavy UI unaided.
-- Verify meaningful UI changes in-browser and obtain an Opus review before final handoff.
+- Execution models are not the default taste models. Taste-heavy frontend work takes design direction and the final visual review from the strongest available Claude: Fable 5.1 when it is the session model (do it in-session, no separate design pass), otherwise Opus. Sonnet does neither direction nor review.
+- Load applicable design context and skills first. When delegating direction to Opus, give a self-contained brief: goal, routes/files, constraints, design context, repo instructions, accessibility, exact deliverable, verification, and report shape.
+- Run one-shot Opus delegation directly and synchronously with foreground `claude -p`. Herdr is only for an explicitly requested interactive Herdr session; `HERDR_ENV` does not determine Claude availability. Declare Opus unavailable only from a foreground command's missing-binary, authentication, or model-access error.
+- The execution model may implement after a Fable/Opus design pass, an explicit mock/spec, or a clearly established design-system pattern. Mechanical work that preserves the existing visual design does not require taste delegation.
+- If neither Fable nor Opus is available, pause instead of shipping taste-heavy UI unaided.
+- Verify meaningful UI changes in-browser and obtain a Fable (in-session) or Opus review before final handoff.
 
 ## Tooling & file discipline
 
@@ -105,7 +122,7 @@ bounded remaining todo with exact checks per item.
 ## Refactors & large changes
 
 - Break multi-file changes into small coherent phases, batches of ~3-5 files unless the work is clearly independent
-- Use parallel/subagents only when the client supports them and the work is truly independent
+- Parallel/subagents follow the fence-and-cap rule in Delivery invariants; sequential single-file work stays with one agent
 - If dead code/noise is materially increasing confusion in a large file, do a cleanup-only pass first, then make the real change
 
 ## Rename / API change safety
@@ -130,6 +147,8 @@ bounded remaining todo with exact checks per item.
 - Never expose secrets, tokens, credentials, or private keys
 - Never bypass safeguards with destructive shortcuts unless explicitly requested
 - Do not revert or overwrite user changes you did not make unless explicitly requested
+
+**Customer material never enters a repo.** Files a customer supplied, figures extracted from them, rate cards, audience data, email evidence, account/organization identifiers, and customer-named scripts, branches or PR text stay outside the working tree, or in an ignored path. Never commit, push, or paste them into a PR body or commit message; keep working notes outside the repo and reference them by local path. Parameterize one-off scripts (values via CLI/file arguments) instead of hardcoding a customer's numbers or identifiers. A private repo is not a safe container: it is shared, mirrored, and cloned. If such material is already committed, remove it in its own PR immediately, and say plainly that the blobs stay reachable in history until a coordinated rewrite or a provider-side purge.
 
 ## Git, VCS, SCM, pull requests, commits
 

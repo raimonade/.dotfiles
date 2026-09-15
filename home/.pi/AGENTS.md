@@ -96,4 +96,5 @@ Unique `agent/skills/` links, `ephemeral/`, and nested `.pi/` runtime directorie
 - MCP is provided by `npm:pi-mcp-adapter`; keep server config in `agent/mcp.json`.
 - `pi-skill-toggle` provides `/toggle-skills` for making installed skills invocable or manual-only.
 - `pi-ephemeral` provides `/ephemeral` for selecting project-local resources.
+- The `computer` MCP server uses CUA Driver; its canonical operating guidance lives in `home/.agents/skills/cua-driver/`.
 - Treat local provider/model overlays as private information: never expose them in version-controlled content.
