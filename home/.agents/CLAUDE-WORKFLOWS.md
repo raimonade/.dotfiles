@@ -1,58 +1,36 @@
 # Claude workflow details
 
-The disclosed branch of `~/.claude/CLAUDE.md`: model routing, Codex delegation, specialized subagents, TraceDecay escape hatches.
+The disclosed branch of `~/.claude/CLAUDE.md`: model routing, specialized subagents, TraceDecay escape hatches.
 
 ## Picking models for workflows and subagents
 
-Rankings are defaults, not limits. Higher = better. `cost` means effective cost/availability, not list price; `intelligence` means how hard a problem can be handed off unsupervised; `taste` covers UI/UX, code quality, API design, and copy.
+Claude models only — no Codex/GPT delegation (plugin, CLI, or `codex-rescue` agent). Every subagent gets an explicit `model`; never Fable as a subagent.
 
-| model | cost | intelligence | taste |
-| --- | ---: | ---: | ---: |
-| GPT-5.6 Sol | 9 | 10 | 6 |
-| opus-5 | 4 | 9 | 9 |
+| model | cost | intelligence | taste | use for |
+| --- | ---: | ---: | ---: | --- |
+| haiku | 10 | 5 | 4 | trivial high-volume lookups, extraction, summaries that are easy to check |
+| sonnet | 7 | 8 | 7 | default: implementation, migrations, tests, research, browser/UI verification |
+| opus | 4 | 9 | 9 | delegated judgement: independent review, architecture/debugging second opinion, design review |
+
+Higher = better; `cost` means effective cost/availability. Rankings are defaults, not limits.
 
 How to apply:
 
-- Opus 5 owns design direction, taste-heavy synthesis and final visual review by default. Exception: when the session model is Fable 5.1 (a tier above Opus) it does those in-session — no separate Opus pass. Subagents always get an explicit model: opus for judgement, sonnet for mechanical; never Haiku unless the user explicitly asks.
-- A cheaper model's output missing the bar → rerun or redo with a smarter model without asking. Judge output quality, not price; cost is a tie-breaker only. For anything that ships, intelligence > taste > cost.
-- Opus 5 is the orchestrator/synthesis model for hard judgment, at **high effort** — escalate to xhigh/max/extra only after a high-value task failed at high effort.
-- Bulk/mechanical execution belongs to **GPT-5.6 Sol via Codex**: clear-spec implementation, migrations, repetitive edits, test writing, data analysis, broad codebase spelunking, and other token-hungry work. Discovery-heavy implementation → let Codex own discovery through verification instead of making Opus read the same surface first.
-- Computer use, browser/UI verification, screenshots, and hands-on UX checks also belong to Codex first; report the findings back to Opus 5 for final judgment.
-- User-facing work (UI, copy, API design, product decisions) gets direction and final judgment from the session's top Claude (Fable 5.1, else opus-5); GPT-5.6 Sol via Codex executes once the direction is clear.
-- Reviews of plans/implementations: the session's top Claude (Fable in-session, else opus-5) for final judgment, optionally GPT-5.6 Sol/Codex as an independent extra reviewer.
+- The session model (Fable, else Opus) owns orchestration, design direction, taste-heavy synthesis, and final judgment/review. Opus subagents only when that judgement must run in parallel or isolated from the main loop.
+- Output missing the bar → redo on the next model up without asking. Judge quality, not price; cost is a tie-breaker. For anything that ships, intelligence > taste > cost.
+- Effort: **high** by default; escalate to xhigh/max only after a high-value task failed at high.
+- Discovery-heavy implementation → let the Sonnet subagent own discovery through verification instead of the main loop reading the same surface first.
+- Browser/UI verification → `browser-verify` agent (Sonnet); final judgment back in the main loop.
 
-## Cross-model implementation handoff
+## Implementation handoff
 
 `~/.agents/CONDUCT.md`'s trajectory-first policy governs — including when to keep a
 read-only plan and what the **trajectory bundle** contains. Claude-specific facts:
 
-- A read-only Opus plan followed by a fresh Codex implementation session is not the default cost optimization: it duplicates discovery and loses provider cache/context.
-- Claude → Codex plugin/CLI delegation does not transfer Claude's private context window. For a cohesive task, either keep Claude end-to-end or let Codex own discovery and implementation end-to-end.
-- Harness can switch models without losing the conversation → use the prewalk shape: Opus grounds the approach, creates a bounded todo with a validation step per item, establishes a repro/failing test when applicable, and lands the first small valid edit; the executor continues with that history, diff, and todo once the planning-only instruction is removed.
-- Cross-harness delegation that is still justified → hand off the trajectory bundle in the shared workspace, and tell the receiver to inspect the diff first, verify inherited claims, and reread only edit-critical spans.
-
-Codex fallback protocol:
-
-- Prefer the installed Codex Claude Code plugin over hand-rolled Bash wrappers.
-- First run `/codex:setup` if Codex availability/auth is uncertain.
-- For implementation, debugging, or substantial investigation, use `/codex:rescue <self-contained task>`.
-- For implementation-sized tasks, explicitly ask Codex to edit and verify; the plugin's rescue agent defaults to write-capable Codex runs unless the task is review/read-only.
-- For normal review, use `/codex:review --wait` or `/codex:review --background`.
-- For challenge/design review, use `/codex:adversarial-review --wait <focus>` or `/codex:adversarial-review --background <focus>`.
-- For long-running plugin jobs, use `/codex:status`, `/codex:result`, and `/codex:cancel` rather than re-running from scratch.
-- Raw CLI fallback only when the plugin is unavailable or too restrictive:
-  - Read-only investigation: `codex exec -s read-only --cd "$PWD" "<self-contained prompt>"`.
-  - Implementation: `codex exec -s workspace-write --cd "$PWD" "<self-contained prompt>"`.
-  - Review: `codex review --uncommitted "<review focus>"` or `codex review --base <branch> "<review focus>"`.
-- This machine's `~/.codex/config.toml` defaults to `model = "gpt-5.6-sol"`, so leave the model unset to use GPT-5.6 Sol. If a workflow overrides the model, explicitly select `gpt-5.6-sol`.
-- Fresh-context prompts to Codex must be self-contained, but never plan-only postcards: include the goal and constraints plus the concrete trajectory bundle above. For independent work, give ownership and acceptance criteria and let Codex discover the relevant code itself.
-- Require Codex to return: summary, files changed or inspected, checks run, failures/blockers, and any assumptions. Inspect its output before presenting it as final.
-
-Using GPT-5.6 Sol inside Claude workflows/subagents:
-
-- If a workflow/Agent `model` parameter only accepts Claude models, use the Codex plugin's `codex-rescue` subagent path rather than building a custom wrapper.
-- The wrapper/subagent should be thin: forward either an independently owned Codex task or the concrete trajectory bundle above, preserve Codex output, and avoid doing the bulk work itself.
-- Do not spend high-effort Opus 5 tokens on child-agent bulk execution. GPT-5.6 Sol should execute; Opus 5 should coordinate, critique, and synthesize.
+- A read-only main-loop plan followed by a fresh-context subagent is not the default cost optimization: it duplicates discovery and loses cache/context.
+- Subagents don't inherit the main loop's context (forks do). For a cohesive task, either keep it in the main loop or let one subagent own discovery and implementation end-to-end.
+- Delegation still justified → prompt must be self-contained, never a plan-only postcard: goal, constraints, the trajectory bundle, ownership and acceptance criteria. Tell the receiver to inspect the diff first, verify inherited claims, and reread only edit-critical spans.
+- Require subagents to return: summary, files changed or inspected, checks run, failures/blockers, assumptions. Inspect output before presenting it as final.
 
 ## Specialized Subagents
 

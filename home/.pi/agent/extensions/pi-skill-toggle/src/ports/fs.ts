@@ -7,6 +7,8 @@ export interface FileSystem {
   writeFileAtomic(path: string, content: string): Promise<void>;
   access(path: string, mode?: number): Promise<boolean>;
   readdir(path: string): Promise<Array<{ name: string; isDirectory: boolean; isFile: boolean; isSymbolicLink: boolean }>>;
+  /** Resolve a skill file's canonical path; unavailable files return undefined. */
+  realpath(path: string): Promise<string | undefined>;
   stat(path: string): Promise<{ isDirectory: boolean; isFile: boolean; mode: number }>;
 }
 
@@ -49,6 +51,15 @@ export class NodeFileSystem implements FileSystem {
       isFile: entry.isFile(),
       isSymbolicLink: entry.isSymbolicLink(),
     }));
+  }
+
+  /** Resolve a skill file's canonical path; unavailable files return undefined. */
+  async realpath(path: string): Promise<string | undefined> {
+    try {
+      return await fs.realpath(path);
+    } catch {
+      return undefined;
+    }
   }
 
   async stat(path: string): Promise<{ isDirectory: boolean; isFile: boolean; mode: number }> {

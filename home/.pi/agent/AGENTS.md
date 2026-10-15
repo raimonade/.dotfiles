@@ -73,3 +73,7 @@ Execution models are not the default taste models. For taste-heavy frontend work
 - The execution model may implement after an Opus design pass, explicit mock/screenshot/spec, or a clearly existing design-system pattern. It may freely do mechanical frontend work that preserves an existing visual design.
 - If Claude Opus is unavailable/unauthenticated, say so and pause instead of shipping taste-heavy UI unaided.
 - Verify user-facing UI with screenshot/browser review when possible; for anything visually meaningful, request/perform a Claude Opus review before final handoff.
+
+## Don't pin GPT model versions
+
+Never write a model id into `~/.codex/config.toml` (`model =`) or `~/.pi/agent/settings.json` (`defaultModel`): both tools default to their newest model (verified 2026-10-11: `gpt-6.1-sol`), and a pin goes stale on the next release. If the user names a model, pass it per invocation (`--model`).

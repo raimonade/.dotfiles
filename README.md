@@ -80,7 +80,7 @@ From a project directory, run `herdr` to launch or attach its persistent session
 
 ## Agent Workflows
 
-Shared workflow guidance is tracked once under `home/.agents/skills/`. Pi and Codex discover the canonical `~/.agents/skills/` link directly; Claude Code uses a thin compatibility overlay under `~/.claude/skills/`. Pi reusable orchestration lives in declarative `pi-subagents` chains under `home/.pi/agent/chains/`:
+Shared workflow guidance is tracked once under `home/.agents/skills/`. Pi and Codex discover the canonical `~/.agents/skills/` link directly; Claude Code uses a thin compatibility overlay under `~/.claude/skills/`; Cursor (including Grok) uses the same overlay under `~/.cursor/skills/`. `dot stow` quarantines overlay-managed copies that landed as real files so restow can recreate those thin links. Pi reusable orchestration lives in declarative `pi-subagents` chains under `home/.pi/agent/chains/`:
 
 ```text
 /run-chain research-plan -- <task>          # external research + local scout → grounded plan

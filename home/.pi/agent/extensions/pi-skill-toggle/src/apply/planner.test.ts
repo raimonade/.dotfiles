@@ -54,6 +54,10 @@ function skillRecord(filePath: string, mode: SkillRecord["mode"]): SkillRecord {
 class MemoryFileSystem implements FileSystem {
   constructor(private readonly files: Map<string, string>) {}
 
+  async realpath(path: string): Promise<string> {
+    return path;
+  }
+
   async readFile(path: string): Promise<string> {
     const value = this.files.get(path);
     if (value === undefined) throw new Error(`missing file: ${path}`);

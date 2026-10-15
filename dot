@@ -512,6 +512,35 @@ __install_packages() {
     fi
 }
 
+__clear_skill_overlay_collisions() {
+    local host overlay_dir live_dir skill name live stamp quarantine_root
+
+    stamp="$(date +%Y%m%d-%H%M%S)-$$"
+
+    for host in claude cursor; do
+        overlay_dir="${HOME_DIR}/.${host}/skills"
+        live_dir="${HOME}/.${host}/skills"
+
+        [[ -d "$overlay_dir" ]] || continue
+        [[ -L "$live_dir" ]] && continue
+        [[ -d "$live_dir" ]] || continue
+
+        while IFS= read -r -d '' skill; do
+            name="$(basename "$skill")"
+            live="${live_dir}/${name}"
+
+            if [[ -L "$live" || ! -e "$live" ]]; then
+                continue
+            fi
+
+            quarantine_root="${HOME}/.${host}/skills-conflicts-disabled/${stamp}"
+            mkdir -p "$quarantine_root"
+            mv "$live" "${quarantine_root}/${name}"
+            __print_warning "Moved colliding .${host}/skills/${name} to ${quarantine_root}/${name}"
+        done < <(find "$overlay_dir" -mindepth 1 -maxdepth 1 -print0)
+    done
+}
+
 __stow_dotfiles() {
 
     if ! __command_exists stow; then
@@ -519,6 +548,8 @@ __stow_dotfiles() {
         __print_info "Please install stow via Homebrew: brew install stow"
         return 1
     fi
+
+    __clear_skill_overlay_collisions
 
     __print_info "Stowing files from ${HOME_DIR} to ${HOME}..."
 

@@ -4,7 +4,8 @@
   "collapseChangelog": true,
   "showHardwareCursor": true,
   "editorPaddingX": 0,
-  "defaultProvider": "openai-codex",
+  "defaultProvider": "claude-bridge",
+  "defaultModel": "claude-opus-5-5",
   "defaultThinkingLevel": "medium",
   "packages": [
     {

@@ -11,11 +11,13 @@ macOS dev env via GNU Stow. Ghostty + Herdr + Fish + Zed + Git worktrees + pi. W
 .dotfiles/
 ├── dot                 # CLI: init/update/doctor/stow/package (bash)
 ├── home/.agents/       # Shared agent policy and canonical skills
-│   └── skills/         # Skills discovered by Pi, Claude, Codex, and other agents
+│   └── skills/         # Skills discovered by Pi, Claude, Codex, Cursor, and other agents
 ├── home/.claude/       # Stowed to ~/.claude/
 │   ├── agents/         # Subagents: oracle, librarian, reviewer, planner, security
 │   ├── commands/       # Harness-specific slash commands
 │   └── skills/         # Thin compatibility links to shared skills
+├── home/.cursor/       # Folded into existing ~/.cursor/ by Stow
+│   └── skills/         # Thin compatibility links so Cursor/Grok sees the shared catalog
 ├── home/.config/       # Stowed to ~/.config/
 │   ├── fish/           # Shell (AGENTS.md)
 │   ├── zed/            # Primary editor; includes blocking CLI adapter
@@ -49,6 +51,7 @@ macOS dev env via GNU Stow. Ghostty + Herdr + Fish + Zed + Git worktrees + pi. W
 | Starship prompt | `home/.config/starship.toml` |
 | Git config | `home/.config/git/config` |
 | Claude compatibility skill | `home/.claude/skills/<name>` |
+| Cursor compatibility skill | `home/.cursor/skills/<name>` |
 | Claude command | `home/.claude/commands/<name>.md` |
 | Claude agent | `home/.claude/agents/<name>.md` |
 | Claude settings | `home/.claude/settings.json` |
@@ -69,7 +72,7 @@ macOS dev env via GNU Stow. Ghostty + Herdr + Fish + Zed + Git worktrees + pi. W
 - Private helpers: prefix `__` (e.g., `__git.default_branch`)
 - VCS: Git worktrees for normal project flow
 - Pi extensions: TypeScript, npm workspaces under `home/.pi/`
-- Shared skills: canonical under `home/.agents/skills/`; Pi and Codex discover that tree directly, while Claude gets thin symlinks under `home/.claude/skills/`
+- Shared skills: canonical under `home/.agents/skills/`; Pi and Codex discover that tree directly; Claude and Cursor get thin symlinks under `home/.claude/skills/` and `home/.cursor/skills/`
 
 ## ANTI-PATTERNS
 
@@ -78,7 +81,7 @@ macOS dev env via GNU Stow. Ghostty + Herdr + Fish + Zed + Git worktrees + pi. W
 - Hardcode paths (use `$DOTFILES_DIR`, `$HOME`)
 - Nested git repos in stowed dirs (creates symlink issues)
 - node_modules in stowed dirs (Pi extensions exception — gitignored)
-- Copy shared skill contents into host-specific directories; Claude compatibility entries are symlinks only
+- Copy shared skill contents into host-specific directories; Claude and Cursor compatibility entries are symlinks only. `dot stow` quarantines colliding real copies under `~/.{claude,cursor}/skills-conflicts-disabled/` before restowing.
 - Track generated Pi runtime directories (`home/.pi/agent/skills`, `home/.pi/ephemeral`, nested `home/.pi/.pi`)
 
 ## COMMANDS

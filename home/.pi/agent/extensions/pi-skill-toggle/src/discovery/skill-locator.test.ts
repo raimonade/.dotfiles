@@ -1,6 +1,9 @@
 import { describe, it, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
-import type { FileSystem } from "../ports/fs.ts";
+import { mkdir, mkdtemp, rm, symlink, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { NodeFileSystem, type FileSystem } from "../ports/fs.ts";
 import { DefaultSkillLocator } from "./skill-locator.ts";
 
 const ORIGINAL_HOME = process.env.HOME;
@@ -38,6 +41,62 @@ describe("DefaultSkillLocator", () => {
     assert.equal(byPath.has("/home/tester/.agents/skills/ignored-global-root.md"), false);
     assert.equal(byPath.has("/repo/.agents/skills/ignored-project-legacy-root.md"), false);
   });
+
+  it("preserves project root markdown when global and project skill roots share a directory", async () => {
+    const home = await mkdtemp(join(tmpdir(), "pi-skill-toggle-markdown-"));
+    try {
+      process.env.HOME = home;
+      process.env.PI_CODING_AGENT_DIR = join(home, ".pi", "agent");
+      const cwd = join(home, "project");
+      const globalRoot = join(home, ".agents", "skills");
+      const projectRoot = join(cwd, ".pi", "skills");
+      await mkdir(join(globalRoot, "shared"), { recursive: true });
+      await writeFile(join(globalRoot, "shared", "SKILL.md"), "# Shared skill\n");
+      await writeFile(join(globalRoot, "root.md"), "# Project root markdown\n");
+      await mkdir(join(cwd, ".pi"), { recursive: true });
+      await symlink(globalRoot, projectRoot, "dir");
+
+      const files = await new DefaultSkillLocator(new NodeFileSystem()).findSkillFiles(cwd);
+
+      assert.deepEqual(files.map((file) => [file.filePath, file.source.kind]), [
+        [join(globalRoot, "shared", "SKILL.md"), "global"],
+        [join(projectRoot, "root.md"), "project"],
+      ]);
+    } finally {
+      await rm(home, { recursive: true, force: true });
+    }
+  });
+
+  it("deduplicates stowed skill roots without hiding distinct skills or following broken roots", async () => {
+    const home = await mkdtemp(join(tmpdir(), "pi-skill-toggle-stow-"));
+    try {
+      process.env.HOME = home;
+      process.env.PI_CODING_AGENT_DIR = join(home, ".pi", "agent");
+      const cwd = join(home, ".dotfiles", "home");
+      const canonicalRoot = join(cwd, ".agents", "skills");
+      const globalRoot = join(home, ".agents", "skills");
+      const projectRoot = join(cwd, ".pi", "skills");
+      for (const root of [canonicalRoot, projectRoot]) {
+        await mkdir(join(root, "shared"), { recursive: true });
+        await writeFile(join(root, "shared", "SKILL.md"), "# Shared skill\n");
+      }
+      await mkdir(join(home, ".agents"), { recursive: true });
+      await symlink(canonicalRoot, globalRoot, "dir");
+      await mkdir(process.env.PI_CODING_AGENT_DIR, { recursive: true });
+      await symlink(join(home, "missing-skills"), join(process.env.PI_CODING_AGENT_DIR, "skills"), "dir");
+
+      const fs = new NodeFileSystem();
+      assert.equal(await fs.realpath(join(home, "missing-skills")), undefined);
+      const files = await new DefaultSkillLocator(fs).findSkillFiles(cwd);
+
+      assert.deepEqual(files.map((file) => [file.filePath, file.source.kind]), [
+        [join(globalRoot, "shared", "SKILL.md"), "global"],
+        [join(projectRoot, "shared", "SKILL.md"), "project"],
+      ]);
+    } finally {
+      await rm(home, { recursive: true, force: true });
+    }
+  });
 });
 
 function restoreEnv(name: string, value: string | undefined): void {
@@ -54,6 +113,10 @@ class MemoryTreeFileSystem implements FileSystem {
 
   constructor(paths: string[]) {
     for (const path of paths) this.addFile(path);
+  }
+
+  async realpath(path: string): Promise<string> {
+    return path;
   }
 
   async readFile(path: string): Promise<string> {

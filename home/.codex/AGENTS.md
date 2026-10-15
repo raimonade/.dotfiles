@@ -10,6 +10,16 @@ latest/current/recent screenshots and prefer newest-looking results; rerun if
 results look stale. The two blocks below are always-on subsets of those, kept in
 sync via markers.
 
+## Deliver the actual request
+
+Completion means satisfying the user's requested outcome and the authoritative brief.
+
+- **Establish the requirements before producing the deliverable.** Read the referenced evidence and identify the requested outputs, commitments and acceptance criteria. For an email-chain review, inspect the relevant threads and attachments through the latest updates. State missing access or context; claim only the review coverage actually achieved.
+- **Keep each required output traceable to its source and a substantive check.** Maintain a compact requirement → source → deliverable → verification mapping in working context. Complete the core request before optional analysis, presentation or polish; a related output does not replace a requested one.
+- **Verify meaning as well as consistency.** Check what source rows, events and units represent, along with joins, duplicates, exclusions and assumptions. Matching totals across files can repeat the same underlying error.
+- **Earn completion claims.** Before saying “done”, “ready to send” or “exactly what they asked”, check the final saved deliverables against every requirement and their supporting evidence. Calculation checks, formatting, successful exports and green builds alone do not establish that the request was fulfilled. Name unmet requirements and unverified claims explicitly.
+- **Urgency reduces optional scope, never required correctness or verification.** Preserve the actual objective across follow-ups, delegation, interruptions and compaction.
+
 <!-- BEGIN engineering-decision-policy (canonical: ~/.agents/POLICY.md) -->
 ## Engineering decision policy
 
@@ -74,3 +84,7 @@ Execution models are not the default taste models. For taste-heavy frontend work
 - The execution model may implement after an Opus design pass, explicit mock/screenshot/spec, or a clearly existing design-system pattern. It may freely do mechanical frontend work that preserves an existing visual design.
 - If Claude Opus is unavailable or unauthenticated, say so and pause instead of shipping taste-heavy UI unaided.
 - Verify user-facing UI with screenshot/browser review when possible; for anything visually meaningful, request or perform an Opus review before final handoff.
+
+## Don't pin GPT model versions
+
+Never write a model id into `~/.codex/config.toml` (`model =`) or `~/.pi/agent/settings.json` (`defaultModel`): both tools default to their newest model (verified 2026-10-11: `gpt-6.1-sol`), and a pin goes stale on the next release. If the user names a model, pass it per invocation (`--model`).

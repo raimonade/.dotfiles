@@ -1,7 +1,7 @@
 ---
 name: browser-verify
 description: Drives Chrome (via the claude-in-chrome tools) to verify UI/behavior and returns a concise TEXT verdict. Use to keep screenshot payloads out of the expensive main-loop context. Invoke for any browser/UI verification, hands-on UX check, screenshot-based confirmation, or "does this actually work in the app" check.
-model: claude-sonnet-4-6
+model: sonnet
 allowedTools:
   - mcp__claude-in-chrome
   - ToolSearch
