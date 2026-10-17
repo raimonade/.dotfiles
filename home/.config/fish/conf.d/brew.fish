@@ -1,3 +1,6 @@
+# Homebrew paths only apply on macOS.
+test (uname) = Darwin; or return
+
 # Brew
 set --global --export HOMEBREW_PREFIX "/opt/homebrew";
 set --global --export HOMEBREW_CELLAR "/opt/homebrew/Cellar";

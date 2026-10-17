@@ -3,7 +3,7 @@
 **Generated:** 2026-06-22T00:00:00Z
 **Commit:** upstream-sync
 
-macOS dev env via GNU Stow. Ghostty + Herdr + Fish + Zed + Git worktrees + pi. Workflow follows dmmulroy upstream with Zed substituted for Neovim.
+macOS and Arch/CachyOS dev env via GNU Stow. Ghostty + Herdr + Fish + Zed + Git worktrees + pi. Workflow follows dmmulroy upstream with Zed substituted for Neovim.
 
 ## STRUCTURE
 
@@ -32,8 +32,10 @@ macOS dev env via GNU Stow. Ghostty + Herdr + Fish + Zed + Git worktrees + pi. W
 │   ├── agent-repos     # Agent repository helper
 │   └── task-loop       # Autonomous PRD impl loop
 ├── packages/
-│   ├── bundle          # Base Brewfile
-│   └── bundle.work     # Work additions (formulas only)
+│   ├── bundle          # Base Brewfile (macOS)
+│   ├── bundle.work     # Work additions (formulas only)
+│   ├── bundle.pacman   # Linux: official-repo packages
+│   └── bundle.aur      # Linux: AUR packages
 └── docs/
 ```
 
@@ -41,7 +43,7 @@ macOS dev env via GNU Stow. Ghostty + Herdr + Fish + Zed + Git worktrees + pi. W
 
 | Task | Location |
 |------|----------|
-| Add package | `dot package add <name>` or edit `packages/bundle` |
+| Add package | macOS: `dot package add <name>` or edit `packages/bundle`; Linux: edit `packages/bundle.pacman` / `bundle.aur` |
 | Shell alias/abbr | `home/.config/fish/conf.d/aliases.fish` |
 | Shell function | `home/.config/fish/functions/` |
 | Git alias | `home/.config/git/config` `[alias]` section |

@@ -1,0 +1,43 @@
+# Linux (Arch/CachyOS) equivalent of packages/bundle: official repo packages.
+# Installed by `dot init` via `sudo pacman -S --needed`. One package per line.
+#
+# Intentionally absent (handled elsewhere):
+#   herdr, plannotator-tui  -> user-space installers in `dot` (~/.local/bin)
+#   bun, vite-plus, pi      -> user-space installers in `dot`
+#   gnu-sed                 -> GNU sed is already the system sed on Linux
+#   mole, cleanshot, orbstack, raycast, scroll-reverser -> macOS only
+#   zed                     -> install Zed yourself (stable: `pacman -S zed`)
+ast-grep
+bitwarden
+btop
+cloc
+cloudflared
+cmake
+direnv
+discord
+doggo
+fd
+ffmpeg
+fish
+fisher
+fzf
+ghostty
+github-cli
+gnupg
+imagemagick
+jq
+just
+lua-language-server
+luacheck
+obs-studio
+python
+ripgrep
+shellcheck
+starship
+stow
+stylua
+tree
+tree-sitter-cli
+wget
+yaak
+zoxide

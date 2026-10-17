@@ -1,3 +1,9 @@
+# CachyOS ships a base fish config (prompt helpers, aliases, completions).
+# Layer the dotfiles on top of it when it is installed.
+if test -r /usr/share/cachyos-fish-config/cachyos-config.fish
+    source /usr/share/cachyos-fish-config/cachyos-config.fish
+end
+
 # Disable greeting
 set fish_greeting
 

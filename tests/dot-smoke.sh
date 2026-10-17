@@ -7,7 +7,8 @@ sandbox=$(mktemp -d "${TMPDIR:-/tmp}/dot-smoke.XXXXXX")
 sandbox=$(cd "$sandbox" && pwd -P)
 trap 'rm -rf "$sandbox"' EXIT
 
-mkdir -p "$sandbox/bin" "$sandbox/home" "$sandbox/repo/packages"
+mkdir -p "$sandbox/bin" "$sandbox/home" "$sandbox/repo/packages" "$sandbox/repo/home/.config/herdr"
+printf '%s\n' '# managed plugins' 'plannotator/herdr-annotate' > "$sandbox/repo/home/.config/herdr/plugins.txt"
 cp "$repo_root/dot" "$sandbox/repo/dot"
 printf 'brew "alpha"\n' > "$sandbox/repo/packages/bundle"
 printf 'brew "work-alpha"\n' > "$sandbox/repo/packages/bundle.work"
@@ -40,6 +41,12 @@ if [[ "${1:-}" == outdated ]]; then
 fi
 STUB
 
+cat > "$sandbox/bin/herdr" <<'STUB'
+#!/usr/bin/env bash
+printf 'herdr %s\n' "$*" >> "$DOT_SMOKE_LOG"
+[[ "${1:-} ${2:-}" != "status server" ]]
+STUB
+
 cat > "$sandbox/bin/stow" <<'STUB'
 #!/usr/bin/env bash
 printf 'stow %s\n' "$*" >> "$DOT_SMOKE_LOG"
@@ -61,6 +68,8 @@ STUB
 
 chmod +x "$sandbox/bin/"*
 export DOT_SMOKE_LOG="$log"
+# This test drives the Homebrew flow; Linux has its own test (dot-linux.test.sh).
+export DOT_OS=Darwin
 export HOME="$sandbox/home"
 export PATH="$sandbox/bin:$PATH"
 
@@ -77,7 +86,9 @@ brew update
 brew outdated
 brew upgrade --yes
 stow -R -v -d $sandbox/repo -t $sandbox/home --ignore=^\.config/fish/completions/(docker|kubectl|orbctl)\.fish$ home
-pi update --all
+herdr plugin install plannotator/herdr-annotate --yes
+herdr status server
+pi update --extensions
 EOF
 )
 [[ "$(cat "$log")" == "$expected_update" ]] || fail "unexpected update command order"
