@@ -280,6 +280,7 @@ TOOL_REGISTRY+=(
     "Vite+             ;; vp   ;; fn:__install_vite_plus    ;; true  ;; -         ;; true"
     "pi                ;; pi   ;; fn:__install_pi           ;; true  ;; -         ;; true"
     "Computer MCP      ;; cua-driver ;; fn:__install_cua_driver ;; true  ;; -         ;; true"
+    "treg              ;; treg ;; fn:__install_treg         ;; false ;; SKIP_TREG ;; true"
     "SSH key           ;; -    ;; fn:__generate_ssh_key     ;; false ;; SKIP_SSH  ;; false"
     "MonoLisa font     ;; -    ;; fn:__install_font         ;; false ;; SKIP_FONT ;; false"
     "Fish shell        ;; -    ;; fn:__setup_fish_shell     ;; false ;; -         ;; false"
@@ -517,6 +518,20 @@ __update_pi() {
         __print_success "pi and configured packages updated"
     else
         __print_error "Failed to update pi packages"
+        return 1
+    fi
+}
+
+__install_treg() {
+    if ! __command_exists uv; then
+        __print_warning "uv is not installed; skipping treg (install uv, then rerun dot init)"
+        return 0
+    fi
+    __print_info "Installing treg (tools-registry)..."
+    if uv tool install --upgrade --python 3.13 'tools-registry[proxy]'; then
+        __print_success "treg installed; run 'treg' once to sign in"
+    else
+        __print_error "Failed to install treg"
         return 1
     fi
 }
