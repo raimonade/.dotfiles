@@ -1,0 +1,48 @@
+#!/bin/zsh
+set -euo pipefail
+
+readonly helium_app="/Applications/Helium.app"
+readonly helium_binary="$helium_app/Contents/MacOS/Helium"
+readonly helium_profile="$HOME/Library/Application Support/net.imput.helium"
+readonly cdp_host="127.0.0.1"
+readonly cdp_port="${HELIUM_CDP_PORT:-9222}"
+readonly cdp_endpoint="http://$cdp_host:$cdp_port/json/version"
+
+if [[ ! "$cdp_port" =~ ^[0-9]+$ ]] || (( cdp_port < 1024 || cdp_port > 65535 )); then
+  print -u2 "HELIUM_CDP_PORT must be an integer from 1024 through 65535."
+  exit 2
+fi
+
+if [[ ! -x "$helium_binary" ]]; then
+  print -u2 "Helium is not installed at $helium_app."
+  exit 1
+fi
+
+if pgrep -f '^/Applications/Helium.app/Contents/MacOS/Helium' >/dev/null; then
+  if curl --fail --silent --show-error "$cdp_endpoint" >/dev/null; then
+    print "Helium agent mode is already ready on $cdp_host:$cdp_port."
+    exit 0
+  fi
+
+  print -u2 "Helium is already running without agent access."
+  print -u2 "Quit Helium with Command-Q, then run helium-agent-mode again."
+  exit 1
+fi
+
+open -na "$helium_app" --args \
+  "--remote-debugging-address=$cdp_host" \
+  "--remote-debugging-port=$cdp_port" \
+  "--user-data-dir=$helium_profile"
+
+for (( attempt = 1; attempt <= 50; attempt++ )); do
+  if curl --fail --silent --show-error "$cdp_endpoint" >/dev/null 2>&1; then
+    print "Helium agent mode is ready on $cdp_host:$cdp_port."
+    print "Use: agent-browser-helium tab new <url>"
+    exit 0
+  fi
+  sleep 0.2
+done
+
+print -u2 "Helium opened, but its DevTools endpoint did not become ready at $cdp_endpoint."
+print -u2 "Quit Helium before retrying."
+exit 1

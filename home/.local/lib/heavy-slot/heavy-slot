@@ -1,0 +1,167 @@
+#!/usr/bin/perl
+# Caps how many memory-heavy pnpm/vp jobs (typecheck, lint, test, build) run at once across every
+# worktree and agent on this machine. One TypeScript 7 program peaks at 2-5 GB, so a few agents
+# checking in parallel push a 24 GB box into swap and every job runs several times slower.
+#
+# `bin/pnpm` and `bin/vp` link here and sit first on PATH. A heavy invocation waits for one of
+# HEAVY_SLOTS flock'd slot files, runs the real tool as a child, and frees the slot when the child
+# exits; the kernel drops the lock if this process dies, so a slot cannot go stale. Everything else
+# passes straight through via exec. Children inherit HEAVY_SLOT_HELD, so the `vp` that
+# `pnpm check:affected` spawns does not queue behind its own parent.
+#
+#   heavy-slot status          who holds each slot
+#   heavy-slot run CMD...      run any command inside a slot (e.g. a direct `node scripts/...`)
+#
+# Env: HEAVY_SLOTS (default 2), HEAVY_SLOT_MIN_FREE_GB (default 6; a second concurrent job also
+# waits until this much memory is available), HEAVY_SLOT=off to bypass.
+use strict;
+use warnings;
+use Cwd qw(abs_path getcwd);
+use Fcntl qw(:flock O_RDWR O_CREAT);
+use File::Basename qw(basename);
+use File::Path qw(make_path);
+
+my $tool = basename($0);
+my $script = abs_path($0);
+my $slot_count = positive_number('HEAVY_SLOTS', 2);
+my $min_free_bytes = positive_number('HEAVY_SLOT_MIN_FREE_GB', 6) * 2**30;
+my $slot_dir = ($ENV{XDG_STATE_HOME} || "$ENV{HOME}/.local/state") . '/heavy-slot';
+
+my $HEAVY_TOKEN = qr/^(?:check|typecheck|test|lint|build|tsc|vitest|knip|playwright)(?::\S*)?$|^(?:repo|static|quality):/;
+my $LONG_RUNNING_TOKEN = qr/^(?:dev|watch|preview|serve|start)(?::\S*)?$|^--watch$/;
+
+sub positive_number {
+    my ($name, $default) = @_;
+    my $value = $ENV{$name} // return $default;
+    die "heavy-slot: $name must be a positive number, got '$value'\n" unless $value =~ /^\d+(?:\.\d+)?$/ && $value > 0;
+    return $value;
+}
+
+sub is_heavy {
+    return (grep { /$HEAVY_TOKEN/ } @_) && !(grep { /$LONG_RUNNING_TOKEN/ } @_);
+}
+
+sub real_tool {
+    for my $dir (split /:/, $ENV{PATH} // '') {
+        my $candidate = "$dir/$tool";
+        next if $dir eq '' || !-f $candidate || !-x _;
+        my $resolved = abs_path($candidate);
+        return $candidate unless defined $resolved && $resolved eq $script;
+    }
+    die "heavy-slot: no '$tool' on PATH besides the heavy-slot shim\n";
+}
+
+sub available_bytes {
+    if ($^O eq 'darwin') {
+        chomp(my $free_percent = `/usr/sbin/sysctl -n kern.memorystatus_level 2>/dev/null`);
+        chomp(my $total = `/usr/sbin/sysctl -n hw.memsize 2>/dev/null`);
+        return $free_percent =~ /^\d+$/ && $total =~ /^\d+$/ ? $total * $free_percent / 100 : undef;
+    }
+    open my $meminfo, '<', '/proc/meminfo' or return undef;
+    while (<$meminfo>) { return $1 * 1024 if /^MemAvailable:\s+(\d+) kB/ }
+    return undef;
+}
+
+sub slot_path { "$slot_dir/slot-$_[0]" }
+
+sub open_slot {
+    my ($index) = @_;
+    sysopen(my $handle, slot_path($index), O_RDWR | O_CREAT) or die "heavy-slot: open ${\ slot_path($index)}: $!\n";
+    return $handle;
+}
+
+sub holder_of {
+    open my $handle, '<', slot_path($_[0]) or return 'unknown';
+    my $line = <$handle> // 'unknown';
+    chomp $line;
+    return $line;
+}
+
+# Returns the held slot handle, or undef when every slot is busy or memory is too low to add a job.
+sub try_acquire {
+    my ($held, $busy) = (undef, 0);
+    for my $index (1 .. int($slot_count)) {
+        my $handle = open_slot($index);
+        if (!$held && flock($handle, LOCK_EX | LOCK_NB)) {
+            $held = $handle;
+        } elsif (!flock($handle, LOCK_SH | LOCK_NB)) {
+            $busy++;
+        }
+    }
+    return undef unless $held;
+    # The memory gate only ever delays a second concurrent job; a lone job always runs.
+    my $available = available_bytes();
+    return undef if $busy > 0 && defined $available && $available < $min_free_bytes;
+    return $held;
+}
+
+sub describe_wait {
+    my @holders = map { holder_of($_) } grep {
+        my $handle = open_slot($_);
+        !flock($handle, LOCK_SH | LOCK_NB);
+    } 1 .. int($slot_count);
+    my $available = available_bytes();
+    my $free = defined $available ? sprintf('%.1f GiB free', $available / 2**30) : 'free memory unknown';
+    return sprintf("heavy-slot: waiting for a heavy-job slot (%d/%d busy, %s; HEAVY_SLOT=off bypasses)\n%s",
+        scalar @holders, int($slot_count), $free, join('', map { "  held by $_\n" } @holders));
+}
+
+sub acquire {
+    make_path($slot_dir);
+    my $waited_since = time;
+    my $next_note = 0;
+    while (1) {
+        my $handle = try_acquire();
+        if ($handle) {
+            truncate($handle, 0);
+            syswrite($handle, sprintf("pid %d since %s in %s: %s\n", $$, scalar localtime, getcwd(), join(' ', $tool, @ARGV)));
+            printf STDERR "heavy-slot: got a slot after %ds\n", time - $waited_since if $next_note;
+            return $handle;
+        }
+        if (time >= $next_note) {
+            print STDERR describe_wait();
+            $next_note = time + 60;
+        }
+        sleep 2;
+    }
+}
+
+sub run_in_slot {
+    my ($command, @arguments) = @_;
+    my $slot = acquire();
+    $ENV{HEAVY_SLOT_HELD} = $$;
+    my $child = fork() // die "heavy-slot: fork: $!\n";
+    if ($child == 0) {
+        exec { $command } $tool, @arguments or die "heavy-slot: exec $command: $!\n";
+    }
+    $SIG{$_} = do { my $signal = $_; sub { kill $signal, $child } } for qw(INT TERM HUP QUIT);
+    while (waitpid($child, 0) == -1) { last unless $!{EINTR} }
+    my $status = $?;
+    close $slot;
+    exit($status & 127 ? 128 + ($status & 127) : $status >> 8);
+}
+
+if ($tool eq 'heavy-slot') {
+    my $command = shift @ARGV // '';
+    if ($command eq 'status') {
+        make_path($slot_dir);
+        for my $index (1 .. int($slot_count)) {
+            my $handle = open_slot($index);
+            printf "slot %d: %s\n", $index, flock($handle, LOCK_SH | LOCK_NB) ? 'free' : holder_of($index);
+        }
+        exit 0;
+    }
+    if ($command eq 'run' && @ARGV) {
+        $tool = shift @ARGV;
+        run_in_slot($tool, @ARGV);
+    }
+    die "usage: heavy-slot status | heavy-slot run CMD [ARGS...]\n";
+}
+
+my $real = real_tool();
+# A repo-owned slot (a project's own heavy-check slot script) already bounds this run: queueing
+# here too made a pre-push lint wait minutes behind other worktrees' full checks.
+if (($ENV{HEAVY_SLOT} // '') eq 'off' || $ENV{HEAVY_SLOT_HELD} || ($ENV{SPOTWISE_HEAVY_CHECK_SLOT_HELD} // '') eq '1' || !is_heavy(@ARGV)) {
+    exec { $real } $tool, @ARGV or die "heavy-slot: exec $real: $!\n";
+}
+run_in_slot($real, @ARGV);

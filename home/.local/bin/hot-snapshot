@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+set -u
+out="$HOME/Desktop/hot-snapshot-$(date +%Y%m%d-%H%M%S).txt"
+{
+  echo "# hot-snapshot $(date)"
+  echo
+  echo "## system"
+  sw_vers
+  echo "uptime: $(uptime)"
+  echo
+  echo "## top cpu processes"
+  ps -axo pid,ppid,user,%cpu,%mem,rss,state,etime,command | sort -k4 -nr | head -35
+  echo
+  echo "## top memory processes"
+  ps -axo pid,ppid,user,%cpu,%mem,rss,state,etime,command | sort -k6 -nr | head -35
+  echo
+  echo "## memory pressure"
+  memory_pressure 2>&1 | head -80
+  echo
+  echo "## vm_stat"
+  vm_stat
+  echo
+  echo "## power assertions"
+  pmset -g assertions 2>&1 | head -160
+  echo
+  echo "## thermal log (15s timeout)"
+  perl -e 'alarm 15; exec @ARGV' pmset -g thermlog 2>&1 | head -120
+} > "$out"
+echo "$out"

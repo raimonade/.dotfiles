@@ -541,6 +541,33 @@ __clear_skill_overlay_collisions() {
     done
 }
 
+# ~/.claude/CLAUDE.md and settings.json stay real files (TraceDecay and Claude Code
+# write to them), so they are seeded from the repo instead of stowed.
+readonly CLAUDE_SEEDED_FILES=(CLAUDE.md settings.json)
+
+# Prints the file with machine-local keys removed, for drift comparison.
+__claude_seed_view() {
+    if [[ "$1" == *.json ]]; then
+        jq -S 'del(.autoMode.environment, .extraKnownMarketplaces.tracedecay)' "$1"
+    else
+        cat "$1"
+    fi
+}
+
+__seed_claude_user_files() {
+    local name repo live
+    mkdir -p "${HOME}/.claude"
+    for name in "${CLAUDE_SEEDED_FILES[@]}"; do
+        repo="${HOME_DIR}/.claude/${name}"
+        live="${HOME}/.claude/${name}"
+        if [[ ! -e "$live" ]]; then
+            cp "$repo" "$live" && __print_success "Seeded ~/.claude/${name}"
+        elif ! cmp -s <(__claude_seed_view "$repo") <(__claude_seed_view "$live"); then
+            __print_warning "~/.claude/${name} differs from the repo; diff: diff ${repo} ${live}"
+        fi
+    done
+}
+
 __stow_dotfiles() {
 
     if ! __command_exists stow; then
@@ -557,6 +584,7 @@ __stow_dotfiles() {
         --ignore='^\.config/fish/completions/(docker|kubectl|orbctl)\.fish$' \
         home; then
         __print_success "Dotfiles stowed successfully"
+        __seed_claude_user_files
     else
         __print_error "Failed to stow dotfiles"
         return 1

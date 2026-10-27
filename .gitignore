@@ -37,8 +37,10 @@ home/.config/herdr/session-snapshots/
 home/.config/herdr/*.sock
 home/.config/herdr/*.sock.*
 
-# local state / runtime (not config)
-home/.local/
+# local state / runtime (not config); bin/ and lib/ hold tracked scripts
+home/.local/*
+!home/.local/bin/
+!home/.local/lib/
 home/.config/zed/prompts/
 
 # pi agent runtime/state (keep settings + customization resources tracked)

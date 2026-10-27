@@ -1,0 +1,50 @@
+#!/bin/zsh
+set -euo pipefail
+
+readonly cdp_host="127.0.0.1"
+readonly cdp_port="${HELIUM_CDP_PORT:-9222}"
+readonly cdp_endpoint="http://$cdp_host:$cdp_port/json/version"
+readonly agent_browser_version="0.32.3"
+
+if ! curl --fail --silent --show-error "$cdp_endpoint" >/dev/null; then
+  print -u2 "Helium agent mode is not running."
+  print -u2 "Quit normal Helium, then run: helium-agent-mode"
+  exit 1
+fi
+
+for argument in "$@"; do
+  case "$argument" in
+    --profile*|--state*|--restore*|--executable-path*|--auto-connect*|--cdp*|--session*)
+      print -u2 "Refusing browser launch/profile override in shared Helium: $argument"
+      exit 2
+      ;;
+  esac
+done
+
+case "${1:-}" in
+  close|install|upgrade|auth)
+    print -u2 "Refusing command that can close or reconfigure shared Helium: ${1:-}"
+    exit 2
+    ;;
+  cookies)
+    if [[ "${2:-}" == "clear" ]]; then
+      print -u2 "Refusing to clear cookies in shared Helium."
+      exit 2
+    fi
+    ;;
+  storage)
+    if [[ "${3:-}" == "clear" ]]; then
+      print -u2 "Refusing to clear storage in shared Helium."
+      exit 2
+    fi
+    ;;
+esac
+
+if [[ "${1:-}" == "open" && -n "${2:-}" ]]; then
+  shift
+  exec npx --yes "agent-browser@$agent_browser_version" \
+    --session helium-shared --cdp "$cdp_port" tab new "$@"
+fi
+
+exec npx --yes "agent-browser@$agent_browser_version" \
+  --session helium-shared --cdp "$cdp_port" "$@"

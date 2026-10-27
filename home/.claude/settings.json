@@ -1,17 +1,15 @@
 {
+  "env": {
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-5[1m]",
+    "CLAUDE_CODE_SUBAGENT_MODEL": "opus"
+  },
   "attribution": {
     "commit": "",
     "pr": ""
   },
+  "includeCoAuthoredBy": false,
   "permissions": {
     "allow": [
-      "Edit",
-      "Write",
-      "Read",
-      "Grep",
-      "Glob",
-      "WebFetch",
-      "WebSearch",
       "Bash(ast-grep:*)",
       "Bash(awk:*)",
       "Bash(basename:*)",
@@ -33,11 +31,11 @@
       "Bash(find:*)",
       "Bash(fnm:*)",
       "Bash(fzf:*)",
-      "Bash(gh:*)",
       "Bash(gh repo clone:*)",
+      "Bash(gh:*)",
       "Bash(git:*)",
-      "Bash(glab:*)",
       "Bash(glab repo clone:*)",
+      "Bash(glab:*)",
       "Bash(go:*)",
       "Bash(grep:*)",
       "Bash(gsed:*)",
@@ -89,7 +87,15 @@
       "Bash(yarn:*)",
       "Bash(z:*)",
       "Bash(zip:*)",
-      "Bash(zoxide:*)"
+      "Bash(zoxide:*)",
+      "Edit",
+      "Glob",
+      "Grep",
+      "Read",
+      "WebFetch",
+      "WebSearch",
+      "Write",
+      "mcp__plugin_tracedecay_graph__*"
     ],
     "deny": [
       "Read(./.env)",
@@ -98,55 +104,56 @@
       "Read(secrets/*)"
     ],
     "ask": [
-      "Bash(git push:*)",
-      "Bash(gh * approve:*)",
-      "Bash(gh * close:*)",
-      "Bash(gh * comment:*)",
-      "Bash(gh * create:*)",
-      "Bash(gh * delete:*)",
-      "Bash(gh * edit:*)",
-      "Bash(gh * merge:*)",
-      "Bash(gh * reopen:*)",
-      "Bash(gh * review:*)",
-      "Bash(glab * approve:*)",
-      "Bash(glab * close:*)",
-      "Bash(glab * comment:*)",
-      "Bash(glab * create:*)",
-      "Bash(glab * delete:*)",
-      "Bash(glab * edit:*)",
-      "Bash(glab * merge:*)",
-      "Bash(glab * reopen:*)",
-      "Bash(glab * review:*)",
+      "Bash(gh * approve*)",
+      "Bash(gh * close*)",
+      "Bash(gh * comment*)",
+      "Bash(gh * delete*)",
+      "Bash(gh * edit*)",
+      "Bash(gh * merge*)",
+      "Bash(gh * reopen*)",
+      "Bash(gh * review*)",
+      "Bash(glab * approve*)",
+      "Bash(glab * close*)",
+      "Bash(glab * comment*)",
+      "Bash(glab * create*)",
+      "Bash(glab * delete*)",
+      "Bash(glab * edit*)",
+      "Bash(glab * merge*)",
+      "Bash(glab * reopen*)",
+      "Bash(glab * review*)",
       "Bash(xargs:*)"
-    ]
+    ],
+    "defaultMode": "auto"
   },
-  "env": {
-    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-5[1m]"
-  },
-  "model": "claude-opus-5[1m]",
+  "model": "claude-opus-5-5",
   "enabledMcpjsonServers": [
     "context7",
     "grep-app",
-    "excalidraw",
-    "Sanity"
+    "excalidraw"
   ],
+  "skillOverrides": {
+    "codiff": "off",
+    "plannotator-setup-goal": "off",
+    "prompt-laboratory": "off",
+    "tdd": "off"
+  },
   "hooks": {
-    "PreToolUse": [
+    "Notification": [
       {
-        "matcher": "tool == \"Bash\" && (tool_input.command matches \"(npm|pnpm|yarn|bun|cargo|pytest|vitest)\")",
+        "matcher": "*",
         "hooks": [
           {
             "type": "command",
-            "command": "if [ \"$HERDR_ENV\" != \"1\" ]; then echo '[Hook] Consider using Herdr for persistent long-running commands' >&2; fi"
+            "command": "afplay /System/Library/Sounds/Ping.aiff 2>/dev/null &"
           }
         ]
       },
       {
-        "matcher": "tool == \"Write\" && tool_input.file_path matches \"\\.md$\" && !(tool_input.file_path matches \"(README|CLAUDE)\\.md$\")",
+        "matcher": "",
         "hooks": [
           {
             "type": "command",
-            "command": "echo '[Hook] Warning: Creating .md file. Are you sure this is necessary?' >&2"
+            "command": "osascript -e 'display notification \"Claude Code needs your attention\" with title \"Claude Code\"'"
           }
         ]
       }
@@ -169,6 +176,37 @@
             "command": "if [ -f \"{{tool_input.file_path}}\" ] && grep -q 'console\\.log' \"{{tool_input.file_path}}\" 2>/dev/null; then echo '[Hook] Warning: File contains console.log statements' >&2; fi"
           }
         ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ ! -f \"$HOME/.claude/skills/impeccable/scripts/impeccable\" ] || \"$HOME/.claude/skills/impeccable/scripts/impeccable\" hook",
+            "timeout": 5,
+            "statusMessage": "Checking UI changes"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "tool == \"Bash\" && (tool_input.command matches \"(npm|pnpm|yarn|bun|cargo|pytest|vitest)\")",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if [ \"$HERDR_ENV\" != \"1\" ]; then echo '[Hook] Consider using Herdr for persistent long-running commands' >&2; fi"
+          }
+        ]
+      },
+      {
+        "matcher": "tool == \"Write\" && tool_input.file_path matches \"\\.md$\" && !(tool_input.file_path matches \"(README|CLAUDE)\\.md$\")",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[Hook] Warning: Creating .md file. Are you sure this is necessary?' >&2"
+          }
+        ]
       }
     ],
     "Stop": [
@@ -180,24 +218,26 @@
             "command": "afplay /System/Library/Sounds/Glass.aiff 2>/dev/null &"
           }
         ]
-      }
-    ],
-    "Notification": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "afplay /System/Library/Sounds/Ping.aiff 2>/dev/null &"
-          }
-        ]
       },
       {
-        "matcher": "",
         "hooks": [
           {
             "type": "command",
-            "command": "osascript -e 'display notification \"Claude Code needs your attention\" with title \"Claude Code\"'"
+            "command": "[ ! -f \"$HOME/.claude/skills/impeccable/scripts/impeccable\" ] || \"$HOME/.claude/skills/impeccable/scripts/impeccable\" hook",
+            "timeout": 30,
+            "statusMessage": "Design deep pass"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ ! -f \"$HOME/.claude/skills/impeccable/scripts/impeccable\" ] || \"$HOME/.claude/skills/impeccable/scripts/impeccable\" hook",
+            "timeout": 5,
+            "statusMessage": "Preparing build session"
           }
         ]
       }
@@ -208,9 +248,9 @@
     "command": "input=$(cat); user=$(whoami); dir=$(basename \"$(echo \"$input\" | jq -r '.workspace.current_dir')\"); branch=$(cd \"$(echo \"$input\" | jq -r '.workspace.current_dir')\" 2>/dev/null && git -c core.useBuiltinFSMonitor=false rev-parse --abbrev-ref HEAD 2>/dev/null || echo ''); model=$(echo \"$input\" | jq -r '.model.display_name'); remaining=$(echo \"$input\" | jq -r '.context_window.remaining_percentage // empty'); status=\"$user in $dir\"; [ -n \"$branch\" ] && status=\"$status on $branch\"; status=\"$status | $model\"; [ -n \"$remaining\" ] && status=\"$status | context: ${remaining}% remaining\"; echo \"$status\""
   },
   "enabledPlugins": {
-    "plannotator@plannotator": true,
-    "codex@openai-codex": true,
-    "posthog@claude-plugins-official": false
+    "plannotator@plannotator": false,
+    "posthog@claude-plugins-official": false,
+    "tracedecay@tracedecay": true
   },
   "extraKnownMarketplaces": {
     "plannotator": {
@@ -219,10 +259,10 @@
         "repo": "backnotprop/plannotator"
       }
     },
-    "openai-codex": {
+    "tracedecay": {
       "source": {
-        "source": "github",
-        "repo": "openai/codex-plugin-cc"
+        "source": "directory",
+        "path": "/Users/rkorzenevskis/.claude/plugins/marketplaces/tracedecay"
       }
     }
   },
@@ -230,5 +270,20 @@
   "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
   "theme": "dark",
-  "skipAutoPermissionPrompt": true
+  "agentPushNotifEnabled": true,
+  "skipAutoPermissionPrompt": true,
+  "autoMode": {
+    "allow": [
+      "$defaults",
+      "Bash(vp run dev:*)",
+      "Bash(vp install)",
+      "Bash(tracedecay tool:*)"
+    ],
+    "soft_deny": [
+      "$defaults",
+      "Bash(az webapp delete:*)",
+      "Bash(tofu apply:*)"
+    ]
+  },
+  "description": "Impeccable design detector: immediate-tier checks after Edit/Write on UI files, full-rule deep pass on Stop."
 }
