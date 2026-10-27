@@ -58,7 +58,7 @@ next target. Do not use `t3_thread_send`, `create_threads`, or
 
 If T3 tools are not listed, try one direct capability call. Outside T3, run
 each round in the foreground with
-`claude -p --model 'claude-opus-5[1m]' --permission-mode plan --output-format text "<brief>"`,
+`claude -p --model 'claude-opus-5-5[1m]' --permission-mode plan --output-format text "<brief>"`,
 or a harness subagent pinned to that model. If no route runs Opus, report the
 blocker. Do not substitute a model.
 

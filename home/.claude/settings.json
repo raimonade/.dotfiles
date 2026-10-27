@@ -1,6 +1,6 @@
 {
   "env": {
-    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-5[1m]",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-5-5[1m]",
     "CLAUDE_CODE_SUBAGENT_MODEL": "opus"
   },
   "attribution": {
@@ -153,24 +153,6 @@
       }
     ],
     "PostToolUse": [
-      {
-        "matcher": "tool == \"Edit\" && tool_input.file_path matches \"\\.(ts|tsx|js|jsx)$\"",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "if command -v prettier >/dev/null 2>&1 && [ -f \"$PWD/$(echo '{{tool_input.file_path}}' | sed 's|^./||')\" ]; then prettier --write \"$PWD/$(echo '{{tool_input.file_path}}' | sed 's|^./||')\" 2>/dev/null || true; fi"
-          }
-        ]
-      },
-      {
-        "matcher": "tool == \"Edit\" || tool == \"Write\"",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "if [ -f \"{{tool_input.file_path}}\" ] && grep -q 'console\\.log' \"{{tool_input.file_path}}\" 2>/dev/null; then echo '[Hook] Warning: File contains console.log statements' >&2; fi"
-          }
-        ]
-      },
       {
         "matcher": "Edit|Write",
         "hooks": [

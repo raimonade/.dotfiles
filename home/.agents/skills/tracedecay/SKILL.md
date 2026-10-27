@@ -10,7 +10,8 @@ Which tool answers which question lives in the upstream skills: start with
 `tracing-functions`, `assessing-impact`, `editing-safely`, `reviewing-changes`,
 `fixing-build-and-type-errors`, `project-memory`, `managing-session-context`).
 They ship with the Claude plugin at `~/.claude/plugins/marketplaces/tracedecay/skills`,
-which Pi also loads via `settings.json` `skills`, and `tracedecay update` refreshes them.
+and `tracedecay update` refreshes them. Pi does not load them (they cost context
+and saw no use); route with this skill there.
 
 ## Availability
 

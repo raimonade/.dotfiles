@@ -21,9 +21,7 @@
   "extensions": [
     "-builtin:mcp"
   ],
-  "skills": [
-    "~/.claude/plugins/marketplaces/tracedecay/skills"
-  ],
+  "skills": [],
   "enableSkillCommands": true,
   "subagents": {
     "agentOverrides": {

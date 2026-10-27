@@ -1,14 +1,10 @@
 # Global agent conduct (Pi)
 
-Personal defaults for every project. Local repo `AGENTS.md` always wins. (Pi
-workspace structure lives in `~/.pi/AGENTS.md`.) Canonical cross-agent
-instructions — read before working: `~/.agents/POLICY.md` (what / how much to
-build), `~/.agents/CONDUCT.md` (how to work), the installed `coding-standards`
-skill (before non-trivial TypeScript work), `~/.agents/EXECUTOR.md`
-(reaching integrations — Mobbin, Linear, Axiom, … — via the `executor` CLI).
-Mobbin default: when using Mobbin via Executor/MCP, ask for latest/current/recent
-screenshots and prefer newest-looking results; rerun if results look stale. The
-two blocks below are always-on subsets of those, kept in sync via markers.
+Personal defaults; a local repo `AGENTS.md` always wins. Pi workspace layout: `~/.pi/AGENTS.md`.
+Read on demand: `~/.agents/POLICY.md` (what / how much to build), `~/.agents/CONDUCT.md`
+(how to work), `~/.agents/EXECUTOR.md` (third-party integrations via `executor`), and the
+`coding-standards` skill before non-trivial TypeScript. The two marked blocks below are their
+always-on subsets, hand-synced with `~/.claude/CLAUDE.md`.
 
 <!-- BEGIN engineering-decision-policy (canonical: ~/.agents/POLICY.md) -->
 ## Engineering decision policy
@@ -47,53 +43,24 @@ Always-on subset of `~/.agents/CONDUCT.md` (read it for the full set: identity, 
 
 ## Skill use discipline
 
-Skills are active project memory, not optional decoration. At the start of non-trivial work, scan available skill names/descriptions and load (`read` the `SKILL.md`) any model-invoked skill whose description materially overlaps the task before planning or editing. Re-check skills when the task changes shape.
+At the start of non-trivial work, and whenever the task changes shape, read the `SKILL.md` of every model-invoked skill whose description overlaps it, before planning or editing. Run heavy user-invoked workflows and broad scans only when asked. A relevant skill missing from this harness → say so in one line and follow local repo rules.
 
-Before handing off a behavior change (bug fix, feature, migration) as done or PR-ready, load the `meaningful-contribution` skill and satisfy its proof gate; its proof scales with risk, and the repo's own gates replace its generic checks. Behavior-preserving refactors, type-only, config and docs edits need only the repo's targeted check. A test you watched fail before the fix is the counterfactual; don't break the fix again to re-prove it.
+Before handing off a behavior change (bug fix, feature, migration) as done or PR-ready, satisfy the `meaningful-contribution` proof gate; its proof scales with risk and the repo's own gates replace its generic checks. Refactors, type-only, config and docs edits need only the repo's targeted check. A test you watched fail before the fix is the counterfactual.
 
-Use skills proportionately: load lightweight/reference skills eagerly; follow their reading order and reference links; do not surprise-run heavy user-invoked workflows or broad scans unless asked. If a relevant skill exists but is unavailable in the current harness, say so briefly and follow local repo rules. Local repo instructions and inspected code still win over skills.
+## TraceDecay
 
-## TraceDecay routing
+For open-ended navigation, call/impact analysis, cross-project context, or past-session recall, load the `tracedecay` skill before broad grep/file reading. It is available when `tracedecay daemon status` exits 0; otherwise use normal tools and do not start, restart, or reinstall it unasked.
 
-For open-ended code navigation, call/impact analysis, cross-project context, or past-session recovery, load the `tracedecay` skill before broad grep/file reading. Stock install: binary `~/.local/bin/tracedecay`, LaunchAgent `com.tracedecay.daemon`, data `~/.tracedecay`. It is available when `tracedecay daemon status` exits 0; otherwise use normal tools and do not start, restart, or reinstall it unasked.
+## Models and design
 
-## Frontend/design model routing
+Claude models only: Opus, Sonnet, Haiku. Never Fable (too expensive) and never GPT/OpenAI/Codex by any route, for the session, subagents, or delegation.
 
-For taste-heavy frontend work, use Claude Code CLI with Opus for design direction, visual implementation delegation when appropriate, and final visual review. Never use Fable — not as the session model and never as a subagent/delegate model. Do not downgrade design direction or review to Sonnet.
-
-- If the task includes user-facing UI/UX/design work — new components/pages, visual polish, layout, typography, color, motion, UX copy, empty/error states, responsive behavior — get design direction from Opus, never Sonnet/Haiku.
-- First load applicable design context/skills (`impeccable`, local `PRODUCT.md`/`DESIGN.md`, design-system docs).
-- Design skill routing: `impeccable` builds, redesigns, and sets direction; the `better-*` skills are the domain rulebooks it applies; UI reviews go to `better-interface` (whole repo) or `interface-review` (a diff); motion goes to `animate` (build), `review-animations` (review), or `improve-animations` (codebase audit).
-- Use Claude Opus as the taste/design model. Give it a self-contained prompt or brief and implement only after its direction is concrete.
-- Run `claude -p` directly and synchronously in the foreground. Herdr is not required; use Herdr only when the user explicitly requests an interactive Herdr session. An unset `HERDR_ENV` says nothing about Claude availability. Treat Opus as unavailable only when the foreground command reports a missing binary, authentication failure, or model-access failure.
-- Pin `--model 'claude-opus-5[1m]'`; never pass the floating `opus` alias because it may resolve to Opus 4.8.
-  - Read-only design direction/review: `claude -p --model 'claude-opus-5[1m]' --permission-mode plan --output-format text "<self-contained design prompt>"`.
-  - Visual implementation when delegation is appropriate: `claude -p --model 'claude-opus-5[1m]' --permission-mode acceptEdits --output-format text "<self-contained implementation prompt>"`, then inspect the diff locally.
-- Delegate prompts must be self-contained: goal, target files/routes, user constraints, design context locations, repo instructions to read (`AGENTS.md` + nearest scoped `AGENTS.md`), exact deliverable, verification command, and required report shape.
-- Ask the design delegate for concrete visual direction, hierarchy/layout, component/API guidance, accessibility constraints, implementation notes, and an anti-slop check. If it edits, require changed files, checks run, failures/blockers, and assumptions.
-- Sonnet (or the session model) may implement after an Opus design pass, explicit mock/screenshot/spec, or a clearly existing design-system pattern. It may freely do mechanical frontend work that preserves an existing visual design.
-- If Claude Opus is unavailable/unauthenticated, say so and pause instead of shipping taste-heavy UI unaided.
-- Verify user-facing UI with screenshot/browser review when possible; for anything visually meaningful, request/perform a Claude Opus review before final handoff.
+Taste-heavy work (UI, UX, copy, visuals) takes design direction and final review from Opus. When Opus is the session model, do it in-session; otherwise run `claude -p --model 'claude-opus-5-5[1m]' --permission-mode plan "<self-contained brief>"` in the foreground, and pause if Opus is unavailable. Sonnet may implement once direction, a mock, or an established design-system pattern exists. Load `impeccable` and any `PRODUCT.md`/`DESIGN.md` first. Routing: `impeccable` builds and sets direction; the `better-*` skills are its rulebooks; UI review is `better-interface` (whole repo) or `interface-review` (a diff); motion is `animate`, `review-animations`, or `improve-animations`.
 
 ## Long-running commands
 
-Never block one tool call on a command that can run more than ~5 minutes (release cuts, CI/E2E
-waits, deploys). Start it detached (`nohup … > /tmp/<task>.log 2>&1 &`), then poll the log or
-`gh run view <id>` in short calls, reporting status each time. Never pipe `/dev/null` into a script's
-confirmation prompt unless you also pass its explicit yes flag with authorization, and say up front if
-the run will stop at a prompt. If a call is aborted, immediately report what did and did not happen
-(remote side effects included) — never end a turn with no status.
-
-## Claude models only
-
-Use only Claude models (Opus, Sonnet, Haiku; never Fable) for the session model, subagents, and any delegation. No GPT/OpenAI/Codex models by any route — Codex CLI/plugin, `openai-codex` provider, Cursor, or otherwise.
+Never block a tool call on anything that can exceed ~5 minutes (release cuts, CI/E2E waits, deploys): start it detached (`nohup … > /tmp/<task>.log 2>&1 &`) and poll in short calls, reporting status each time. Never feed `/dev/null` to a confirmation prompt without the script's explicit yes flag and authorization. If a call is aborted, report what did and did not happen, remote side effects included.
 
 ## Writes to production systems
 
-Bulk writes to a live system (CMS, DB, API, queue) go **one at a time**, never `Promise.all`/parallel
-fan-out, unless the system documents a concurrency limit you stay under. Each write can fire hooks
-you can't see (cache purges, extra queries, image processing). Run a single write first, time it,
-check the service is still healthy, then continue in small sequential batches with a health check
-between them. On the first timeout, stop writing and check service health before anything else.
-(2026-10-25: 36 parallel Payload media alt-text updates exhausted spotwise.ai's DB pool and hung
-every `/api` route, including images, until the container app was restarted.)
+Bulk writes to a live system (CMS, DB, API, queue) go one at a time, never parallel fan-out, unless the system documents a concurrency limit you stay under: each write can fire hidden hooks. Time a single write, check health, then continue in small sequential batches; on the first timeout, stop and check service health. (2026-10-25: 36 parallel Payload media updates exhausted the spotwise.ai DB pool and hung every `/api` route until a restart.)

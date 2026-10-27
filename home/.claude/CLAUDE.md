@@ -1,27 +1,19 @@
 # Global agent instructions (Claude)
 
-Local repo `AGENTS.md` / `CLAUDE.md` always wins over this file. Reach the
-canonical cross-agent instructions by branch:
-
-- `~/.agents/POLICY.md` — full engineering decision policy (always-on subset below)
-- `~/.agents/CONDUCT.md` — full working conduct: identity, dev style, error-message design, file/refactor/rename discipline, autonomy, plans (always-on subset below)
-- `coding-standards` skill — non-trivial TypeScript
-- `~/.agents/EXECUTOR.md` — Mobbin, Linear, Plane, Axiom, PostHog, Vercel and every other third-party integration, via the executor CLI/MCP
-- `~/.agents/CLAUDE-WORKFLOWS.md` — model/subagent/delegation choices; Oracle/Librarian reviews; tracedecay escape hatches
-
-The two marked blocks below are always-on subsets, hand-synced across
-`~/.agents/` and `~/.pi/agent/AGENTS.md` — edit the source
-and every copy together. Everything after them is Claude-only override.
+A local repo `AGENTS.md` / `CLAUDE.md` always wins. Read on demand: `~/.agents/POLICY.md` (what /
+how much to build), `~/.agents/CONDUCT.md` (how to work), `~/.agents/EXECUTOR.md` (Mobbin, Linear,
+Axiom, PostHog, Vercel and every other integration, via `executor`), `~/.agents/CLAUDE-WORKFLOWS.md`
+(model and delegation choices, Oracle/Librarian reviews), and the `coding-standards` skill before
+non-trivial TypeScript. The two marked blocks below are their always-on subsets, hand-synced with
+`~/.pi/agent/AGENTS.md`; everything else here is Claude-only.
 
 ## Deliver the actual request
 
-Completion means satisfying the user's requested outcome and the authoritative brief.
-
-- **Establish the requirements before producing the deliverable.** Read the referenced evidence and identify the requested outputs, commitments and acceptance criteria. For an email-chain review, inspect the relevant threads and attachments through the latest updates. State missing access or context; claim only the review coverage actually achieved.
-- **Keep each required output traceable to its source and a substantive check.** Maintain a compact requirement → source → deliverable → verification mapping in working context. Complete the core request before optional analysis, presentation or polish; a related output does not replace a requested one.
-- **Verify meaning as well as consistency.** Check what source rows, events and units represent, along with joins, duplicates, exclusions and assumptions. Matching totals across files can repeat the same underlying error.
-- **Earn completion claims.** Before saying “done”, “ready to send” or “exactly what they asked”, check the final saved deliverables against every requirement and their supporting evidence. Calculation checks, formatting, successful exports and green builds alone do not establish that the request was fulfilled. Name unmet requirements and unverified claims explicitly.
-- **Urgency reduces optional scope, never required correctness or verification.** Preserve the actual objective across follow-ups, delegation, interruptions and compaction.
+- Before producing a deliverable, read the referenced evidence and name the requested outputs and acceptance criteria. State missing access; claim only the coverage you achieved.
+- Keep each required output traceable: requirement → source → deliverable → check. Finish the core request before optional analysis or polish; a related output does not replace a requested one.
+- Verify meaning, not just consistency: what rows, events and units represent; joins, duplicates, exclusions. Matching totals can repeat one underlying error.
+- Say "done" or "ready to send" only after checking the saved deliverable against every requirement; green builds, exports and formatting are not that check. Name what is unmet or unverified.
+- Urgency cuts optional scope, never required correctness or verification.
 
 <!-- BEGIN engineering-decision-policy (canonical: ~/.agents/POLICY.md) -->
 ## Engineering decision policy
@@ -57,48 +49,26 @@ Always-on subset of `~/.agents/CONDUCT.md` (read it for the full set: identity, 
 - **VCS:** use Git. Commit locally as needed (incl. WIP to protect work); never push or create/update PRs unless explicitly asked. Never add AI attribution to commits or PRs. Do not mention copied/ported/adapted provenance or inspiration in commits or PRs; preserve legally required license/NOTICE/source attribution.
 <!-- END agent-conduct-essentials -->
 
-## Skill use discipline
+## Skills
 
-Skills are active project memory, not optional decoration. At the start of non-trivial work — and again whenever the task changes shape — scan skill names/descriptions and `read` the `SKILL.md` of every model-invoked skill materially overlapping the task, before planning or editing.
+At the start of non-trivial work, and whenever the task changes shape, read the `SKILL.md` of every model-invoked skill whose description overlaps it, before planning or editing. Run heavy user-invoked workflows and broad scans only when asked. A skill that misfires, or fails to fire for a task it owns, is a bug in its description: fix the frontmatter.
 
-Before handing off a behavior change (bug fix, feature, migration) as done or PR-ready, load the `meaningful-contribution` skill and satisfy its proof gate; its proof scales with risk, and the repo's own gates replace its generic checks. Behavior-preserving refactors, type-only, config and docs edits need only the repo's targeted check. A test you watched fail before the fix is the counterfactual; don't break the fix again to re-prove it.
+Before handing off a behavior change (bug fix, feature, migration) as done or PR-ready, satisfy the `meaningful-contribution` proof gate; its proof scales with risk and the repo's own gates replace its generic checks. Refactors, type-only, config and docs edits need only the repo's targeted check. A test you watched fail before the fix is the counterfactual.
 
-Load lightweight/reference skills eagerly and follow their reading order and reference links; run heavy user-invoked workflows and broad scans only when asked. A relevant skill missing from this harness → say so in one line and follow local repo rules, which win over skills anyway, as does inspected code.
+## Models, subagents, design
 
-A skill description that misfires, or fails to fire for a task it clearly owns, is a bug: fix the frontmatter description — model-invoked descriptions are permanent context load.
+Claude models only; never Fable (too expensive), never Codex/GPT. Every subagent gets an explicit `model` (forks excepted), since an omitted one inherits the session model: `sonnet` by default (implementation, tests, research, browser checks, bulk work), `opus` for delegated judgement that must run in parallel or isolated (independent review, second opinions, design review), `haiku` for trivial, easily checked lookups. Output below the bar → redo on the next model up without asking.
 
-## Claude-only design routing
+Taste-heavy work (UI, UX, copy, visuals) takes direction and final review in-session from the Opus main loop; a Sonnet subagent may execute once direction is clear. Session model is not Opus → pause. Routing: `impeccable` builds and sets direction; the `better-*` skills are its rulebooks; UI review is `better-interface` (whole repo) or `interface-review` (a diff); motion is `animate`, `review-animations`, or `improve-animations`.
 
-Taste-heavy work — UI, UX, brand, marketing, visuals — gets design direction and final review in-session from the main-loop model; a Sonnet subagent may execute once that direction is clear. Session model is not Opus → pause rather than ship taste-heavy work unaided.
-- Design skill routing: `impeccable` builds, redesigns, and sets direction; the `better-*` skills are the domain rulebooks it applies; UI reviews go to `better-interface` (whole repo) or `interface-review` (a diff); motion goes to `animate` (build), `review-animations` (review), or `improve-animations` (codebase audit).
+## Reference ports
 
-## Subagents: Claude models only — Opus, Sonnet, Haiku
+When porting behavior from a donor (LobeChat, any reference repo), read its actual source first and cite file:line for every "theirs does X". Re-verify any "source unreadable" note and check the app repo, not only its packages. Label anything not read from source as inference before it shapes code (2026-08-14: a thinking-block port built from inference).
 
-No Codex/GPT delegation (plugin, CLI, or `codex-rescue` agent); all delegated work runs on Claude. Every subagent (Agent tool, Workflow `agent()`; forks excepted since they can't override) gets an explicit `model` — never omit it, omitted subagents inherit the session model.
+## Code research runs on TraceDecay
 
-- `sonnet` (default): implementation, migrations, test writing, research, browser/UI verification, bulk or mechanical work.
-- `opus`: delegated judgement — independent review, architecture/debugging second opinion, design review — only when it must run in parallel or isolated from the main loop.
-- `haiku`: trivial, high-volume lookups, extraction, or summaries where output is easy to check.
-- Never Fable — not as session model or subagent (too expensive).
+Before your first `Grep`/`Glob`/`rg`/`find`/`Read` in a repo, call `tracedecay_context` with the task in plain English (load deferred schemas with `ToolSearch`). Use `tracedecay_search`, `tracedecay_callers`/`callees`/`impact` for symbols and `tracedecay_grep` for literal text. Never route codebase research to `Explore` or another agent while TraceDecay is available (check `tracedecay_status`); a spawned agent uses `tracedecay_context` as its only exploration tool. On MCP errors fall back to `tracedecay tool <name> --args '<json>'`.
 
-Output below the bar → redo on the next model up without asking. This overrides any skill, workflow doc, or memory note that routes elsewhere.
+## Long-running commands and production writes
 
-
-## Reference ports: read the donor source FIRST
-
-When copying/porting behavior from a reference implementation (LobeChat, any donor repo): read the donor's actual source before designing, and cite file:line for every "theirs does X" claim. Never build from screenshots, memory, or a stale "source unreadable" note when the code is on disk — re-verify such notes, and check the app repo, not just its library packages. Anything not read from source must be labeled inference, out loud, before it shapes code. Presenting inference as fact is the failure mode; it happened 2026-08-14 (thinking-block port) and must not repeat.
-
-## Code research runs on tracedecay, not on Explore agents
-
-**Before your FIRST `Grep`/`Glob`/`rg`/`find`/`Read`/`cat` in this repo, call `tracedecay_context`** with your task in plain English. Schemas may be deferred — load them first with `ToolSearch` (`select:tracedecay_context,tracedecay_search,tracedecay_grep`, plus any others). Subagents load this file, so the rule applies inside them too.
-
-- concept / "how does X work" / where to start → `tracedecay_context`
-- symbol by name → `tracedecay_search`, then `tracedecay_callers` / `tracedecay_callees` / `tracedecay_impact` / `tracedecay_node` / `tracedecay_affected` / `tracedecay_files`
-- literal string or regex in file contents → `tracedecay_grep`, not `rg`
-- which project/store am I in → `tracedecay_active_project` / `tracedecay_storage_status`
-- durable facts / prior-conversation recall → `tracedecay_fact_store` / `tracedecay_fact_feedback` / `tracedecay_message_search`; never store secrets or unnecessary PII
-
-**Never route codebase research to `Agent(subagent_type=Explore)` or any other agent while tracedecay is available** — this overrides any skill that recommends one, and the call costs tokens even when the hook blocks it. Agents are for confirmed-unavailable tracedecay (check `tracedecay_status`) or non-code work. If you do spawn one, tell it to use `tracedecay_context` as its only exploration tool and to pass `seen_node_ids` forward as `exclude_node_ids`.
-
-When MCP errors or disconnects, fall back to the shell CLI (`tracedecay tool <name> --args '<json>'`) rather than abandoning tracedecay. Other escape hatches: `~/.agents/CLAUDE-WORKFLOWS.md`.
-
+Never block a tool call on anything that can exceed ~5 minutes: run it detached (`nohup … > /tmp/<task>.log 2>&1 &`) and poll in short calls. Bulk writes to a live system go one at a time, never parallel fan-out: time a single write, check health, continue in small sequential batches, and stop at the first timeout (2026-10-25: parallel Payload updates hung every spotwise.ai `/api` route).
