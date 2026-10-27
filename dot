@@ -824,7 +824,7 @@ readonly STOW_REAL_DIRS=(
 # Prints the file with machine-local keys removed, for drift comparison.
 __claude_seed_view() {
     if [[ "$1" == *.json ]]; then
-        jq -S 'del(.autoMode.environment, .extraKnownMarketplaces.tracedecay)' "$1"
+        jq -S 'del(.autoMode.environment, .extraKnownMarketplaces.tracedecay, .tui)' "$1"
     else
         cat "$1"
     fi
