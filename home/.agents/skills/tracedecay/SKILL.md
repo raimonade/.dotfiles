@@ -28,10 +28,11 @@ enrolling unasked. When a result's freshness line is not `fresh`, say so.
 
 - **Pi:** MCP server `tracedecay` (`~/.pi/agent/mcp.json`, `tracedecay serve`).
   Call `mcp({ tool: "tracedecay_context", args: "{\"task\":\"…\"}" })`, or the
-  `mcp__tracedecay` namespace proxy when exposed. The server resolves its project
-  from Pi's launch cwd and ignores `project_selector` (upstream bug, beta.92):
-  started outside an enrolled repo, calls answer `project_required`; use the CLI
-  form with `project_selector` instead. Do not run `tracedecay install --agent pi`:
+  `mcp__tracedecay` namespace proxy when exposed. The server binds its project to
+  Pi's launch cwd. From an enrolled repo (incl. `~/.dotfiles`), `project_selector`
+  reaches other registered projects; from an unenrolled cwd every project call
+  answers `project_not_enrolled`, selector or not (beta.92) — use the CLI form
+  with `project_selector` there. Do not run `tracedecay install --agent pi`:
   it writes `~/.pi/agent/extensions/tracedecay` registering all ~230 tools
   (~800 KB schemas) into every Pi session; the lazy MCP proxy is deliberate, so
   `doctor`'s "Pi not integrated" warning is expected.
