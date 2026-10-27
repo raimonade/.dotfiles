@@ -75,6 +75,7 @@ For taste-heavy frontend work, use Claude Code CLI with Opus for design directio
 
 - If the task includes user-facing UI/UX/design work — new components/pages, visual polish, layout, typography, color, motion, UX copy, empty/error states, responsive behavior — get design direction from Opus, never Sonnet/Haiku.
 - First load applicable design context/skills (`impeccable`, local `PRODUCT.md`/`DESIGN.md`, design-system docs).
+- Design skill routing: `impeccable` builds, redesigns, and sets direction; the `better-*` skills are the domain rulebooks it applies; UI reviews go to `better-interface` (whole repo) or `interface-review` (a diff); motion goes to `animate` (build), `review-animations` (review), or `improve-animations` (codebase audit).
 - Use Claude Opus as the taste/design model. Give it a self-contained prompt or brief and implement only after its direction is concrete.
 - Run `claude -p` directly and synchronously in the foreground. Herdr is not required; use Herdr only when the user explicitly requests an interactive Herdr session. An unset `HERDR_ENV` says nothing about Claude availability. Treat Opus as unavailable only when the foreground command reports a missing binary, authentication failure, or model-access failure.
   - Read-only design direction/review: `claude -p --model 'claude-opus-5[1m]' --permission-mode plan --output-format text "<self-contained design prompt>"`.

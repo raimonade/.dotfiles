@@ -128,15 +128,6 @@
       "installedAt": "2026-07-15T16:15:09.850Z",
       "updatedAt": "2026-10-20T11:43:04.000Z"
     },
-    "emil-design-eng": {
-      "source": "emilkowalski/skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/emilkowalski/skills.git",
-      "skillPath": "skills/emil-design-eng/SKILL.md",
-      "skillFolderHash": "db7a20dc1d8ad26a0307dcb45ebc79fc372f5c69",
-      "installedAt": "2026-09-27T08:27:41.141Z",
-      "updatedAt": "2026-09-27T08:27:41.141Z"
-    },
     "explain-interface": {
       "source": "jakubkrehel/skills",
       "sourceType": "github",
