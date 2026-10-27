@@ -4,7 +4,7 @@ The disclosed branch of `~/.claude/CLAUDE.md`: model routing, specialized subage
 
 ## Picking models for workflows and subagents
 
-Claude models only — no Codex/GPT delegation (plugin, CLI, or `codex-rescue` agent). Every subagent gets an explicit `model`; never Fable as a subagent.
+Claude models only — no Codex/GPT delegation (plugin, CLI, or `codex-rescue` agent). Every subagent gets an explicit `model`; never Fable, as session model or subagent (too expensive).
 
 | model | cost | intelligence | taste | use for |
 | --- | ---: | ---: | ---: | --- |
@@ -16,7 +16,7 @@ Higher = better; `cost` means effective cost/availability. Rankings are defaults
 
 How to apply:
 
-- The session model (Fable, else Opus) owns orchestration, design direction, taste-heavy synthesis, and final judgment/review. Opus subagents only when that judgement must run in parallel or isolated from the main loop.
+- The session model (Opus) owns orchestration, design direction, taste-heavy synthesis, and final judgment/review. Opus subagents only when that judgement must run in parallel or isolated from the main loop.
 - Output missing the bar → redo on the next model up without asking. Judge quality, not price; cost is a tie-breaker. For anything that ships, intelligence > taste > cost.
 - Effort: **high** by default; escalate to xhigh/max only after a high-value task failed at high.
 - Discovery-heavy implementation → let the Sonnet subagent own discovery through verification instead of the main loop reading the same surface first.

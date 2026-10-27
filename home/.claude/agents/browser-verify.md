@@ -41,4 +41,4 @@ Add `form_input`, `find`, `javascript_tool`, or `read_network_requests` to the s
 - **Errors:** relevant console/network errors (filtered), or "none seen".
 - **Blocking issues / next step:** anything that stopped you or that the main agent must decide.
 
-Be concise. The main agent (Fable/Opus) makes the final judgment from your report — give it facts, not raw pixels.
+Be concise. The main agent (Opus) makes the final judgment from your report — give it facts, not raw pixels.
