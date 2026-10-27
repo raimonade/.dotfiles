@@ -75,3 +75,6 @@ home/.local/share/pi/mcp-auth.json
 
 # Must follow the extension re-includes above.
 home/.pi/agent/extensions/**/node_modules/
+
+# Local work notes (may contain employer/customer details)
+home/.pi/notes/

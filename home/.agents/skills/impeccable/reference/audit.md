@@ -1,69 +1,139 @@
-# Technical audit
+Run systematic **technical** quality checks and generate a comprehensive report. Don't fix issues; document them for other commands to address.
 
-Measurable, verifiable implementation quality: accessibility, performance, responsive behavior, theming. A code-level pass, not a design critique — that is [critique.md](critique.md).
+This is a code-level audit, not a design critique. Check what's measurable and verifiable in the implementation.
 
-Audit reports. When the user asked for the fixes too, report first, then fix in priority order; the optimization section below carries the fixes for the performance dimension. On native, the platform conventions in [platforms.md](platforms.md) are the standard being audited against, and its numbers replace the web ones.
+**Web only.** Native platforms (`ios` / `android` / `adaptive`) route to [audit.native.md](audit.native.md) instead; if the project is native, switch to it now.
 
-## Dimensions
+## Diagnostic Scan
 
-Score each 0–4: 0 broken, 1 major gaps, 2 partial, 3 good with minor gaps, 4 excellent. Total out of 20 — 18+ excellent, 14–17 good, 10–13 acceptable, 6–9 poor, below that critical.
+Run comprehensive checks across 5 dimensions. Score each dimension 0-4 using the criteria below.
 
-### Accessibility
+### 1. Accessibility (A11y)
 
-- **Contrast** — body and placeholder text ≥4.5:1, large text ≥3:1, controls / icons / focus indicators ≥3:1. Check every state, both themes, text over images, and disabled content.
-- **Semantics** — heading hierarchy, landmarks, lists as lists, `button` rather than a clickable `div`, form controls with real labels.
-- **Keyboard** — visible focus everywhere, logical tab order, no traps, every mouse path reachable, focus managed on overlay open and close.
-- **ARIA** — roles, names, and states on custom controls; live regions for async status. Native semantics before ARIA.
-- **Motion** — `prefers-reduced-motion` needs an *intentional* alternative that preserves the state change. A blanket `animation: none !important` or `0.01ms` kill is a failure, not compliance. Flag anything flashing above threshold or motion that blocks reading or focus.
-- **Alt text** — informative images describe their information; decorative images take empty `alt`.
-- **Forms** — persistent labels, requirements stated before submission, errors announced and tied to their field.
+**Check for**:
+- **Contrast issues**: Text contrast ratios < 4.5:1 (or 7:1 for AAA)
+- **Motion sensitivity**: `prefers-reduced-motion` needs an intentional alternative that preserves state change and hierarchy; flag a global `0.01ms` kill that destroys useful feedback, flashing above threshold, and motion that blocks focus, reading, or task completion
+- **Missing ARIA**: Interactive elements without proper roles, labels, or states
+- **Keyboard navigation**: Missing focus indicators, illogical tab order, keyboard traps
+- **Semantic HTML**: Improper heading hierarchy, missing landmarks, divs instead of buttons
+- **Alt text**: Missing or poor image descriptions
+- **Form issues**: Inputs without labels, poor error messaging, missing required indicators
 
-### Performance
+**Score 0-4**: 0=Inaccessible (fails WCAG A), 1=Major gaps (few ARIA labels, no keyboard nav), 2=Partial (some a11y effort, significant gaps), 3=Good (WCAG AA mostly met, minor gaps), 4=Excellent (WCAG AA fully met, approaches AAA)
 
-- Layout thrashing: reading and writing layout properties in the same loop.
-- Expensive animation: layout-driving properties animated casually, unbounded blur / filter / shadow, effects that visibly drop frames.
-- `will-change` applied broadly or left on at rest — it is a targeted hint, not a baseline.
-- Images without dimensions, lazy loading, modern formats, or responsive sources.
-- Bundle weight: unnecessary imports, unused dependencies, heavy libraries used for one function.
-- Render waste: unnecessary re-renders, missing memoization on genuinely hot paths, work on the main thread that belongs in a worker.
+### 2. Performance
 
-### Responsive
+**Check for**:
+- **Layout thrashing**: Reading/writing layout properties in loops
+- **Expensive animations**: Casual layout-property animation, unbounded blur/filter/shadow effects, or effects that visibly drop frames
+- **Missing optimization**: Images without lazy loading, unoptimized assets
+- **will-change overuse**: `will-change` applied broadly or left on at rest (it is a targeted hint for known expensive animations, not a baseline requirement)
+- **Bundle size**: Unnecessary imports, unused dependencies
+- **Render performance**: Unnecessary re-renders, missing memoization
 
-- Fixed widths that overflow narrow viewports; horizontal scroll at any supported size.
-- Touch targets below 44 CSS px (48 dp on Android), or adjacent targets without separation.
-- Layouts that break at 200% zoom or with the user's larger text setting.
-- Missing intermediate breakpoints — a design that works at 375 and 1440 and nowhere between.
-- Safe-area insets ignored on notched and gesture-bar devices.
+**Score 0-4**: 0=Severe issues (layout thrash, unoptimized everything), 1=Major problems (no lazy loading, expensive animations), 2=Partial (some optimization, gaps remain), 3=Good (mostly optimized, minor improvements possible), 4=Excellent (fast, lean, well-optimized)
 
-### Theming
+### 3. Theming
 
-- Hard-coded colors, spacing, radii, and shadows where the project has tokens.
-- Dark mode missing, mechanically inverted, or failing contrast in its own right.
-- Wrong token tier used: a primitive where a semantic role belongs.
-- Values that do not update on theme change.
+**Check for**:
+- **Hard-coded colors**: Colors not using design tokens
+- **Broken dark mode**: Missing dark mode variants, poor contrast in dark theme
+- **Inconsistent tokens**: Using wrong tokens, mixing token types
+- **Theme switching issues**: Values that don't update on theme change
 
-### Implementation integrity
+**Score 0-4**: 0=No theming (hard-coded everything), 1=Minimal tokens (mostly hard-coded), 2=Partial (tokens exist but inconsistently used), 3=Good (tokens used, minor hard-coded values), 4=Excellent (full token system, dark mode works perfectly)
 
-Repeated shortcuts, design-system drift, decorative or misleading content, and structure interchangeable with an unrelated product. Score 0 for systemic drift through 4 for coherent and intentional. Keep this separate from the visual judgment in [critique.md](critique.md) and cite file-level evidence.
+### 4. Responsive Design
 
-## Optimizing what the audit found
+**Check for**:
+- **Fixed widths**: Hard-coded widths that break on mobile
+- **Touch targets**: Interactive elements < 44x44px
+- **Broken touch interaction**: Custom sliders, drag surfaces, and scrollable control strips whose primary gesture fails under touch, that swallow page scroll or lose the drag to it, or that stay stuck after an interrupted gesture. Code tells: mouse-only handlers, no `touch-action` on a pointer-event drag surface, drag state that nothing clears on cancel, lost capture, or blur. Exercise the gesture when a browser tool can synthesize touch (a rendered viewport proves layout, not the gesture), then say what produced the evidence (emulated viewport, synthesized touch, which engine, physical device) and what stayed untested
+- **Horizontal scroll**: Content overflow on narrow viewports
+- **Text scaling**: Layouts that break when text size increases
+- **Missing breakpoints**: No mobile/tablet variants
 
-**Loading.** Serve modern image formats at the right dimensions with `width`/`height` set and `loading="lazy"` below the fold; preload the LCP asset and the fonts it needs, and never lazy-load the LCP image. Subset and self-host fonts with `font-display: swap` and metric-compatible fallbacks. Split routes, defer non-critical JS, and drop dependencies whose job is a few lines.
+**Score 0-4**: 0=Desktop-only (breaks on mobile), 1=Major issues (some breakpoints, many failures), 2=Partial (works on mobile, rough edges), 3=Good (responsive, minor touch target or overflow issues), 4=Excellent (fluid, all viewports, proper touch targets, gestures work under touch)
 
-**Rendering.** Batch reads before writes. Use `content-visibility` for long offscreen sections and virtualize lists past a few hundred rows. Confine expensive filters to isolated, sized regions. Memoize only measured hot paths — reflexive memoization costs more than it saves.
+### 5. Implementation Integrity (CRITICAL)
 
-**Animation.** Prefer compositor-friendly properties; reach past them only when the effect stays smooth on the target device, measured rather than assumed. Apply `will-change` for the duration of a known animation and remove it after. Pause offscreen loops.
+Run the bundled detector and verify each finding in context. Look for repeated implementation shortcuts, design-system drift, misleading or decorative content, and structure that is interchangeable with an unrelated product. Keep deterministic findings separate from visual judgment and call out false positives.
 
-**Core Web Vitals.** LCP under 2.5s — find the actual LCP element before optimizing anything. INP under 200ms — break long tasks, yield to the main thread, keep event handlers thin. CLS under 0.1 — reserve space for images, ads, embeds, and late-loading fonts; never insert content above what the user is reading.
+**Desktop apps** (Electron, NW.js, CEF, WebView2): launch the app with a local DevTools port (`--remote-debugging-port=9222`, or `WEBVIEW2_ADDITIONAL_BROWSER_ARGUMENTS=--remote-debugging-port=9222` for WebView2; keep it on 127.0.0.1, never exposed), seed the state to audit, keep the window on screen (a hidden one skips the pixel contrast reads), then run `.agents/skills/impeccable/scripts/impeccable detect --cdp 9222 --target <part of the page URL or title> --json`. It returns the same JSON as a URL scan and leaves the window as found. Take screenshots through the harness's CDP tooling, and leave the window as you found it too. Tauri on macOS (WKWebView) and on Linux (WebKitGTK) expose no CDP: scan the source and say the rendered check did not run.
 
-Measure before and after on a real mid-range device or a throttled profile, and report both numbers. An optimization without a measurement is a guess.
+**Score 0-4**: 0=systemic drift, 1=major repeated failures, 2=several verified issues, 3=minor isolated issues, 4=coherent and intentional
 
-## Report
+## Generate Report
 
-1. **Score table** — the five dimensions, each with its most critical finding, and the total.
-2. **Executive summary** — issue counts by severity, top three to five issues, recommended next steps.
-3. **Findings by severity** — for each: **[P0–P3]** name, location (file and line), category, user impact, the standard it violates when applicable, and the fix.
-4. **Systemic patterns** — recurring problems that indicate a gap rather than a mistake ("hard-coded colors in 15+ components", "touch targets under 44px throughout mobile").
-5. **Positive findings** — what is working and should be replicated.
+### Audit Health Score
 
-**P0** blocks task completion, fix immediately. **P1** is significant difficulty or a WCAG AA violation, fix before release. **P2** is an annoyance with a workaround. **P3** is polish. Too many P3s is noise; be thorough about what matters. Never report an issue without its user impact, and verify each finding in context rather than trusting a pattern match.
+| # | Dimension | Score | Key Finding |
+|---|-----------|-------|-------------|
+| 1 | Accessibility | ? | [most critical a11y issue or "--"] |
+| 2 | Performance | ? | |
+| 3 | Theming | ? | |
+| 4 | Responsive Design | ? | |
+| 5 | Implementation Integrity | ? | |
+| **Total** | | **??/20** | **[Rating band]** |
+
+**Rating bands**: 18-20 Excellent (minor polish), 14-17 Good (address weak dimensions), 10-13 Acceptable (significant work needed), 6-9 Poor (major overhaul), 0-5 Critical (fundamental issues)
+
+### Implementation Integrity Verdict
+**Start here.** Pass/fail: does the implementation express a coherent product-specific system? Cite verified evidence and detector findings.
+
+### Executive Summary
+- Audit Health Score: **??/20** ([rating band])
+- Total issues found (count by severity: P0/P1/P2/P3)
+- Top 3-5 critical issues
+- Recommended next steps
+
+### Detailed Findings by Severity
+
+Tag every issue with **P0-P3 severity**:
+- **P0 Blocking**: Prevents task completion. Fix immediately
+- **P1 Major**: Significant difficulty or WCAG AA violation. Fix before release
+- **P2 Minor**: Annoyance, workaround exists. Fix in next pass
+- **P3 Polish**: Nice-to-fix, no real user impact. Fix if time permits
+
+For each issue, document:
+- **[P?] Issue name**
+- **Location**: Component, file, line
+- **Category**: Accessibility / Performance / Theming / Responsive / Implementation Integrity
+- **Impact**: How it affects users
+- **WCAG/Standard**: Which standard it violates (if applicable)
+- **Recommendation**: How to fix it
+- **Suggested command**: Which command to use (prefer: $impeccable adapt, $impeccable animate, $impeccable audit, $impeccable bolder, $impeccable clarify, $impeccable colorize, $impeccable critique, $impeccable delight, $impeccable distill, $impeccable document, $impeccable harden, $impeccable layout, $impeccable onboard, $impeccable optimize, $impeccable overdrive, $impeccable polish, $impeccable quieter, $impeccable shape, $impeccable typeset)
+
+### Patterns & Systemic Issues
+
+Identify recurring problems that indicate systemic gaps rather than one-off mistakes:
+- "Hard-coded colors appear in 15+ components, should use design tokens"
+- "Touch targets consistently too small (<44px) throughout mobile experience"
+
+### Positive Findings
+
+Note what's working well: good practices to maintain and replicate.
+
+## Recommended Actions
+
+List recommended commands in priority order (P0 first, then P1, then P2):
+
+1. **[P?] `$command-name`**: Brief description (specific context from audit findings)
+2. **[P?] `$command-name`**: Brief description (specific context)
+
+**Rules**: Only recommend commands from: $impeccable adapt, $impeccable animate, $impeccable audit, $impeccable bolder, $impeccable clarify, $impeccable colorize, $impeccable critique, $impeccable delight, $impeccable distill, $impeccable document, $impeccable harden, $impeccable layout, $impeccable onboard, $impeccable optimize, $impeccable overdrive, $impeccable polish, $impeccable quieter, $impeccable shape, $impeccable typeset. Map findings to the most appropriate command. End with `$impeccable polish` as the final step if any fixes were recommended.
+
+After presenting the summary, tell the user:
+
+> You can ask me to run these one at a time, all at once, or in any order you prefer.
+>
+> Re-run `$impeccable audit` after fixes to see your score improve.
+
+Keep P3s few: a long tail of minor issues buries the ones that matter.
+
+**Avoid**:
+- Report issues without explaining impact (why does this matter?)
+- Provide generic recommendations (be specific and actionable)
+- Skip positive findings (celebrate what works)
+- Forget to prioritize (everything can't be P0)
+- Report false positives without verification

@@ -1,43 +1,42 @@
 ---
 name: tracedecay
-description: Use TraceDecay for open-ended codebase exploration, symbol/call tracing, impact analysis, cross-branch or cross-project context, and past-session or project-memory recovery. Load before broad grep/file reading when the TraceDecay daemon is available; skip for exact-file narrow handoffs or while the daemon is intentionally disabled.
+description: Local setup for TraceDecay — availability check and how each host (Pi, Claude Code, Codex) calls its tools. Load alongside the upstream TraceDecay skills (routing-tracedecay, exploring-code, tracing-functions, …) before the first TraceDecay call; skip while the daemon is down.
 ---
 
-# TraceDecay
+# TraceDecay (local setup)
 
-## Availability gate
+Which tool answers which question lives in the upstream skills: start with
+`routing-tracedecay`, or load the specific one (`exploring-code`,
+`tracing-functions`, `assessing-impact`, `editing-safely`, `reviewing-changes`,
+`fixing-build-and-type-errors`, `project-memory`, `managing-session-context`).
+They ship with the Claude plugin at `~/.claude/plugins/marketplaces/tracedecay/skills`,
+which Pi also loads via `settings.json` `skills`, and `tracedecay update` refreshes them.
 
-Before connecting, check whether `~/.tracedecay/daemon.sock` exists **and** whether `~/.pi/agent/state/tracedecay-daemon-contained` exists. The containment marker wins even when a stale socket is still present: treat TraceDecay as unavailable and use normal code tools. Startup ingestion can cause sustained CPU use at large repository scale, and a contained daemon may accept connections without producing a response:
+## Availability
 
-- do not install, start, or restart the daemon;
-- do not call TraceDecay through MCP or CLI while the containment marker exists;
-- use the host's normal code tools instead;
-- do not repeatedly retry MCP or CLI calls.
+Stock install: binary `~/.local/bin/tracedecay`, LaunchAgent `com.tracedecay.daemon`,
+data `~/.tracedecay`. Run `tracedecay daemon status` once per session; exit 0
+(`protocol: Ready`) means it is serving. A socket file alone proves nothing. On
+non-zero exit use normal code tools, and do not start, restart, update, or
+reinstall the daemon unless the user asks. Do not retry failed calls in a loop.
 
-Pi's `~/.pi/agent/bin/tracedecay` wrapper enforces this for daemon start commands while `~/.pi/agent/state/tracedecay-daemon-contained` exists. Never bypass that guard with `/opt/homebrew/bin/tracedecay`. Removing the marker is allowed only for an explicitly approved, bounded validation and it must be restored afterward unless the scaling issue is verified fixed.
-
-A present socket permits normal routing below. Confirm project/index state with `tracedecay_status` when results may be unavailable or stale; never run manual sync speculatively.
+A repository is enrolled once with `tracedecay init`; linked worktrees share it.
+An unenrolled repo answers `project_not_enrolled` — tell the user rather than
+enrolling unasked. When a result's freshness line is not `fresh`, say so.
 
 ## Transport by host
 
-- **Claude Code:** tools are exposed over MCP, usually namespaced (e.g. `mcp__plugin_tracedecay_graph__tracedecay_context`) and often deferred — load schemas first with `ToolSearch("select:<full tool name>, ...")`, then call them like any tool. Refer to tools below by their short `tracedecay_*` suffix.
-- **Pi:** use the lazy `mcp` gateway. Discover: `mcp({ search: "tracedecay context search grep" })`. Call with `args` as a JSON string: `mcp({ tool: "tracedecay_context", args: "{\"task\":\"trace request authorization\"}" })`.
-- **Codex or any shell-only host:** use the CLI: `tracedecay tool <name> --args '<json>'` (run `tracedecay tool` to list, `tracedecay tool <name> --help` for parameters).
+- **Pi:** MCP server `tracedecay` (`~/.pi/agent/mcp.json`, `tracedecay serve`).
+  Call `mcp({ tool: "tracedecay_context", args: "{\"task\":\"…\"}" })`, or the
+  `mcp__tracedecay` namespace proxy when exposed. The stock
+  `tracedecay install --agent pi` refuses here because `~/.pi` is a symlink into
+  `~/.dotfiles`; that `doctor` warning is expected.
+- **Claude Code:** plugin `tracedecay@tracedecay`; tools are namespaced
+  (`mcp__plugin_tracedecay_graph__tracedecay_context`) and often deferred — load
+  schemas with `ToolSearch` first.
+- **Codex / shell:** `tracedecay tool <name> --args '<json>'` (`--args -` for a
+  heredoc). `tracedecay tool` lists tools; `tracedecay tool <name> --help` shows
+  parameters.
 
-If an MCP call fails while the daemon socket still exists, fall back to the CLI form once rather than retrying MCP; fall back to normal tools if the daemon becomes unavailable.
-
-## Routing
-
-- Open-ended concept/task exploration: `tracedecay_context`.
-- Symbol lookup: `tracedecay_search`; exact identifier: `tracedecay_find_exact_symbol` or `tracedecay_by_qualified_name`.
-- Literal, regex, config key, or error text: `tracedecay_grep`.
-- Large-file orientation: `tracedecay_outline`, then `tracedecay_body` or bounded `tracedecay_read`.
-- Calls and blast radius: `tracedecay_callers`, `tracedecay_callees`, `tracedecay_call_chain`, `tracedecay_impact`, `tracedecay_affected`.
-- Another registered repo/workspace: `tracedecay_project_list` or `tracedecay_project_search`, then pass its selector to context/search tools.
-- Past decisions or transcript recovery: `tracedecay_message_search` and fact/memory tools.
-
-Use returned node IDs for narrow follow-ups and pass `seen_node_ids` when supported. Narrow a truncated result before retrieving more; do not repeat a broad semantic query.
-
-For unfamiliar repositories, let the first useful TraceDecay result choose the files to inspect. Before editing, identify the owning module, source contract, affected callers and tests, local precedent, and narrowest verifier. Refine an incomplete query instead of inferring absence. If source is generated, minified, redacted, or otherwise transformed, search stable structural anchors and corroborate the conclusion through an independent surface. Use scoped shell search when the repository is unavailable to TraceDecay or the question concerns an exact filesystem/generated-text artifact; state that fallback briefly.
-
-Repository instructions and explicit user constraints always outrank this routing.
+If an MCP call fails while `daemon status` is green, retry once via the CLI form,
+then fall back to normal tools.

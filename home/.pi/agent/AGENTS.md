@@ -55,13 +55,13 @@ Use skills proportionately: load lightweight/reference skills eagerly; follow th
 
 ## TraceDecay routing
 
-For open-ended code navigation, call/impact analysis, cross-project context, or past-session recovery, load the `tracedecay` skill before broad grep/file reading when `~/.tracedecay/daemon.sock` exists. If the socket is absent, the daemon is intentionally contained: do not start or reinstall it; use normal tools instead. The Pi PATH wrapper blocks daemon startup while `~/.pi/agent/state/tracedecay-daemon-contained` exists; never bypass it with the absolute Homebrew binary.
+For open-ended code navigation, call/impact analysis, cross-project context, or past-session recovery, load the `tracedecay` skill before broad grep/file reading. Stock install: binary `~/.local/bin/tracedecay`, LaunchAgent `com.tracedecay.daemon`, data `~/.tracedecay`. It is available when `tracedecay daemon status` exits 0; otherwise use normal tools and do not start, restart, or reinstall it unasked.
 
 ## Frontend/design model routing
 
-Execution models are not the default taste models. For taste-heavy frontend work, use Claude Code CLI with Opus for design direction, visual implementation delegation when appropriate, and final visual review. Never use Fable — not as the session model and never as a subagent/delegate model. Do not downgrade design direction or review to Sonnet.
+For taste-heavy frontend work, use Claude Code CLI with Opus for design direction, visual implementation delegation when appropriate, and final visual review. Never use Fable — not as the session model and never as a subagent/delegate model. Do not downgrade design direction or review to Sonnet.
 
-- If the task includes user-facing UI/UX/design work — new components/pages, visual polish, layout, typography, color, motion, UX copy, empty/error states, responsive behavior — do not rely on the execution model for design direction.
+- If the task includes user-facing UI/UX/design work — new components/pages, visual polish, layout, typography, color, motion, UX copy, empty/error states, responsive behavior — get design direction from Opus, never Sonnet/Haiku.
 - First load applicable design context/skills (`impeccable`, local `PRODUCT.md`/`DESIGN.md`, design-system docs).
 - Use Claude Opus as the taste/design model. Give it a self-contained prompt or brief and implement only after its direction is concrete.
 - Run `claude -p` directly and synchronously in the foreground. Herdr is not required; use Herdr only when the user explicitly requests an interactive Herdr session. An unset `HERDR_ENV` says nothing about Claude availability. Treat Opus as unavailable only when the foreground command reports a missing binary, authentication failure, or model-access failure.
@@ -70,10 +70,29 @@ Execution models are not the default taste models. For taste-heavy frontend work
   - Visual implementation when delegation is appropriate: `claude -p --model 'claude-opus-5[1m]' --permission-mode acceptEdits --output-format text "<self-contained implementation prompt>"`, then inspect the diff locally.
 - Delegate prompts must be self-contained: goal, target files/routes, user constraints, design context locations, repo instructions to read (`AGENTS.md` + nearest scoped `AGENTS.md`), exact deliverable, verification command, and required report shape.
 - Ask the design delegate for concrete visual direction, hierarchy/layout, component/API guidance, accessibility constraints, implementation notes, and an anti-slop check. If it edits, require changed files, checks run, failures/blockers, and assumptions.
-- The execution model may implement after an Opus design pass, explicit mock/screenshot/spec, or a clearly existing design-system pattern. It may freely do mechanical frontend work that preserves an existing visual design.
+- Sonnet (or the session model) may implement after an Opus design pass, explicit mock/screenshot/spec, or a clearly existing design-system pattern. It may freely do mechanical frontend work that preserves an existing visual design.
 - If Claude Opus is unavailable/unauthenticated, say so and pause instead of shipping taste-heavy UI unaided.
 - Verify user-facing UI with screenshot/browser review when possible; for anything visually meaningful, request/perform a Claude Opus review before final handoff.
 
-## Don't pin GPT model versions
+## Long-running commands
 
-Never write a model id into `~/.codex/config.toml` (`model =`) or `~/.pi/agent/settings.json` (`defaultModel`): both tools default to their newest model (verified 2026-10-11: `gpt-6.1-sol`), and a pin goes stale on the next release. If the user names a model, pass it per invocation (`--model`).
+Never block one tool call on a command that can run more than ~5 minutes (release cuts, CI/E2E
+waits, deploys). Start it detached (`nohup … > /tmp/<task>.log 2>&1 &`), then poll the log or
+`gh run view <id>` in short calls, reporting status each time. Never pipe `/dev/null` into a script's
+confirmation prompt unless you also pass its explicit yes flag with authorization, and say up front if
+the run will stop at a prompt. If a call is aborted, immediately report what did and did not happen
+(remote side effects included) — never end a turn with no status.
+
+## Claude models only
+
+Use only Claude models (Opus, Sonnet, Haiku; never Fable) for the session model, subagents, and any delegation. No GPT/OpenAI/Codex models by any route — Codex CLI/plugin, `openai-codex` provider, Cursor, or otherwise.
+
+## Writes to production systems
+
+Bulk writes to a live system (CMS, DB, API, queue) go **one at a time**, never `Promise.all`/parallel
+fan-out, unless the system documents a concurrency limit you stay under. Each write can fire hooks
+you can't see (cache purges, extra queries, image processing). Run a single write first, time it,
+check the service is still healthy, then continue in small sequential batches with a health check
+between them. On the first timeout, stop writing and check service health before anything else.
+(2026-10-25: 36 parallel Payload media alt-text updates exhausted spotwise.ai's DB pool and hung
+every `/api` route, including images, until the container app was restarted.)

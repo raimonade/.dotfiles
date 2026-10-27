@@ -20,7 +20,9 @@
     "npm:pi-claude-bridge"
   ],
   "extensions": [],
-  "skills": [],
+  "skills": [
+    "/Users/rkorzenevskis/.claude/plugins/marketplaces/tracedecay/skills"
+  ],
   "enableSkillCommands": true,
   "subagents": {
     "agentOverrides": {

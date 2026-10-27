@@ -71,9 +71,9 @@ Use skills proportionately: load lightweight/reference skills eagerly; follow th
 
 ## Frontend/design model routing
 
-Execution models are not the default taste models. For taste-heavy frontend work, use Claude Code CLI with Opus for design direction, visual implementation delegation when appropriate, and final visual review. Never use Fable. Do not downgrade design direction or review to Sonnet.
+For taste-heavy frontend work, use Claude Code CLI with Opus for design direction, visual implementation delegation when appropriate, and final visual review. Never use Fable. Do not downgrade design direction or review to Sonnet.
 
-- If the task includes user-facing UI/UX/design work — new components/pages, visual polish, layout, typography, color, motion, UX copy, empty/error states, responsive behavior — do not rely on the execution model for design direction.
+- If the task includes user-facing UI/UX/design work — new components/pages, visual polish, layout, typography, color, motion, UX copy, empty/error states, responsive behavior — get design direction from Opus, never Sonnet/Haiku.
 - First load applicable design context/skills (`impeccable`, local `PRODUCT.md`/`DESIGN.md`, design-system docs).
 - Use Claude Opus as the taste/design model. Give it a self-contained prompt or brief and implement only after its direction is concrete.
 - Run `claude -p` directly and synchronously in the foreground. Herdr is not required; use Herdr only when the user explicitly requests an interactive Herdr session. An unset `HERDR_ENV` says nothing about Claude availability. Treat Opus as unavailable only when the foreground command reports a missing binary, authentication failure, or model-access failure.
@@ -81,10 +81,10 @@ Execution models are not the default taste models. For taste-heavy frontend work
   - Visual implementation when delegation is appropriate: `claude -p --model 'claude-opus-5[1m]' --permission-mode acceptEdits --output-format text "<self-contained implementation prompt>"`, then inspect the diff locally.
 - Delegate prompts must be self-contained: goal, target files/routes, user constraints, design context locations, repo instructions to read (`AGENTS.md` + nearest scoped `AGENTS.md`), exact deliverable, verification command, and required report shape.
 - Ask the design delegate for concrete visual direction, hierarchy/layout, component/API guidance, accessibility constraints, implementation notes, and an anti-slop check. If it edits, require changed files, checks run, failures/blockers, and assumptions.
-- The execution model may implement after an Opus design pass, explicit mock/screenshot/spec, or a clearly existing design-system pattern. It may freely do mechanical frontend work that preserves an existing visual design.
+- Sonnet (or the session model) may implement after an Opus design pass, explicit mock/screenshot/spec, or a clearly existing design-system pattern. It may freely do mechanical frontend work that preserves an existing visual design.
 - If Claude Opus is unavailable or unauthenticated, say so and pause instead of shipping taste-heavy UI unaided.
 - Verify user-facing UI with screenshot/browser review when possible; for anything visually meaningful, request or perform an Opus review before final handoff.
 
-## Don't pin GPT model versions
+## Claude models only
 
-Never write a model id into `~/.codex/config.toml` (`model =`) or `~/.pi/agent/settings.json` (`defaultModel`): both tools default to their newest model (verified 2026-10-11: `gpt-6.1-sol`), and a pin goes stale on the next release. If the user names a model, pass it per invocation (`--model`).
+Use only Claude models (Opus, Sonnet, Haiku; never Fable) for the session model, subagents, and any delegation. No GPT/OpenAI/Codex models by any route — Codex CLI/plugin, `openai-codex` provider, Cursor, or otherwise.

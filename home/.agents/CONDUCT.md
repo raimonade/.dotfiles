@@ -105,10 +105,10 @@ Distilled from a 2026-09-14 audit of two months of sessions; each line names a m
 
 ## Frontend/design model routing
 
-- Execution models are not the default taste models. Taste-heavy frontend work takes design direction and the final visual review from the strongest available Claude: Fable 5.1 when it is the session model (do it in-session, no separate design pass), otherwise Opus. Sonnet does neither direction nor review.
+- Taste-heavy frontend work takes design direction and the final visual review from the strongest available Claude: Fable 5.1 when it is the session model (do it in-session, no separate design pass), otherwise Opus. Sonnet does neither direction nor review.
 - Load applicable design context and skills first. When delegating direction to Opus, give a self-contained brief: goal, routes/files, constraints, design context, repo instructions, accessibility, exact deliverable, verification, and report shape.
 - Run one-shot Opus delegation directly and synchronously with foreground `claude -p`. Herdr is only for an explicitly requested interactive Herdr session; `HERDR_ENV` does not determine Claude availability. Declare Opus unavailable only from a foreground command's missing-binary, authentication, or model-access error.
-- The execution model may implement after a Fable/Opus design pass, an explicit mock/spec, or a clearly established design-system pattern. Mechanical work that preserves the existing visual design does not require taste delegation.
+- Sonnet (or the session model) may implement after a Fable/Opus design pass, an explicit mock/spec, or a clearly established design-system pattern. Mechanical work that preserves the existing visual design does not require taste delegation.
 - If neither Fable nor Opus is available, pause instead of shipping taste-heavy UI unaided.
 - Verify meaningful UI changes in-browser and obtain a Fable (in-session) or Opus review before final handoff.
 

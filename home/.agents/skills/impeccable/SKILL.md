@@ -1,75 +1,86 @@
 ---
 name: impeccable
-description: Improve frontend UI/UX through design, critique, polish, accessibility, responsive behavior, typography, color, layout, motion, copy, states, or native adaptation. Use for user-facing interface work, not backend or mechanical frontend changes that preserve an existing design.
-version: 5.0.0
+description: "Use when the user wants to design, redesign, shape, critique, audit, polish, simplify, harden, animate, or otherwise improve a frontend interface: websites, landing pages, dashboards, product UI, components, forms, settings, onboarding, empty states, and native iOS or Android screens. Handles UX review, hierarchy, layout, typography, color, motion, UX copy, accessibility, responsive behavior, edge cases, and capturing or documenting design systems (DESIGN.md, tokens). Also for making bland UI bolder, loud UI quieter, or ambitious visual effects. Not for backend-only or non-UI tasks."
+metadata:
+  version: 4.7.0
 ---
 
-Design as a director with a point of view, not as a safe average of everything you have seen. The default failure is not ugliness — it is work that could belong to any product in the category. Every surface should be traceable to this product, this audience, and this brief.
+This skill gives you the tools and permission to make design that earns the name out-of-distribution craft. Work as an award-winning design director would: production-grade code, a clear POV, a deep grasp of what the client and its users need, and exceptional craft.
 
-Three things hold across every task here:
+Core principles:
+- Finish the job. No hedging, no shortcuts: the deliverable is complete, except assets the user must provide.
+- Scale ambition to the surface's mode (see Modes). Persuade and Experience get full commitment: bold, distinct work with a point of view. On Operate and Read, ambition shows as precision and restraint, and patterns the visitor already knows earn their place.
+- Verify by looking at the rendered result at the sizes it ships at, and batch the checks: fix what one look shows before looking again, rather than screenshotting after every tweak.
 
-- **Go all the way.** A committed design made clear beats a hedged design made safe. Ship the whole deliverable, minus assets only the user can supply.
-- **Facts before taste.** Read the code before proposing anything. Claims, prices, capabilities, and data come from supplied truth.
-- **Verify in bounded passes, not a loop.** Build fully, inspect once in a batched round (desktop and mobile together on the web; the shipped device classes on native), fix everything it shows in one batch, confirm with at most one more round, then stop. Open-ended self-QA burns budget for less than a fresh review would find.
+## Setup
 
-This skill does not choose models, spawn agents, install hooks, run scripts, or reach the network. Delegation and model routing belong to the host's own agent instructions.
+1. Run `<skill-base-dir>/scripts/impeccable context` once per session, where `<skill-base-dir>` is the directory that contains this SKILL.md (the skill folder, not a plugin root two levels above it); keep cwd at the user's project. That base directory resolves every `.agents/skills/impeccable/scripts/impeccable <verb>` command in this skill and its references, and `.agents/skills/impeccable/scripts` is the fallback only when the runtime reports no base directory. On a Windows shell without `sh`, call `.agents/skills/impeccable/scripts/impeccable.cmd` instead. The launcher runs a self-contained binary that ships next to it or is downloaded once on first run; no Node or other runtime is required. Pass a named source file or route as `--target <path>`. It loads PRODUCT.md, DESIGN.md, the matching surface brief, and native-platform guidance when applicable; follow its directives and do not rerun it.
+2. Load the request's playbook: its Commands-table reference for an explicit/implied sub-command, or [reference/new-work.md](reference/new-work.md) for a new surface or replacement visual world. Inspect target and incumbent visual truth before editing. When the app cannot run, start with committed visual-regression goldens or screenshot fixtures; verify target and freshness against current tokens, CSS, components, or assets, resolve conflicts, and compare theme/variant captures.
+3. After resolving analysis and direction, read [reference/craft-floor.md](reference/craft-floor.md) immediately before any UI edit, including small refinements. It carries the quality floor, the absolute bans, and the reflexes no detector catches. Do not load it for planning-only work.
 
-## Ground the work
+**Launcher unavailable:** On refusal or failure, send a separate message **before the next tool call**: “Context loading did not run; I’ll read the existing project context directly.” Then read existing PRODUCT.md and DESIGN.md without inventing missing context, follow applicable steps 2–3, and continue through permitted tools. This applies to planning and editing; launcher failure alone does not block either.
 
-Before proposing or editing:
+## How to design
 
-1. **Read what exists.** `PRODUCT.md` and `DESIGN.md` when the project has them — they are authority, not decoration. Then the target itself plus at least one representative source of incumbent visual truth: tokens, theme, global CSS, a shared component, an asset.
-2. **Infer, don't interrogate.** Stack, conventions, spacing scale, palette, component vocabulary, target devices, and platform are all readable from the code. Derive them.
-3. **Ask only material unknowns** — the ones where two answers produce different work: who must act and what must they believe; what real content, evidence, and assets exist; which states matter; what must stay untouched; what would make a polished result still feel wrong. One round of two or three related questions, then proceed. Never ask for CSS values or a menu of aesthetic lanes.
-4. **State assumptions and continue** when nobody can answer.
-
-`PRODUCT.md` and `DESIGN.md` are honored when present and never required. Offer to write one only after work that establishes durable truth — a new visual world, or a system worth recording — and write it from the built result, never ahead of it. Existing files are updated, not replaced, unless the user asked for a redesign.
-
-## Precedence
-
-The brief wins, then the incumbent design system, then everything in these files.
-
-- **A pinned brief is law.** Honor the era, material, font, palette, or reference the user named, even when it collides with a warning here. Redirecting a clear brief toward your own taste is failure.
-- **An established system outranks these defaults.** Match its tokens, scale, component vocabulary, and idioms. Improve inside it; do not migrate a repo to a private preference.
-- **The heuristics here are defaults for a free axis.** They describe where undirected work goes wrong, not what is forbidden. Only genuine accessibility and correctness constraints — contrast, focus, touch targets, reduced motion, semantics, truthful claims — hold regardless of brief.
-
-## Refine or redesign
-
-Name which one this is before touching anything; most drift starts here.
-
-- **Refinement preserves.** The incumbent identity, content, behavior, and everything outside the named scope stay. Ask before replacing factual copy or adding claims. If the concept itself is wrong, say so and recommend a redesign rather than smuggling one in.
-- **Redesign replaces the look and keeps the truth.** Product facts, content, function, native affordances, accessibility, and explicit brand commitments survive; the old visual world becomes evidence of what the subject is, not authority over what it becomes. Never split the difference into polish on a discarded look.
-- **Visual authority is evidence, not a filename.** A missing `DESIGN.md` does not make a project greenfield: a coherent identity living in the code is authority. Route through [new-work.md](reference/new-work.md) only for a genuinely new surface or an approved replacement world. A section, component, or state inside an established surface inherits that surface.
+- **The brief wins.** Honor pinned aesthetics, eras, materials, fonts, and palettes even when they conflict with a saturated-pattern warning. Redirecting a clear brief toward your taste is failure.
+- **Refinement preserves; redesign replaces.** Refinement keeps the incumbent identity, behavior, copy, and everything outside scope. Ask before replacing factual copy or adding claims. Redesign keeps product truth, content, function, native affordances, and constraints, but treats the old look as evidence and anti-reference; choose a replacement world in new-work and replace DESIGN.md. Never split the difference into polish on the discarded look.
+- **Loaded symbols stay out of the decoration.** A subject's world does not license emblems tied to militarism, supremacy, or hate movements as motifs, badges, or ornament, such as the Rising Sun flag's rays, the Confederate battle flag, or Nazi-era insignia and their stylised variants; reach for that world's neutral forms instead. Content that documents such a symbol as fact stays as it is.
+- **Visual authority is evidence, not a filename.** Missing DESIGN.md alone does not make a project greenfield; new-work decides whether to preserve, expand, or replace the incumbent world.
 
 ## Modes
 
-The mode names what success looks like for the visitor on *this surface*, chosen from the surface itself and not from the company. A tool's landing page is Persuade; a fashion house's documentation is Read.
+The mode names what the visitor's success looks like on this surface.
 
-- **Persuade** — the visitor decides and acts. Landing pages, marketing, pricing, campaigns. Design is the product; earn attention and action, and demonstrate something only this product can prove.
-- **Operate** — the visitor completes a task. App UI, dashboards, editors, admin, settings. Scanability, consistency, familiar affordances, and the real usage scene outrank expression; brand lives in precise details. Earned familiarity is the bar — the tool disappears into the task.
-- **Read** — the visitor understands something. Docs, articles, guides, changelogs. Structure for comprehension first, then make the reading worth staying in.
-- **Experience** — the visitor is inside the work. Portfolios, galleries, showcases. The artifact leads from the first viewport; the interface recedes.
+- **Persuade:** the visitor decides and acts; design is the product. Landing pages, marketing, campaigns, pricing. Earn attention and action. Ship real imagery when the brief needs it; follow the committed world, not category habit.
+- **Operate:** the visitor completes a task. App UI, dashboards, editors, admin, settings, tools. Scanability, consistency, native expectations, and the real usage scene outrank expression. Brand lives in precise details.
+- **Read:** the visitor understands something. Docs, articles, guides, help, changelogs. Structure for comprehension, then make the reading experience worth staying in.
+- **Experience:** the visitor is inside the work itself. Portfolios, galleries, showcases. Let the artifact lead from the first viewport; the interface recedes.
 
-Persuade and Experience have permission for expression that Operate and Read must earn. In every mode, expression may never obscure the task, the state, or a familiar affordance.
+Choose the mode from the requested surface, not the product, and persist it only in that surface brief. A tool's landing page is still Persuade; a fashion house's documentation is still Read; a docs index is Read, not Persuade. See [new-work.md](reference/new-work.md) for new surfaces and [operate.md](reference/operate.md) for deeper Operate/Read guidance.
 
-## Route
+## Commands
 
-Load the one file that owns the request, then work. Load a second only when the task genuinely spans both.
+| Command | Category | Description | Reference |
+|---|---|---|---|
+| `craft [feature]` | Build | Deprecated alias for an ordinary new-work request | [reference/craft.md](reference/craft.md) |
+| `shape [feature]` | Build | Plan UX/UI before writing code | [reference/shape.md](reference/shape.md) |
+| `init` | Build | Capture durable product context in PRODUCT.md | [reference/init.md](reference/init.md) |
+| `document` | Build | Generate DESIGN.md from existing project code | [reference/document.md](reference/document.md) |
+| `extract [target]` | Build | Pull reusable tokens and components into design system | [reference/extract.md](reference/extract.md) |
+| `critique [target]` | Evaluate | UX design review with heuristic scoring | [reference/critique.md](reference/critique.md) |
+| `audit [target]` | Evaluate | Technical quality checks (a11y, perf, responsive) | [reference/audit.md](reference/audit.md) · native: [reference/audit.native.md](reference/audit.native.md) |
+| `polish [target]` | Refine | Final quality pass before shipping | [reference/polish.md](reference/polish.md) |
+| `bolder [target]` | Refine | Amplify safe or bland designs | [reference/bolder.md](reference/bolder.md) |
+| `quieter [target]` | Refine | Tone down aggressive or overstimulating designs | [reference/quieter.md](reference/quieter.md) |
+| `distill [target]` | Refine | Strip to essence, remove complexity | [reference/distill.md](reference/distill.md) |
+| `harden [target]` | Refine | Production-ready: errors, i18n, edge cases | [reference/harden.md](reference/harden.md) |
+| `onboard [target]` | Refine | Design first-run flows, empty states, activation | [reference/onboard.md](reference/onboard.md) |
+| `animate [target]` | Enhance | Add purposeful animations and motion | [reference/animate.md](reference/animate.md) |
+| `colorize [target]` | Enhance | Add strategic color to monochromatic UIs | [reference/colorize.md](reference/colorize.md) |
+| `typeset [target]` | Enhance | Improve typography hierarchy and fonts | [reference/typeset.md](reference/typeset.md) |
+| `layout [target]` | Enhance | Fix spacing, rhythm, and visual hierarchy | [reference/layout.md](reference/layout.md) |
+| `delight [target]` | Enhance | Add personality and memorable touches | [reference/delight.md](reference/delight.md) |
+| `overdrive [target]` | Enhance | Push past conventional limits | [reference/overdrive.md](reference/overdrive.md) |
+| `clarify [target]` | Fix | Improve UX copy, labels, and error messages | [reference/clarify.md](reference/clarify.md) |
+| `adapt [target]` | Fix | Adapt for different devices and screen sizes | [reference/adapt.md](reference/adapt.md) · native: [reference/adapt.native.md](reference/adapt.native.md) |
+| `optimize [target]` | Fix | Diagnose and fix UI performance | [reference/optimize.md](reference/optimize.md) |
+| `live` | Iterate | Visual variant mode: pick elements in the browser, iterate on alternatives | [reference/live.md](reference/live.md) |
+| `generate [n] [action] [element]` | Iterate | Variants, versions, or alternatives of a named element to choose from in the live browser; no manual picking | [reference/generate.md](reference/generate.md) |
 
-| The request | Load |
-|---|---|
-| New surface, new feature, or replacement visual world | [new-work.md](reference/new-work.md) |
-| Design review, UX critique, "is this any good", heuristic scoring | [critique.md](reference/critique.md) |
-| Technical quality: accessibility, performance, responsive, theming | [audit.md](reference/audit.md) |
-| Polish, ship-ready pass, bolder, quieter, distill, simplify | [refine.md](reference/refine.md) |
-| Typography, fonts, hierarchy, measure, scale | [typography.md](reference/typography.md) |
-| Color, palette, theming, dark mode, contrast strategy | [color.md](reference/color.md) |
-| Spacing, rhythm, structure, responsive and device adaptation | [layout.md](reference/layout.md) |
-| Motion, micro-interactions, transitions, ambitious visual technique | [motion.md](reference/motion.md) |
-| Drag, swipe, sheets, scrubbers, gesture-driven UI | [direct-manipulation.md](reference/direct-manipulation.md) |
-| UX copy, errors, empty states, onboarding, i18n, edge cases | [content.md](reference/content.md) |
-| Native iOS or Android UI, or porting between platforms | [platforms.md](reference/platforms.md) |
+Routing:
 
-Unclear which of two fits? Ask once. Anything not on this list is ordinary design work: ground it as above, honor the incumbent system, and build.
+- **No argument:** read [routing.md](reference/routing.md) and present its context-aware menu; never auto-run a command.
+- **Explicit or clearly implied request to run a command:** load its reference (native variant on native platforms) and follow it. Ask once if two commands fit.
+- **Workflow or command-selection question:** read [Workflow questions](reference/routing.md#workflow-questions).
+- **Otherwise:** treat the request as general design work. Missing PRODUCT.md routes a new surface or replacement world through init, then new-work; a narrow refinement of existing code proceeds on the incumbent implementation as `impeccable context` directs, offering init afterward rather than blocking on it.
+- `teach` aliases `init`. `craft` is a deprecated alias for ordinary new-work and adds nothing. `shape` owns task discovery, then enters new-work only for visual-world and surface-concept decisions.
 
-**Before editing UI — after the direction is settled — load [craft-floor.md](reference/craft-floor.md).** It carries the quality floor, the accessibility constraints, and the reflexes that separate built from assembled. Skip it only for planning-only work. On a native platform, [platforms.md](reference/platforms.md) governs structure, controls, and motion, and its numbers replace the web ones.
+After init writes PRODUCT.md, resume without rerunning `impeccable context`; init loads the native platform reference itself when the platform it recorded is `ios`, `android`, or `adaptive`.
+
+**Pin / Unpin:** `.agents/skills/impeccable/scripts/impeccable pin <pin|unpin> <command>` creates or removes a standalone `$<command>` shortcut. Report the script's result concisely; relay stderr verbatim on error.
+
+**Hooks:** `$impeccable hooks <on|off|status|ignore-rule|ignore-file|ignore-value|reset>` manages the design detector hook for this project (auto-runs the detector after UI file edits and surfaces findings). Load [reference/hooks.md](reference/hooks.md) when the user invokes it with any argument.
+
+**Doctor:** `$impeccable doctor` reports and repairs drift between this project's Impeccable artifacts (PRODUCT.md, DESIGN.md and its sidecar, config, surface briefs, the hook) and what this version reads. Load [reference/doctor.md](reference/doctor.md) when the user invokes it, or when they ask what is out of date, stale, or needs refreshing. A `CONTEXT_STALE` directive in Setup's output is the cheap subset of the same report; act on it there per its own instructions rather than running doctor unasked.
+
+**Never repair drift as a side effect of a design task.** A `CONTEXT_STALE` finding is reported, not acted on, unless the user asks. The one exception is a finding marked `auto`, which the next write to that file performs anyway.

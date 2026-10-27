@@ -71,12 +71,7 @@ Reach here for the edges:
 - **A code-analysis question the tools can't fully answer** → try other built-in MCP tools first. If the user explicitly needs raw store inspection, use the graph DB path resolved by `tracedecay_storage_status` (never a hardcoded repo-local path), and answer complex structural queries with SQL.
 - **You spawn an Explore agent anyway** (the user asked, or a sub-task requires it) → put this in the agent prompt:
 
-  > This session has a resolved active tracedecay project. Use `tracedecay_context` as your ONLY exploration tool. Call it with your question in plain English. Do not call Read, glob, grep, or list_directory — the source sections returned by tracedecay_context ARE the relevant code. Follow the call budget in the tool description. Pass `seen_node_ids` from each response to the next call's `exclude_node_ids`.
+  > This repo is enrolled in TraceDecay. Start with `tracedecay_context` (plain-English question) and let its results choose which files to read; use `tracedecay_grep` for literal text. Follow the call budget in the tool description and pass `seen_node_ids` from each response into the next call.
 
 - **An extractor, schema, or tool could answer something natively but doesn't** → propose that the user open an issue at https://github.com/ScriptedAlchemy/tracedecay describing the limitation, and **remind them to strip sensitive or proprietary code from the description first**.
-
-<!-- TRACEDECAY MEMORY DIGEST START -->
-## TraceDecay memory digest
-
-No durable facts exported yet. Approved facts from TraceDecay project memory will appear here; use MCP tool `tracedecay_recall` for on-demand memory search.
-<!-- TRACEDECAY MEMORY DIGEST END -->
+- **Past decisions or project memory** → `tracedecay_fact_store_search` for durable facts, `tracedecay_message_search` / `tracedecay_lcm_grep` for session history.
