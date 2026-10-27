@@ -14,8 +14,8 @@ which Pi also loads via `settings.json` `skills`, and `tracedecay update` refres
 
 ## Availability
 
-Stock install: binary `~/.local/bin/tracedecay`, LaunchAgent `com.tracedecay.daemon`,
-data `~/.tracedecay`. Run `tracedecay daemon status` once per session; exit 0
+Stock install: binary `~/.local/bin/tracedecay`, daemon service (Linux: systemd user
+unit `tracedecay.service`; macOS: LaunchAgent `com.tracedecay.daemon`), data `~/.tracedecay`. Run `tracedecay daemon status` once per session; exit 0
 (`protocol: Ready`) means it is serving. A socket file alone proves nothing. On
 non-zero exit use normal code tools, and do not start, restart, update, or
 reinstall the daemon unless the user asks. Do not retry failed calls in a loop.
@@ -28,9 +28,13 @@ enrolling unasked. When a result's freshness line is not `fresh`, say so.
 
 - **Pi:** MCP server `tracedecay` (`~/.pi/agent/mcp.json`, `tracedecay serve`).
   Call `mcp({ tool: "tracedecay_context", args: "{\"task\":\"…\"}" })`, or the
-  `mcp__tracedecay` namespace proxy when exposed. The stock
-  `tracedecay install --agent pi` refuses here because `~/.pi` is a symlink into
-  `~/.dotfiles`; that `doctor` warning is expected.
+  `mcp__tracedecay` namespace proxy when exposed. The server resolves its project
+  from Pi's launch cwd and ignores `project_selector` (upstream bug, beta.92):
+  started outside an enrolled repo, calls answer `project_required`; use the CLI
+  form with `project_selector` instead. Do not run `tracedecay install --agent pi`:
+  it writes `~/.pi/agent/extensions/tracedecay` registering all ~230 tools
+  (~800 KB schemas) into every Pi session; the lazy MCP proxy is deliberate, so
+  `doctor`'s "Pi not integrated" warning is expected.
 - **Claude Code:** plugin `tracedecay@tracedecay`; tools are namespaced
   (`mcp__plugin_tracedecay_graph__tracedecay_context`) and often deferred — load
   schemas with `ToolSearch` first.
