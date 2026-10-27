@@ -1,3 +1,5 @@
+# OrbStack is macOS-only.
+test (uname) = Darwin; or return
 
 # Added by OrbStack: command-line tools and integration
 # This won't be added again if you remove it.

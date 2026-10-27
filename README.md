@@ -1,10 +1,10 @@
 # Dotfiles
 
-A comprehensive, automated dotfiles management system for macOS development environments. Features a powerful CLI tool for setup, maintenance, and environment management.
+A comprehensive, automated dotfiles management system for macOS and Arch/CachyOS Linux development environments. Features a powerful CLI tool for setup, maintenance, and environment management.
 
 ## Overview
 
-This repository contains my personal development environment configuration, managed through a custom CLI tool called `dot`. It uses GNU Stow for symlink management and Homebrew for packages. The daily workflow follows dmmulroy's Ghostty → Herdr → Git worktree setup, substituting Zed for Neovim.
+This repository contains my personal development environment configuration, managed through a custom CLI tool called `dot`. It uses GNU Stow for symlink management, and Homebrew (macOS) or pacman/AUR (Linux) for packages. The daily workflow follows dmmulroy's Ghostty → Herdr → Git worktree setup, substituting Zed for Neovim.
 
 ### Key Features
 
@@ -307,9 +307,28 @@ dot package remove docker base  # Remove docker from base bundle only
 
 ### Prerequisites
 
-- macOS (Intel or Apple Silicon)
+- macOS (Intel or Apple Silicon), or Arch/CachyOS Linux
 - Internet connection
 - Terminal access
+
+### Linux (Arch/CachyOS)
+
+`./dot init` detects Linux and swaps the macOS-only steps:
+
+| macOS | Linux |
+|-------|-------|
+| Homebrew + `packages/bundle` | `sudo pacman -S --needed` from `packages/bundle.pacman`, AUR (`yay`/`paru`) from `packages/bundle.aur` |
+| `brew "herdr"` | Herdr's checksum-verified installer → `~/.local/bin` |
+| `brew "plannotator-tui"` | Pinned GitHub release binary, SHA-256 verified → `~/.local/bin` |
+| Bun, Vite+, pi, CUA Driver | Same installers (all user-space) |
+
+- `sudo` is only used when it can succeed (passwordless or an interactive terminal). Otherwise init continues and prints the exact `pacman`/`yay` command to run.
+- macOS-only tools (CleanShot, OrbStack, Raycast, Scroll Reverser, Mole) have no Linux entry. Fish snippets for Homebrew and OrbStack are guarded to Darwin.
+- `config.fish` layers on the CachyOS base config (`/usr/share/cachyos-fish-config`) when present.
+- `dot package`, `dot check-packages` and `dot retry-failed` are Homebrew-only; on Linux edit the manifests instead. `dot update` leaves system upgrades to `sudo pacman -Syu`.
+- CUA Driver drives X11 apps on Linux; under a Wayland session it only reaches XWayland windows.
+- If `~/.pi` already exists as a real directory, init links `~/.pi/node_modules` to the repo-owned pi install. `dot update` bumps pi inside the `package.json` ranges with `npm update` (pi cannot self-update a repo-local install).
+- No sudo for stow? `dot stow` needs `stow` on `PATH`; extract the Arch `stow` package into `~/.local` as a fallback.
 
 ### First-Time Setup
 

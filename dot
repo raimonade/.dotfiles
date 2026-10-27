@@ -22,6 +22,10 @@ readonly PACKAGES_DIR="${DOTFILES_DIR}/packages"
 readonly HOME_DIR="${DOTFILES_DIR}/home"
 readonly HERDR_PLUGIN_SOURCES_FILE="${HOME_DIR}/.config/herdr/plugins.txt"
 readonly CUA_DRIVER_VERSION="cua-driver-rs-v0.24.0"
+readonly PLANNOTATOR_TUI_VERSION="v0.9.4"
+readonly HERDR_INSTALL_URL="https://herdr.dev/install.sh"
+# DOT_OS lets tests force a platform; otherwise follow the running kernel.
+readonly DOT_OS="${DOT_OS:-$(uname -s)}"
 readonly GITHUB_EMAIL="raimonds.korzenevskis@gmail.com"
 readonly GITHUB_PRIVATE_KEY_PATH="${HOME}/.ssh/id_ed25519_github"
 readonly LEGACY_GITHUB_PRIVATE_KEY_PATH="${HOME}/.ssh/key.pub"
@@ -59,6 +63,61 @@ __print_step() {
 
 __command_exists() {
     command -v "$1" >/dev/null 2>&1
+}
+
+__is_macos() {
+    [[ "$DOT_OS" == "Darwin" ]]
+}
+
+__is_linux() {
+    [[ "$DOT_OS" == "Linux" ]]
+}
+
+# Homebrew-driven commands (package/check-packages/retry-failed) have no Linux
+# equivalent; point at the pacman manifests instead of failing obscurely.
+__require_homebrew_command() {
+    if __is_macos; then
+        return 0
+    fi
+    __print_error "'$1' manages Homebrew bundles and is macOS-only"
+    __print_info "On Linux edit packages/bundle.pacman or packages/bundle.aur, then run '${SCRIPT_NAME} init'"
+    return 1
+}
+
+# The account's login shell. $SHELL can be stale (inherited from the parent
+# process), so prefer the passwd entry where it exists, resolved through
+# symlinks (/bin -> /usr/bin on merged-usr systems).
+__login_shell() {
+    local shell_path=""
+    if __command_exists getent; then
+        shell_path=$(getent passwd "$(id -un)" | cut -d: -f7)
+    fi
+    shell_path="${shell_path:-$SHELL}"
+    readlink -f "$shell_path" 2>/dev/null || echo "$shell_path"
+}
+
+# Copy stdin to the system clipboard when a clipboard tool exists.
+__copy_to_clipboard() {
+    if __command_exists pbcopy; then
+        pbcopy
+    elif __command_exists wl-copy; then
+        wl-copy
+    elif __command_exists xclip; then
+        xclip -selection clipboard
+    else
+        return 1
+    fi
+}
+
+# Print a manifest's package names, dropping comments and blank lines.
+__read_package_manifest() {
+    local manifest="$1" line
+    [[ -f "$manifest" ]] || return 0
+    while IFS= read -r line || [[ -n "$line" ]]; do
+        line="${line%%#*}"
+        line="${line//[[:space:]]/}"
+        [[ -n "$line" ]] && printf '%s\n' "$line"
+    done < "$manifest"
 }
 
 __confirm() {
@@ -199,12 +258,25 @@ __require_no_args() {
 #   doctor      – "true" = include in doctor dev-tools check, "false" = skip
 #
 # Order matters: steps run top-to-bottom in cmd_init.
-TOOL_REGISTRY=(
-    "Homebrew          ;; brew ;; fn:__install_homebrew     ;; true  ;; -         ;; true"
-    "Brewfile packages ;; -    ;; fn:__install_packages     ;; true  ;; -         ;; false"
-    "Stow dotfiles     ;; -    ;; fn:__stow_dotfiles        ;; true  ;; -         ;; false"
-    "Bun               ;; bun  ;; fn:__install_bun          ;; true  ;; -         ;; true"
-    "Herdr plugins     ;; -    ;; fn:__sync_herdr_plugins   ;; true  ;; -         ;; false"
+if __is_linux; then
+    TOOL_REGISTRY=(
+        "System packages   ;; pacman ;; fn:__install_system_packages ;; false ;; -   ;; true"
+        "Stow dotfiles     ;; -    ;; fn:__stow_dotfiles        ;; true  ;; -         ;; false"
+        "Bun               ;; bun  ;; fn:__install_bun          ;; true  ;; -         ;; true"
+        "Herdr             ;; -    ;; fn:__install_herdr        ;; false ;; -         ;; false"
+        "plannotator-tui   ;; -    ;; fn:__install_plannotator_tui ;; false ;; -      ;; false"
+        "Herdr plugins     ;; -    ;; fn:__sync_herdr_plugins   ;; true  ;; -         ;; false"
+    )
+else
+    TOOL_REGISTRY=(
+        "Homebrew          ;; brew ;; fn:__install_homebrew     ;; true  ;; -         ;; true"
+        "Brewfile packages ;; -    ;; fn:__install_packages     ;; true  ;; -         ;; false"
+        "Stow dotfiles     ;; -    ;; fn:__stow_dotfiles        ;; true  ;; -         ;; false"
+        "Bun               ;; bun  ;; fn:__install_bun          ;; true  ;; -         ;; true"
+        "Herdr plugins     ;; -    ;; fn:__sync_herdr_plugins   ;; true  ;; -         ;; false"
+    )
+fi
+TOOL_REGISTRY+=(
     "Vite+             ;; vp   ;; fn:__install_vite_plus    ;; true  ;; -         ;; true"
     "pi                ;; pi   ;; fn:__install_pi           ;; true  ;; -         ;; true"
     "Computer MCP      ;; cua-driver ;; fn:__install_cua_driver ;; true  ;; -         ;; true"
@@ -394,19 +466,57 @@ __install_vite_plus() {
     fi
 }
 
+# Stow folds ~/.pi into a symlink to home/.pi only when ~/.pi did not exist.
+# When pi already created a real ~/.pi, expose the repo-owned install there so
+# the PATH hook in conf.d/vite-plus.fish (~/.pi/node_modules/.bin) resolves it.
+__link_pi_node_modules() {
+    local live="${HOME}/.pi"
+    local repo_modules="${DOTFILES_DIR}/home/.pi/node_modules"
+
+    [[ -d "$live" && ! -L "$live" && -d "$repo_modules" ]] || return 0
+    [[ -e "${live}/node_modules" || -L "${live}/node_modules" ]] && return 0
+
+    ln -s "$repo_modules" "${live}/node_modules"
+    __print_success "Linked ~/.pi/node_modules to the dotfiles pi install"
+}
+
 __install_pi() {
     local pi_bin="$DOTFILES_DIR/home/.pi/node_modules/.bin/pi"
 
     if [[ -x "$pi_bin" ]]; then
         __print_success "pi is already installed"
+        __link_pi_node_modules
         return 0
     fi
 
     __print_info "Installing pi..."
     if npm install --prefix "$DOTFILES_DIR/home/.pi"; then
         __print_success "pi installed successfully"
+        __link_pi_node_modules
     else
         __print_error "Failed to install pi"
+        return 1
+    fi
+}
+
+# pi cannot self-update a repo-local install, so bump the workspace pin with
+# npm (stays inside the package.json ranges), then update its packages.
+__update_pi() {
+    if ! __command_exists pi; then
+        __print_warning "pi is not installed; skipping pi update"
+        return 0
+    fi
+
+    __print_info "Updating pi and configured packages..."
+    if [[ -x "$DOTFILES_DIR/home/.pi/node_modules/.bin/pi" ]]; then
+        (cd "$DOTFILES_DIR/home/.pi" \
+            && npm update @earendil-works/pi-coding-agent @earendil-works/pi-ai @earendil-works/pi-tui) \
+            || { __print_error "Failed to update the pi runtime"; return 1; }
+    fi
+    if (cd "$DOTFILES_DIR" && pi update --extensions); then
+        __print_success "pi and configured packages updated"
+    else
+        __print_error "Failed to update pi packages"
         return 1
     fi
 }
@@ -438,6 +548,147 @@ __install_cua_driver() {
     fi
 
     __print_success "Cua Driver is installed with telemetry disabled"
+}
+
+# Run sudo only when it can succeed: passwordless, or an interactive terminal
+# where the user can type a password. Otherwise report the command to run.
+__can_sudo() {
+    sudo -n true 2>/dev/null || [[ -t 0 && -t 1 ]]
+}
+
+# Linux counterpart of the Brewfile step: pacman for official packages and
+# yay/paru for AUR. Missing privileges never abort init; the exact command is
+# printed so it can be run later.
+__install_system_packages() {
+    if ! __command_exists pacman; then
+        __print_warning "pacman not found; install the packages listed in ${PACKAGES_DIR}/bundle.pacman manually"
+        return 0
+    fi
+
+    local missing=() aur_missing=() package
+    while IFS= read -r package; do
+        missing+=("$package")
+    done < <(__read_package_manifest "${PACKAGES_DIR}/bundle.pacman" | xargs -r pacman -T 2>/dev/null || true)
+
+    if [[ ${#missing[@]} -eq 0 ]]; then
+        __print_success "All pacman packages are installed"
+    elif __can_sudo; then
+        __print_info "Installing ${#missing[@]} pacman packages: ${missing[*]}"
+        if sudo pacman -S --needed "${missing[@]}"; then
+            __print_success "pacman packages installed"
+        else
+            __print_warning "pacman failed; retry: sudo pacman -S --needed ${missing[*]}"
+        fi
+    else
+        __print_warning "sudo unavailable; run: sudo pacman -S --needed ${missing[*]}"
+    fi
+
+    while IFS= read -r package; do
+        aur_missing+=("$package")
+    done < <(__read_package_manifest "${PACKAGES_DIR}/bundle.aur" | xargs -r pacman -T 2>/dev/null || true)
+
+    if [[ ${#aur_missing[@]} -eq 0 ]]; then
+        return 0
+    fi
+
+    local aur_helper=""
+    if __command_exists yay; then
+        aur_helper=yay
+    elif __command_exists paru; then
+        aur_helper=paru
+    fi
+
+    if [[ -z "$aur_helper" ]]; then
+        __print_warning "No AUR helper (yay/paru); install manually: ${aur_missing[*]}"
+    elif __can_sudo; then
+        __print_info "Installing AUR packages: ${aur_missing[*]}"
+        "$aur_helper" -S --needed "${aur_missing[@]}" \
+            || __print_warning "AUR install failed; retry: $aur_helper -S --needed ${aur_missing[*]}"
+    else
+        __print_warning "sudo unavailable; run: $aur_helper -S --needed ${aur_missing[*]}"
+    fi
+}
+
+# Herdr ships a checksum-verified user-space installer (-> ~/.local/bin). On
+# macOS it comes from the Brewfile instead.
+__install_herdr() {
+    if __command_exists herdr; then
+        __print_success "Herdr is already installed"
+        return 0
+    fi
+
+    if __is_macos; then
+        __print_warning "Herdr is installed by the Brewfile on macOS"
+        return 0
+    fi
+
+    local installer
+    installer=$(mktemp)
+    __print_info "Downloading the Herdr installer..."
+    if ! curl -fsSL "$HERDR_INSTALL_URL" -o "$installer"; then
+        rm -f "$installer"
+        __print_error "Failed to download the Herdr installer"
+        return 1
+    fi
+
+    if sh "$installer"; then
+        rm -f "$installer"
+        __print_success "Herdr installed to ~/.local/bin"
+    else
+        rm -f "$installer"
+        __print_error "Failed to install Herdr"
+        return 1
+    fi
+}
+
+# plannotator-tui is a Homebrew formula on macOS and a pinned GitHub release
+# binary on Linux, verified against the release's SHA256SUMS.
+__install_plannotator_tui() {
+    if __command_exists plannotator-tui; then
+        __print_success "plannotator-tui is already installed"
+        return 0
+    fi
+
+    if __is_macos; then
+        __print_warning "plannotator-tui is installed by the Brewfile on macOS"
+        return 0
+    fi
+
+    local arch asset
+    case "$(uname -m)" in
+        x86_64|amd64) arch="x86_64" ;;
+        aarch64|arm64) arch="aarch64" ;;
+        *)
+            __print_error "Unsupported architecture for plannotator-tui: $(uname -m)"
+            return 1
+            ;;
+    esac
+    asset="plannotator-tui-${arch}-unknown-linux-gnu"
+
+    local base="https://github.com/plannotator/plannotator-tui/releases/download/${PLANNOTATOR_TUI_VERSION}"
+    local work expected actual
+    work=$(mktemp -d)
+
+    __print_info "Downloading plannotator-tui ${PLANNOTATOR_TUI_VERSION}..."
+    if ! curl -fsSL "${base}/${asset}" -o "${work}/${asset}" \
+        || ! curl -fsSL "${base}/SHA256SUMS" -o "${work}/SHA256SUMS"; then
+        rm -rf "$work"
+        __print_error "Failed to download plannotator-tui"
+        return 1
+    fi
+
+    expected=$(awk -v asset="$asset" '$2 == asset || $2 == "*" asset { print $1; exit }' "${work}/SHA256SUMS")
+    actual=$(sha256sum "${work}/${asset}" | awk '{ print $1 }')
+    if [[ -z "$expected" || "$expected" != "$actual" ]]; then
+        rm -rf "$work"
+        __print_error "plannotator-tui checksum did not match"
+        return 1
+    fi
+
+    mkdir -p "${HOME}/.local/bin"
+    install -m 755 "${work}/${asset}" "${HOME}/.local/bin/plannotator-tui"
+    rm -rf "$work"
+    __print_success "plannotator-tui installed to ~/.local/bin"
 }
 
 __install_packages() {
@@ -545,6 +796,16 @@ __clear_skill_overlay_collisions() {
 # write to them), so they are seeded from the repo instead of stowed.
 readonly CLAUDE_SEEDED_FILES=(CLAUDE.md settings.json)
 
+# Directories apps and installers write into. They must exist as real
+# directories before stowing; on a fresh machine stow would otherwise fold
+# them into symlinks and every app would write its state into this repo.
+readonly STOW_REAL_DIRS=(
+    .agents .claude .claude/agents .claude/commands .claude/rules .claude/skills
+    .codex .config .config/fish .config/ghostty .config/git .config/nvim
+    .config/opencode .config/ripgrep .config/zed .cursor .local .local/bin
+    .local/lib .plannotator
+)
+
 # Prints the file with machine-local keys removed, for drift comparison.
 __claude_seed_view() {
     if [[ "$1" == *.json ]]; then
@@ -560,6 +821,7 @@ __seed_claude_user_files() {
     for name in "${CLAUDE_SEEDED_FILES[@]}"; do
         repo="${HOME_DIR}/.claude/${name}"
         live="${HOME}/.claude/${name}"
+        [[ -f "$repo" ]] || continue
         if [[ ! -e "$live" ]]; then
             cp "$repo" "$live" && __print_success "Seeded ~/.claude/${name}"
         elif ! cmp -s <(__claude_seed_view "$repo") <(__claude_seed_view "$live"); then
@@ -572,11 +834,20 @@ __stow_dotfiles() {
 
     if ! __command_exists stow; then
         __print_error "GNU Stow is not installed"
-        __print_info "Please install stow via Homebrew: brew install stow"
+        if __is_linux; then
+            __print_info "Please install stow: sudo pacman -S stow"
+        else
+            __print_info "Please install stow via Homebrew: brew install stow"
+        fi
         return 1
     fi
 
     __clear_skill_overlay_collisions
+
+    local real_dir
+    for real_dir in "${STOW_REAL_DIRS[@]}"; do
+        [[ -d "${HOME_DIR}/${real_dir}" && ! -L "${HOME}/${real_dir}" ]] && mkdir -p "${HOME}/${real_dir}"
+    done
 
     __print_info "Stowing files from ${HOME_DIR} to ${HOME}..."
 
@@ -608,7 +879,7 @@ __generate_ssh_key() {
     if ssh-keygen -t ed25519 -C "$GITHUB_EMAIL" -f "$GITHUB_PRIVATE_KEY_PATH" -N ""; then
         __print_success "SSH key generated successfully"
         __print_info "Add the public key to GitHub:"
-        echo "  pbcopy < ${GITHUB_PRIVATE_KEY_PATH}.pub"
+        echo "  cat ${GITHUB_PRIVATE_KEY_PATH}.pub   # copy it to your clipboard"
         echo "  Then go to: GitHub > Settings > SSH and GPG keys > New SSH key"
     else
         __print_error "Failed to generate SSH key"
@@ -635,6 +906,9 @@ __install_font() {
     local font_temp_dir
     font_temp_dir=$(mktemp -d)
     local font_install_dir="${HOME}/Library/Fonts"
+    if __is_linux; then
+        font_install_dir="${HOME}/.local/share/fonts"
+    fi
 
     __print_info "Cloning font repository..."
     if GIT_SSH_COMMAND="ssh -i '$github_private_key' -o IdentitiesOnly=yes" git clone "$FONT_REPO_URL" "$font_temp_dir"; then
@@ -650,6 +924,7 @@ __install_font() {
         done < <(find "$font_temp_dir" -type f \( -name '*.otf' -o -name '*.ttf' \) -print0)
 
         if [[ $font_count -gt 0 ]]; then
+            __is_linux && __command_exists fc-cache && fc-cache -f "$font_install_dir" >/dev/null
             __print_success "Installed $font_count font files"
         else
             __print_warning "No font files found in repository"
@@ -781,11 +1056,10 @@ EOF
     fi
 
     # Copy public key to clipboard
-    if __command_exists pbcopy; then
-        pbcopy < "${key_path}.pub"
+    if __copy_to_clipboard < "${key_path}.pub"; then
         __print_success "Public key copied to clipboard!"
     else
-        __print_warning "pbcopy not available, skipping clipboard copy"
+        __print_warning "No clipboard tool (pbcopy/wl-copy/xclip), skipping clipboard copy"
     fi
 
     # Display instructions
@@ -829,7 +1103,7 @@ __setup_fish_shell() {
     fi
 
     # Set fish as default shell
-    if [[ "$SHELL" != "$fish_path" ]]; then
+    if [[ "$(__login_shell)" != "$(readlink -f "$fish_path")" ]]; then
         __print_info "Setting Fish as default shell..."
         if chsh -s "$fish_path"; then
             __print_success "Default shell changed to Fish"
@@ -892,37 +1166,41 @@ cmd_update() {
         return 1
     fi
 
-    __print_info "Updating Homebrew..."
-    # WARP adds latency that triggers brew's curl speed-limit abort
-    # Pre-download API files to work around this
-    if pgrep -q "Cloudflare WARP"; then
-        __print_info "Cloudflare WARP detected, pre-downloading Homebrew API..."
-        local api_cache="$HOME/Library/Caches/Homebrew/api"
-        mkdir -p "$api_cache"
-        curl -fsSL -o "$api_cache/formula.jws.json" "https://formulae.brew.sh/api/formula.jws.json" 2>/dev/null
-        curl -fsSL -o "$api_cache/cask.jws.json" "https://formulae.brew.sh/api/cask.jws.json" 2>/dev/null
-    fi
-    if ! brew update; then
-        __print_error "Failed to update Homebrew"
-        return 1
-    fi
-
-    local outdated
-    if ! outdated=$(brew outdated); then
-        __print_error "Failed to check outdated packages"
-        return 1
-    fi
-
-    if [[ -z "$outdated" ]]; then
-        __print_success "All packages are already up to date"
+    if __is_linux; then
+        __print_info "System packages are not upgraded here; run: sudo pacman -Syu"
     else
-        __print_info "The following packages can be upgraded:"
-        echo "$outdated"
-        if brew upgrade --yes; then
-            __print_success "Packages updated"
-        else
-            __print_error "Failed to upgrade packages"
+        __print_info "Updating Homebrew..."
+        # WARP adds latency that triggers brew's curl speed-limit abort
+        # Pre-download API files to work around this
+        if pgrep -q "Cloudflare WARP"; then
+            __print_info "Cloudflare WARP detected, pre-downloading Homebrew API..."
+            local api_cache="$HOME/Library/Caches/Homebrew/api"
+            mkdir -p "$api_cache"
+            curl -fsSL -o "$api_cache/formula.jws.json" "https://formulae.brew.sh/api/formula.jws.json" 2>/dev/null
+            curl -fsSL -o "$api_cache/cask.jws.json" "https://formulae.brew.sh/api/cask.jws.json" 2>/dev/null
+        fi
+        if ! brew update; then
+            __print_error "Failed to update Homebrew"
             return 1
+        fi
+
+        local outdated
+        if ! outdated=$(brew outdated); then
+            __print_error "Failed to check outdated packages"
+            return 1
+        fi
+
+        if [[ -z "$outdated" ]]; then
+            __print_success "All packages are already up to date"
+        else
+            __print_info "The following packages can be upgraded:"
+            echo "$outdated"
+            if brew upgrade --yes; then
+                __print_success "Packages updated"
+            else
+                __print_error "Failed to upgrade packages"
+                return 1
+            fi
         fi
     fi
 
@@ -944,17 +1222,7 @@ cmd_update() {
     __sync_herdr_plugins || return 1
 
     # Update pi and its configured packages.
-    if __command_exists pi; then
-        __print_info "Updating pi and configured packages..."
-        if (cd "$DOTFILES_DIR" && pi update --all); then
-            __print_success "pi and configured packages updated"
-        else
-            __print_error "Failed to update pi and configured packages"
-            return 1
-        fi
-    else
-        __print_warning "pi is not installed; skipping pi update"
-    fi
+    __update_pi
 }
 
 cmd_doctor() {
@@ -963,8 +1231,14 @@ cmd_doctor() {
 
     local issues=0
 
-    # Check Homebrew
-    if __command_exists brew; then
+    # Check the platform package manager
+    if __is_linux; then
+        if __command_exists pacman; then
+            __print_success "pacman available"
+        else
+            __print_warning "pacman not found; Linux package manifests target Arch/CachyOS"
+        fi
+    elif __command_exists brew; then
         __print_success "Homebrew installed"
     else
         __print_error "Homebrew not installed"
@@ -982,7 +1256,7 @@ cmd_doctor() {
     # Check Fish
     if __command_exists fish; then
         __print_success "Fish shell installed"
-        if [[ "$SHELL" == "$(command -v fish)" ]]; then
+        if [[ "$(__login_shell)" == "$(readlink -f "$(command -v fish)")" ]]; then
             __print_success "Fish is default shell"
         else
             __print_warning "Fish is not default shell"
@@ -1626,6 +1900,7 @@ EOF
 }
 
 cmd_retry_failed() {
+    __require_homebrew_command retry-failed || return 1
     __require_no_args retry-failed "$@" || return 1
     __print_header "Retrying failed package installations"
 
@@ -1694,6 +1969,7 @@ cmd_retry_failed() {
 }
 
 cmd_check_packages() {
+    __require_homebrew_command check-packages || return 1
     __require_no_args check-packages "$@" || return 1
     __print_header "Checking installed packages"
 
@@ -1783,6 +2059,7 @@ cmd_check_packages() {
 }
 
 cmd_package() {
+    __require_homebrew_command package || return 1
     local subcommand="${1:-list}"
     shift || true
 

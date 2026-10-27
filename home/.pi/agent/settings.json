@@ -19,9 +19,11 @@
     "git:github.com/dmmulroy/pi-web-tools",
     "npm:pi-claude-bridge"
   ],
-  "extensions": [],
+  "extensions": [
+    "-builtin:mcp"
+  ],
   "skills": [
-    "/Users/rkorzenevskis/.claude/plugins/marketplaces/tracedecay/skills"
+    "~/.claude/plugins/marketplaces/tracedecay/skills"
   ],
   "enableSkillCommands": true,
   "subagents": {
