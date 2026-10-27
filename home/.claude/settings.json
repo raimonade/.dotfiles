@@ -126,11 +126,6 @@
     "defaultMode": "auto"
   },
   "model": "claude-opus-5-5",
-  "enabledMcpjsonServers": [
-    "context7",
-    "grep-app",
-    "excalidraw"
-  ],
   "skillOverrides": {
     "codiff": "off",
     "plannotator-setup-goal": "off",
@@ -189,26 +184,6 @@
         ]
       }
     ],
-    "PreToolUse": [
-      {
-        "matcher": "tool == \"Bash\" && (tool_input.command matches \"(npm|pnpm|yarn|bun|cargo|pytest|vitest)\")",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "if [ \"$HERDR_ENV\" != \"1\" ]; then echo '[Hook] Consider using Herdr for persistent long-running commands' >&2; fi"
-          }
-        ]
-      },
-      {
-        "matcher": "tool == \"Write\" && tool_input.file_path matches \"\\.md$\" && !(tool_input.file_path matches \"(README|CLAUDE)\\.md$\")",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "echo '[Hook] Warning: Creating .md file. Are you sure this is necessary?' >&2"
-          }
-        ]
-      }
-    ],
     "Stop": [
       {
         "matcher": "*",
@@ -248,21 +223,20 @@
     "command": "input=$(cat); user=$(whoami); dir=$(basename \"$(echo \"$input\" | jq -r '.workspace.current_dir')\"); branch=$(cd \"$(echo \"$input\" | jq -r '.workspace.current_dir')\" 2>/dev/null && git -c core.useBuiltinFSMonitor=false rev-parse --abbrev-ref HEAD 2>/dev/null || echo ''); model=$(echo \"$input\" | jq -r '.model.display_name'); remaining=$(echo \"$input\" | jq -r '.context_window.remaining_percentage // empty'); status=\"$user in $dir\"; [ -n \"$branch\" ] && status=\"$status on $branch\"; status=\"$status | $model\"; [ -n \"$remaining\" ] && status=\"$status | context: ${remaining}% remaining\"; echo \"$status\""
   },
   "enabledPlugins": {
-    "plannotator@plannotator": false,
-    "posthog@claude-plugins-official": false,
-    "tracedecay@tracedecay": true
+    "tracedecay@tracedecay": true,
+    "paper-desktop@paper": true
   },
   "extraKnownMarketplaces": {
-    "plannotator": {
-      "source": {
-        "source": "github",
-        "repo": "backnotprop/plannotator"
-      }
-    },
     "tracedecay": {
       "source": {
         "source": "directory",
         "path": "/Users/rkorzenevskis/.claude/plugins/marketplaces/tracedecay"
+      }
+    },
+    "paper": {
+      "source": {
+        "source": "github",
+        "repo": "paper-design/agent-plugins"
       }
     }
   },
