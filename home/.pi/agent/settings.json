@@ -15,7 +15,6 @@
     "npm:pi-mcp-adapter",
     "npm:pi-subagents",
     "npm:pi-context",
-    "npm:@gotgenes/pi-anthropic-auth",
     "git:github.com/dmmulroy/pi-web-tools",
     "npm:pi-claude-bridge"
   ],

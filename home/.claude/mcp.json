@@ -1,31 +1,3 @@
 {
-  "mcpServers": {
-    "context7": {
-      "type": "http",
-      "url": "https://mcp.context7.com/mcp"
-    },
-    "grep-app": {
-      "type": "http",
-      "url": "https://mcp.grep.app"
-    },
-"excalidraw": {
-      "type": "http",
-      "url": "https://excalidraw-mcp-app.vercel.app/mcp"
-    },
-    "Sanity": {
-      "type": "http",
-      "url": "https://mcp.sanity.io"
-    },
-    "mobbin": {
-      "type": "http",
-      "url": "https://api.mobbin.com/mcp"
-    },
-    "css-studio": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "cssstudio"
-      ]
-    }
-  }
+  "mcpServers": {}
 }

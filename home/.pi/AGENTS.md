@@ -18,12 +18,6 @@ Global Pi config, synced through dotfiles and stowed into `~/.pi`. npm workspace
     ├── cloak.json        # secret masking patterns
     ├── chains/           # reusable declarative pi-subagents workflows
     ├── extensions/       # local TypeScript extensions and workspace packages
-    │   ├── cfpaste/            # Cloudflare Markdown paste commands
-    │   ├── opencode-cloudflare/ # Cloudflare gateway provider helpers
-    │   ├── save-md/            # save markdown helper extension
-    │   ├── pi-ephemeral/       # project-local ephemeral resource picker
-    │   ├── pi-skill-toggle/    # interactive skill frontmatter toggler
-    │   ├── pi-worktrees/       # interactive canonical worktree manager
     │   ├── pi-cloak/           # secret cloaking extension
     │   ├── session-footer/     # responsive session telemetry footer
     │   ├── todos/              # file-backed todo tool
@@ -38,10 +32,7 @@ Canonical shared skills live in `../.agents/skills/` in this repository and are 
 ```bash
 npm install                        # refresh extension workspace deps
 npm run check                      # typecheck/test local Pi extensions
-npm run test:cfpaste               # cfpaste tests only
-npm run test:save-md               # save-md tests only
 npm run test:session-footer        # responsive footer tests only
-npm run check --workspace=pi-worktrees-extension # worktree manager checks only
 ```
 
 ## Where to look
@@ -94,7 +85,5 @@ Unique `agent/skills/` links, `ephemeral/`, and nested `.pi/` runtime directorie
 ## Notes
 
 - MCP is provided by `npm:pi-mcp-adapter`; keep server config in `agent/mcp.json`.
-- `pi-skill-toggle` provides `/toggle-skills` for making installed skills invocable or manual-only.
-- `pi-ephemeral` provides `/ephemeral` for selecting project-local resources.
 - The `computer` MCP server uses CUA Driver; its canonical operating guidance lives in `home/.agents/skills/cua-driver/`.
 - Treat local provider/model overlays as private information: never expose them in version-controlled content.

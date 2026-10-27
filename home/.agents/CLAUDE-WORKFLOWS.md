@@ -49,15 +49,14 @@ Prompt with: precise problem + relevant file paths. Ask for concrete outcomes.
 
 **Effort estimates**: S (<1hr), M (1-3hr), L (1-2d), XL (>2d)
 
-**Tool usage**: read-only access — read, grep, glob, WebFetch, WebSearch. Use MCP tools freely: opensrc (explore 3rd-party source), context7 (library docs/API examples), grep_app (public GitHub usage patterns).
+**Tool usage**: read-only access — read, grep, glob, WebFetch, WebSearch, and read-only `gh` (3rd-party source, public usage patterns).
 
 ### Librarian
 Invoke for: understanding 3rd party libraries/packages, exploring remote repositories, discovering open source patterns. Show response in full — do not summarize.
 
 **Tool arsenal**:
-- opensrc — deep exploration of specific repos, comparing implementations
-- grep_app — find usage patterns across public GitHub repos
-- context7 — library docs, API examples, usage patterns
+- `gh repo clone` / `gh search code` — deep exploration of specific repos, usage patterns across public GitHub
+- WebFetch — official library docs, API references, release notes
 - WebSearch — current docs, blog posts, discussions
 
 **Output**: direct answer + source links + diagrams if architecture involved. Link to GitHub source with fluent markdown links.
