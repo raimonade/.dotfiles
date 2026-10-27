@@ -5,7 +5,7 @@
 #   herdr, plannotator-tui  -> user-space installers in `dot` (~/.local/bin)
 #   bun, vite-plus, pi      -> user-space installers in `dot`
 #   gnu-sed                 -> GNU sed is already the system sed on Linux
-#   mole, cleanshot, orbstack, raycast, scroll-reverser -> macOS only
+#   mole, orbstack, raycast -> macOS only
 #   zed                     -> install Zed yourself (stable: `pacman -S zed`)
 ast-grep
 bitwarden
@@ -26,17 +26,12 @@ gnupg
 imagemagick
 jq
 just
-lua-language-server
-luacheck
 obs-studio
 python
 ripgrep
 shellcheck
 starship
 stow
-stylua
 tree
-tree-sitter-cli
 wget
-yaak
 zoxide

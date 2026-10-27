@@ -816,7 +816,7 @@ readonly CLAUDE_SEEDED_FILES=(CLAUDE.md settings.json)
 # them into symlinks and every app would write its state into this repo.
 readonly STOW_REAL_DIRS=(
     .agents .claude .claude/agents .claude/commands .claude/rules .claude/skills
-    .codex .config .config/fish .config/ghostty .config/git .config/nvim
+    .config .config/fish .config/ghostty .config/git
     .config/opencode .config/ripgrep .config/zed .cursor .local .local/bin
     .local/lib .plannotator
 )

@@ -10,7 +10,7 @@ canonical cross-agent instructions by branch:
 - `~/.agents/CLAUDE-WORKFLOWS.md` — model/subagent/delegation choices; Oracle/Librarian reviews; tracedecay escape hatches
 
 The two marked blocks below are always-on subsets, hand-synced across
-`~/.agents/`, `~/.codex/AGENTS.md`, and `~/.pi/agent/AGENTS.md` — edit the source
+`~/.agents/` and `~/.pi/agent/AGENTS.md` — edit the source
 and every copy together. Everything after them is Claude-only override.
 
 ## Deliver the actual request

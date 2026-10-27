@@ -42,7 +42,6 @@ After installation, the `dot` command will be available globally for ongoing man
 │   │   ├── git/       # Git configuration
 │   │   ├── zed/       # Primary editor + blocking CLI adapter
 │   │   ├── herdr/     # Primary workspace manager
-│   │   ├── nvim/      # Retained config, outside the primary workflow
 │   │   └── ...
 │   └── .ideavimrc     # IntelliJ IDEA Vim config
 ├── packages/

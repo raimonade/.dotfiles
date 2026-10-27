@@ -21,7 +21,6 @@ macOS and Arch/CachyOS dev env via GNU Stow. Ghostty + Herdr + Fish + Zed + Git 
 ├── home/.config/       # Stowed to ~/.config/
 │   ├── fish/           # Shell (AGENTS.md)
 │   ├── zed/            # Primary editor; includes blocking CLI adapter
-│   ├── nvim/           # Retained config, not part of the primary workflow
 │   ├── herdr/          # Primary workspace/tab/pane manager
 │   ├── git/            # Git config
 │   ├── ghostty/        # Terminal; launch Herdr explicitly per upstream

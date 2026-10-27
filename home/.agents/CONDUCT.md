@@ -7,10 +7,10 @@ _whether and how much_ to build; the installed `coding-standards` skill governs
 how to build TypeScript. This file governs _how to work_: process,
 communication, grounding, verification, safety.
 
-Each agent entry file (`~/.claude/CLAUDE.md`, `~/.codex/AGENTS.md`,
+Each agent entry file (`~/.claude/CLAUDE.md`,
 `~/.pi/agent/AGENTS.md`) embeds a condensed always-on subset of this file inside
 `<!-- BEGIN/END agent-conduct-essentials -->` markers. Edit the essentials here,
-then re-sync all three blocks together (hand-synced, like the policy block).
+then re-sync both blocks together (hand-synced, like the policy block).
 
 ## Identity
 
