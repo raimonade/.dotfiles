@@ -128,6 +128,15 @@
       "installedAt": "2026-07-15T16:15:09.850Z",
       "updatedAt": "2026-10-20T11:43:04.000Z"
     },
+    "emil-design-eng": {
+      "source": "emilkowalski/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/emilkowalski/skills.git",
+      "skillPath": "skills/emil-design-eng/SKILL.md",
+      "skillFolderHash": "db7a20dc1d8ad26a0307dcb45ebc79fc372f5c69",
+      "installedAt": "2026-09-27T08:27:41.141Z",
+      "updatedAt": "2026-09-27T08:27:41.141Z"
+    },
     "explain-interface": {
       "source": "jakubkrehel/skills",
       "sourceType": "github",
@@ -190,6 +199,15 @@
       "skillFolderHash": "3905d758fb70b4e660038456f86ac02343a3dedf",
       "installedAt": "2026-10-27T00:00:00.000Z",
       "updatedAt": "2026-10-27T01:27:19-07:00"
+    },
+    "mobile-native": {
+      "source": "emilkowalski/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/emilkowalski/skills.git",
+      "skillPath": "skills/mobile-native/SKILL.md",
+      "skillFolderHash": "fdad6e6e91d8bbfda7164c7027269a8389dbadcd",
+      "installedAt": "2026-09-27T08:27:41.143Z",
+      "updatedAt": "2026-09-27T08:27:41.143Z"
     },
     "modernize": {
       "source": "t3dotgg/tstack",
