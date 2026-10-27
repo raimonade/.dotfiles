@@ -278,6 +278,7 @@ else
 fi
 TOOL_REGISTRY+=(
     "Vite+             ;; vp   ;; fn:__install_vite_plus    ;; true  ;; -         ;; true"
+    "OpenCode          ;; opencode ;; fn:__install_opencode ;; false ;; -         ;; true"
     "pi                ;; pi   ;; fn:__install_pi           ;; true  ;; -         ;; true"
     "Computer MCP      ;; cua-driver ;; fn:__install_cua_driver ;; true  ;; -         ;; true"
     "treg              ;; treg ;; fn:__install_treg         ;; false ;; SKIP_TREG ;; true"
@@ -463,6 +464,37 @@ __install_vite_plus() {
         __print_success "Vite+ installed successfully"
     else
         __print_error "Failed to install Vite+"
+        return 1
+    fi
+}
+
+# OpenCode 2 ships as @opencode/cli; the old opencode-ai (1.x) and
+# @opencode-ai/cli (beta) packages claim the same opencode/opencode2 bins.
+__vp_global_has() {
+    vp list -g 2>/dev/null | sed $'s/\x1b\\[[0-9;]*m//g' | grep -q "^$1@"
+}
+
+__install_opencode() {
+    if ! __command_exists vp; then
+        __print_warning "Vite+ is not installed; skipping OpenCode"
+        return 0
+    fi
+    if __vp_global_has @opencode/cli; then
+        __print_success "OpenCode is already installed"
+        return 0
+    fi
+
+    __print_info "Installing OpenCode..."
+    local legacy
+    for legacy in opencode-ai @opencode-ai/cli; do
+        if __vp_global_has "$legacy"; then
+            vp uninstall -g "$legacy" || return 1
+        fi
+    done
+    if vp install -g @opencode/cli; then
+        __print_success "OpenCode installed successfully"
+    else
+        __print_error "Failed to install OpenCode"
         return 1
     fi
 }
@@ -1246,6 +1278,15 @@ cmd_update() {
             __print_success "Node.js runtimes up to date"
         else
             __print_warning "Failed to update Node.js runtimes"
+        fi
+
+        if __vp_global_has @opencode/cli; then
+            __print_info "Updating OpenCode..."
+            if vp update -g @opencode/cli; then
+                __print_success "OpenCode up to date"
+            else
+                __print_warning "Failed to update OpenCode"
+            fi
         fi
     fi
 
