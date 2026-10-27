@@ -13,3 +13,6 @@ set -gx MANPAGER 'less -R'
 
 # Add dotfiles directory to PATH for 'dot' command
 fish_add_path ~/.dotfiles
+
+# opencode
+test -d ~/.opencode/bin; and fish_add_path ~/.opencode/bin

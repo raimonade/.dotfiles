@@ -66,7 +66,7 @@ bounded remaining todo with exact checks per item.
 
 - Treat work as incomplete until the requested deliverables are done or explicitly marked blocked
 - A successful edit/tool call or a green typecheck, lint, or build is not proof of completion; those gates do not prove runtime behavior. For non-trivial logic, verify behavior at boundaries, edge cases, and relevant build modes.
-- Before reporting success, run the smallest relevant verification for the changed surface area (test/typecheck/lint/build) and report the exact command and result; prefer targeted checks during iteration, and broader checks before final handoff when the repo provides them
+- Before reporting success, run the smallest relevant verification for the changed surface area (test/typecheck/lint/build) and report the exact command and result; prefer targeted checks during iteration, and run a repo's broader gate only at the step it names (e.g. before marking a PR ready)
 - If verification could not be run, say exactly what was not run and why
 - Write tests that verify semantically correct behavior, and confirm relevant tests actually execute rather than silently skip
 - Failing tests are acceptable when they expose genuine bugs and test correct behavior; do not change, skip, or delete tests just to make the suite pass
@@ -78,13 +78,14 @@ Distilled from a 2026-09-14 audit of two months of sessions; each line names a m
 - **Source of truth first.** Before porting, extending, or measuring anything found on disk (a fork, worktree, donor copy, screenshot, old pitch), confirm it is the authoritative artifact; name it in the first status line and treat every other copy as abandoned until told otherwise.
 - **Reference means parity.** When the user names a reference (a donor file, a screenshot, a product like Linear/Cloudflare/sim, a component they supplied), reproduce it exactly and cite file:line; a deviation is a question to the user, never a taste decision.
 - **Visible outcome before plumbing.** Ship the change the user can see or run (the page layout, the working endpoint) first; componentization, abstractions, and cleanup follow it, never precede it.
+- **Verdicts name the gaps.** A "can we use / fill / build X" answer lists what X yields for the product's core outputs and what each missing input blocks (an audience file: ratings and GRP need only percentages; contacts, reach in people and CPT need a population universe), before any code. A gap found while building reaches the user that turn, with its consequence, even when code already handles it.
 - **Done means observed.** "Done" is a live-data check, a screenshot, or a command output the user can read; anything else is reported as unverified, with the exact step not run.
 - **Resolve the referent before acting.** A collective noun (backlog, hanging PRs, the app, everything left) resolves to a concrete list, path, or filter, echoed back in one line, before any edit or subagent spawn.
 - **Read the mode.** A description, complaint, or thinking-aloud turn gets an assessment; "plan" or "review" gets a document and zero edits; an explicit implement ask gets the full change without permission questions for reversible steps.
 - **Environment before diagnosis.** On any incident, state prod vs dev, org/tenant, and the repro you will use before reading logs or code.
 - **Never idle, always narrate.** One line before each step and after each result; when a background agent or command finishes, read its output and continue immediately; a harness "continue" while work is in flight gets a status line, never an empty reply.
 - **Resume with the plan.** After a limits reset, compaction, or bare "continue", restate the next item, its proof, and the stop condition in one line before acting; carry standing user rules (subagent policy, model routing, forbidden paths) into every compaction summary and progress file.
-- **Parallel lanes are fenced and capped.** Fan out only over independent tickets: one owner per lane, one worktree per branch, no two lanes on one file, at most six concurrent, typecheck and CI serialized behind them. A coupled problem (red main, a migration, a design decision) gets one owner. Before spawning, check the active roster so no task runs twice; verifier lanes fan out freely, cross-vendor builder lanes do not.
+- **Parallel lanes are fenced and capped.** Fan out only over independent tickets: one owner per lane, one worktree per branch, no two lanes on one file, at most six concurrent, typecheck and CI serialized behind them. Lanes run targeted tests for their own files; the integrator runs the repo's affected check once per integration, and a lane brief never prescribes whole-repo checks. A coupled problem (red main, a migration, a design decision) gets one owner. Before spawning, check the active roster so no task runs twice; verifier lanes fan out freely, cross-vendor builder lanes do not.
 - **Merging red is a named debt.** When asked to skip a check or merge red, comply, and record in the PR or handoff which check is red and who owns the fix.
 
 ## Error message design
@@ -97,7 +98,7 @@ Distilled from a 2026-09-14 audit of two months of sessions; each line names a m
 ## Skills
 
 - Treat skills as active project memory, not optional decoration: at the start of non-trivial work, scan available skill names/descriptions and load (`read` the `SKILL.md`) any model-invoked skill whose description materially overlaps the task before planning or editing
-- Before final handoff of any non-trivial code change, load the `meaningful-contribution` skill and satisfy its proof gate
+- Before handing off a behavior change (bug fix, feature, migration) as done or PR-ready, load the `meaningful-contribution` skill and satisfy its proof gate; its proof scales with risk, and the repo's own gates replace its generic checks. Behavior-preserving refactors, type-only, config and docs edits need only the repo's targeted check. A test you watched fail before the fix is the counterfactual; don't break the fix again to re-prove it
 - Re-check skills when the task changes shape (debug → refactor, API → UI, TypeScript → Cloudflare, etc.)
 - Follow a loaded skill's reading order and reference links, but keep use proportional: load lightweight/reference skills eagerly; run heavy user-invoked workflows and broad scans only when asked
 - If a relevant skill exists but is unavailable in the current harness, say so briefly and follow local repo rules

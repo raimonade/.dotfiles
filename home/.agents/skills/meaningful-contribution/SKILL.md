@@ -1,6 +1,6 @@
 ---
 name: meaningful-contribution
-description: "Proof gate for non-trivial code changes. Use before declaring an implementation, bug fix, refactor, migration, or PR-ready change complete, and before commit or PR handoff. Requires a task-owned stopwatch and laboratory, observed behavior, durable automated proof, counterfactual failure when practical, edge-case accounting, honest types and names, and an evidence report. Skip read-only work and trivial docs or config edits."
+description: "Proof gate for behavior changes. Use before declaring a bug fix, feature, or migration done or PR-ready. Requires a task-owned stopwatch and laboratory, observed behavior, durable automated proof, counterfactual failure when practical, edge-case accounting, honest types and names, and an evidence report. Skip read-only work, behavior-preserving refactors, type-only edits, and docs or config edits."
 ---
 
 # Meaningful Contribution
@@ -23,7 +23,7 @@ Prefer an existing evaluator. When none can support the claim, add the smallest 
 1. **State the claim.** Name the behavior changed, its expected inputs and outputs, and what happens outside the happy path.
 2. **Observe it working.** Exercise the real boundary when the surface permits it: browser, CLI, API, worker, migration, or other runtime seam. Record the path and result. If runtime observation is unavailable, state why and preserve that as residual risk.
 3. **Leave durable proof.** Add or update the smallest automated test that fails when the behavior breaks. Confirm the relevant test actually executes. A typecheck, lint, or build complements this proof; it does not replace it.
-4. **Establish the counterfactual.** Show that the proof fails without the fix. Prefer an already-recorded red test. Otherwise, when safe, temporarily remove only the task-owned behavior change, run the targeted test, then restore it. If that would risk unrelated work or require disproportionate setup, explain why the counterfactual was not run.
+4. **Establish the counterfactual.** A test written red-first, or watched failing before the fix, already is the counterfactual: cite that run and move on. Otherwise show that the proof fails without the fix: when safe, temporarily remove only the task-owned behavior change, run the targeted test, then restore it. If that would risk unrelated work or require disproportionate setup, explain why the counterfactual was not run.
 5. **Test edges.** Cover the invalid, empty, boundary, failure, and worst-path cases relevant to the claim. Make each outcome explicit rather than relying on an accidental default.
 6. **Audit the model.** Verify names, types, and interfaces describe what they actually contain and accept. Check that the local abstraction agrees with the wider domain model. Rename or remodel contradictions instead of explaining them away with comments.
 7. **Report evidence.** Before handoff, list exact automated commands and results, manual/runtime checks, the counterfactual result or reason omitted, and remaining risk.

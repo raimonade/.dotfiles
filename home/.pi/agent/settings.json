@@ -52,5 +52,6 @@
   "theme": "zenbones-ansi",
   "markdown": {
     "codeBlockIndent": ""
-  }
+  },
+  "hideThinkingBlock": false
 }
