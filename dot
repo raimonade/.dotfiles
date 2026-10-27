@@ -1154,14 +1154,6 @@ __setup_fish_shell() {
     else
         __print_success "Fish is already the default shell"
     fi
-
-    # Install Fisher plugins
-    __print_info "Installing Fish plugins..."
-    if fish -c "fisher install jhillyerd/plugin-git" 2>/dev/null; then
-        __print_success "Fish plugins installed"
-    else
-        __print_warning "Failed to install some Fish plugins"
-    fi
 }
 
 # Command functions
@@ -1365,13 +1357,6 @@ cmd_doctor() {
 
     if [[ ${#missing_tools[@]} -gt 0 ]]; then
         __print_warning "Missing development tools: ${missing_tools[*]}"
-    fi
-
-    # Check if Fish plugins are installed (Fisher)
-    if __command_exists fish && fish -c "type fisher" >/dev/null 2>&1; then
-        __print_success "Fisher (Fish plugin manager) is available"
-    elif __command_exists fish; then
-        __print_warning "Fisher not installed - Fish plugins may not work"
     fi
 
     # Check if dotfiles directory is in PATH
