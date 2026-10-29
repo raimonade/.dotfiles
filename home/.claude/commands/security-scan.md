@@ -2,7 +2,7 @@
 
 Perform security review on recent changes:
 
-Use the security-reviewer agent to check for:
+Check for:
 1. Hardcoded secrets, API keys, credentials
 2. SQL injection vulnerabilities
 3. XSS vulnerabilities

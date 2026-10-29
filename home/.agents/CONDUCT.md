@@ -28,6 +28,10 @@ then re-sync both blocks together (hand-synced, like the policy block).
 - A newer user instruction beats a conflicting earlier one; earlier instructions that do not conflict stay in force
 - Apply language-, framework-, and project-specific preferences only where they bear on the current codebase — where the repository already follows a different intentional pattern, keep that pattern rather than introducing a convention just to satisfy these instructions
 
+## Models
+
+- Claude models only: Opus, Sonnet, Haiku. Never Fable (too expensive) and never GPT/OpenAI/Codex by any route, for the session, subagents, or delegation
+
 ## Development style
 
 - Prefer small, validated increments: for behavior changes and bug fixes, use pragmatic red-green-refactor when possible, usually one test at a time
@@ -45,7 +49,7 @@ bounded remaining todo with exact checks per item.
 - Same-context switch supported: let the capable model ground the approach, create a bounded todo list with a validation step per item, establish a repro/failing test when applicable, and land the first small valid edit. Then switch while preserving tool/read history, the current diff, and todos; remove any planning-only instruction before execution continues.
 - Context cannot transfer across sessions, harnesses, or providers: prefer letting the executor own discovery and implementation. A sequential handoff that is still justified transfers the trajectory bundle; the receiver verifies inherited evidence and rereads only edit-critical spans.
 - Large parallel task: ground shared invariants first, then delegate genuinely independent slices with explicit ownership, acceptance criteria, and verification. Integrate and review the combined result; avoid telephone chains of plan summaries.
-- Switch models only when expected savings exceed cache invalidation, repeated reads, handoff, review, and quality risk. Different provider prices, local models, and multi-session scale can change that decision; if uncertain, keep the current agent.
+- Switch models only when expected savings exceed cache invalidation, repeated reads, handoff, review, and quality risk. Model-tier prices and multi-session scale can change that decision; if uncertain, keep the current agent.
 - Preserve plan review when the user asks for it, ambiguity needs a decision, or work is irreversible, security-sensitive, migration-heavy, or a long-running program whose spec/tickets are durable artifacts. Read-only research, design direction, and review are also valid terminal tasks, not failed implementation handoffs.
 - A first edit proves the approach touched reality; it does not prove correctness. Keep proportionate independent review and final behavioral verification. Benchmark rules against finding a known answer do not imply banning legitimate external research in real work.
 - **Plannotator:** proactively offer its local review surface when a non-trivial plan contains user-facing choices, meaningful scope tradeoffs, or multiple implementation phases, and when a substantial diff is ready for human review. Use `plannotator annotate <file-or-dir>` for plans/specs and `plannotator review --git` for local diffs. Keep tiny, routine, or explicitly urgent work inline. Offer; do not block execution unless the user asks for approval-gated review.
@@ -85,7 +89,7 @@ Distilled from a 2026-09-14 audit of two months of sessions; each line names a m
 - **Environment before diagnosis.** On any incident, state prod vs dev, org/tenant, and the repro you will use before reading logs or code.
 - **Never idle, always narrate.** One line before each step and after each result; when a background agent or command finishes, read its output and continue immediately; a harness "continue" while work is in flight gets a status line, never an empty reply.
 - **Resume with the plan.** After a limits reset, compaction, or bare "continue", restate the next item, its proof, and the stop condition in one line before acting; carry standing user rules (subagent policy, model routing, forbidden paths) into every compaction summary and progress file.
-- **Parallel lanes are fenced and capped.** Fan out only over independent tickets: one owner per lane, one worktree per branch, no two lanes on one file, at most six concurrent, typecheck and CI serialized behind them. Lanes run targeted tests for their own files; the integrator runs the repo's affected check once per integration, and a lane brief never prescribes whole-repo checks. A coupled problem (red main, a migration, a design decision) gets one owner. Before spawning, check the active roster so no task runs twice; verifier lanes fan out freely, cross-vendor builder lanes do not.
+- **Parallel lanes are fenced and capped.** Fan out only over independent tickets: one owner per lane, one worktree per branch, no two lanes on one file, at most six concurrent, typecheck and CI serialized behind them. Lanes run targeted tests for their own files; the integrator runs the repo's affected check once per integration, and a lane brief never prescribes whole-repo checks. A coupled problem (red main, a migration, a design decision) gets one owner. Before spawning, check the active roster so no task runs twice; verifier lanes fan out freely, builder lanes do not.
 - **Merging red is a named debt.** When asked to skip a check or merge red, comply, and record in the PR or handoff which check is red and who owns the fix.
 
 ## Error message design

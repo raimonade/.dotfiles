@@ -2,32 +2,31 @@
 
 Third-party integrations (Mobbin, Linear, Axiom, PostHog, Vercel, Cloudflare,
 Context7, Better Stack, Google Analytics, grep.app, Payload, ui.sh …)
-are configured **once** in Executor and shared across every agent. A single local
-daemon (`~/.executor/data.db`) backs all of them. Do **not** try to reach these
-services with WebFetch/curl — most require auth Executor already holds, so a raw
-fetch returns 401/403. Go through Executor instead.
+are configured **once** in Executor 2 and shared across every agent. Do **not**
+try to reach these services with WebFetch/curl — most require auth Executor
+already holds, so a raw fetch returns 401/403. Go through Executor instead.
 
-## Universal surface — the CLI (works identically for Pi, Codex, Claude)
+## Surface — the `executor` MCP server
 
-```sh
-executor tools integrations            # list everything configured + tool counts
-executor tools search "<intent>"       # find a tool → returns its dotted `path`
-executor tools describe <path>         # input/output JSON + TypeScript schema
-executor call <path> '{"k":"v"}'       # invoke a tool
-executor web                           # open the UI to add/configure integrations
-```
+Executor 2 is reached only over MCP (HTTP, `http://127.0.0.1:4790/mcp` in the
+Claude, Pi and Cursor configs). The Executor 1 CLI (`executor tools …`,
+`executor call`, `executor web`) no longer exists; do not use it. The server
+exposes `skills`, `search`, `describe`, `call`, `execute` and `resume`:
 
-Paths look like `mobbin.user.mobbin.search_screens`. Always `describe` first to
-get required args (skipping one returns a validation error, not a default):
+- `search({ query: "<intent>" })` → each tool's exact `path` (`tools.<slug>.<tool>`) and input type
+- `describe({ paths })` → full signatures. Always `describe` before calling;
+  never guess argument names (a missing one is a validation error, not a default)
+- `call({ calls: { path, input } })` → invoke; an array of calls runs concurrently
+- `execute` → a JavaScript program for when one call's result feeds another or a
+  large result should be filtered first; inside it paths are async functions,
+  e.g. `await tools.mobbin.search_screens({ … })`
+- `skills({})` lists Executor's own skills; read `code-mode` before using `execute`
+- A call that pauses for approval or input: show the request to the user and
+  `resume` it; never repeat the call
 
-```sh
-executor tools describe mobbin.user.mobbin.search_screens
-# → { query: string; platform: "ios" | "web"; … }
-executor call mobbin.user.mobbin.search_screens '{"query":"settings billing","platform":"web"}'
-```
-
-Reach order for "what do I have / just call X": `executor tools integrations` /
-`search` → `describe` → `call`. No MCP round-trip needed.
+Reach order for "what do I have / just call X": `search` → `describe` → `call`.
+Prefer `call` for a single call, `execute` only to chain or to filter large or
+rich output (Mobbin returns inline screen images / an interactive gallery).
 
 ## Local Plane
 
@@ -49,13 +48,3 @@ available screenshots:
 - Results that look stale or carry no freshness signal → rerun a narrower,
   freshness-biased query before citing or copying the pattern.
 - An older-looking screenshot as the only option → call that out explicitly.
-
-## Claude-only note
-
-Claude also has the `executor` MCP server (`execute` TypeScript sandbox + `skills`
-tools). Prefer it over the CLI only when you need to **chain** several tool calls
-in one sandbox run, or when a tool emits **rich content** (Mobbin returns inline
-screen images / an interactive gallery that the CLI can't render). Inside the
-sandbox: `await tools["<path>"](args)` — e.g.
-`await tools["mobbin.user.mobbin.search_screens"]({ query: "..." })`. For a plain
-"list what's connected" or a single call, the shell CLI above is faster.

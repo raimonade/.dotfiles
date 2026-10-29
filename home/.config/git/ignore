@@ -1,2 +1,16 @@
 **/.claude/settings.local.json
 **/CLAUDE.local.md
+
+# macOS
+.DS_Store
+
+# Local env files and secrets (keep committed templates visible)
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+.dev.vars
+
+# Agent scratch space
+.agent-scratch/

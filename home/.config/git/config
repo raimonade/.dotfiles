@@ -16,6 +16,9 @@
 	editor = "~/.config/zed/zed-wait.sh"
 	fsmonitor = true
 
+[diff]
+	algorithm = "histogram"
+
 [fetch]
 	prune = true
 	writeCommitGraph = true
@@ -34,6 +37,9 @@
 
 [pull]
 	rebase = true
+
+[push]
+	autoSetupRemote = true
 
 [rebase]
 	updateRefs = true
