@@ -81,3 +81,9 @@ home/.pi/agent/extensions/**/node_modules/
 
 # Local work notes, linked from ~/.dotfiles-private (may contain employer details)
 home/.pi/notes
+
+# generated per machine by `tracedecay install --agent pi` (absolute binary path)
+home/.pi/agent/extensions/tracedecay/
+# platform engines fetched by impeccable on each host
+home/.agents/skills/impeccable/scripts/bin/linux-x64/
+home/.claude/skills/impeccable/scripts/bin/linux-x64/

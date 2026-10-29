@@ -1,6 +1,0 @@
-{
-  "name": "tracedecay-pi-extension",
-  "private": true,
-  "version": "1.0.0-beta.92",
-  "description": "TraceDecay code-graph tools, hooks, and commands for Pi (mirrors the Codex/Cursor plugin)."
-}
