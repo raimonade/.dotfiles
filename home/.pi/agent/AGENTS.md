@@ -49,7 +49,7 @@ Before handing off a behavior change (bug fix, feature, migration) as done or PR
 
 ## TraceDecay
 
-For open-ended navigation, call/impact analysis, cross-project context, or past-session recall, load the `tracedecay` skill before broad grep/file reading. It is available when `tracedecay daemon status` exits 0; otherwise use normal tools and do not start, restart, or reinstall it unasked.
+In an indexed repo, reach for the native `tracedecay_*` tools before `rg`/`grep`/whole-file reads: `tracedecay_context` (concept), `tracedecay_search`/`tracedecay_find_exact_symbol` (symbol), `tracedecay_grep` (literal/regex, returns enclosing symbol), `tracedecay_source_outline` → `tracedecay_source_body` (instead of reading a whole file), `tracedecay_callers`/`tracedecay_callees`/`tracedecay_impact` (before changing a shared symbol), `tracedecay_affected`/`tracedecay_test_map` (which tests), `tracedecay_diff_context` (reviews), `tracedecay_message_search` (past sessions). Plain tools stay right for a file you can already name, prose, and unindexed files. Other catalog tools are behind `mcp` server `tracedecay`; `tracedecay-cli` skill has the routes. If a tool reports the daemon unavailable, use normal tools; do not start, restart, or reinstall it unasked.
 
 ## Models and design
 
@@ -57,9 +57,20 @@ Claude models only: Opus, Sonnet, Haiku. Never Fable (too expensive) and never G
 
 Taste-heavy work (UI, UX, copy, visuals) takes design direction and final review from Opus. When Opus is the session model, do it in-session; otherwise run `claude -p --model 'claude-opus-5-5[1m]' --permission-mode plan "<self-contained brief>"` in the foreground, and pause if Opus is unavailable. Sonnet may implement once direction, a mock, or an established design-system pattern exists. Load `impeccable` and any `PRODUCT.md`/`DESIGN.md` first. Routing: `impeccable` builds and sets direction; the `better-*` skills are its rulebooks; UI review is `better-interface` (whole repo) or `interface-review` (a diff); motion is `animate`, `review-animations`, or `improve-animations`.
 
+## Token economy
+
+Every turn re-reads the whole context, so cost ≈ context size × turns. A 7-day audit (2026-10-28) found 63% of usage in sessions past 300k context; output was only 10%.
+
+- **One task per session.** When a PR merges, the user goal changes, or context passes ~200k, write a handoff (goal, state, diff/branch, next step, proof) and tell the user to start a fresh session from it. CI babysitting, rebases and conflict fixes never ride on a long design or audit context.
+- **No polling at large context.** Hand a CI/test/deploy wait to an async Haiku subagent (fresh context) that blocks on it and returns only exit code, failing names and a log path; the completion wake-up resumes you. If you must check in-thread, one call per check, `sleep` ≤ 200 s (240–300 s straddles the 5-minute cache lifetime and re-pays the whole context), no loops of many short sleeps.
+- **Small inputs into the parent.** Subagents return ≤2k tokens plus a file path; never read a child's full report or transcript, and never read the same file or image twice. Clip tool output by characters (`| cut -c1-200 | head -60`), view screenshots in a throwaway subagent, slice files with `rg -n` first.
+- **Cheapest capable model.** Opus plans, designs and reviews taste; Sonnet implements lanes, CI fixes, conflicts and data scripts; Haiku triages logs. Subagents start fresh; fork only when the brief depends on this conversation, and never fork into a different model.
+- **Run a gate once.** `check:ready` and other full gates run once; on failure rerun only the failed step.
+- **Batch edits** into one multi-edit call instead of one turn per tweak or heredoc rewrites.
+
 ## Long-running commands
 
-Never block a tool call on anything that can exceed ~5 minutes (release cuts, CI/E2E waits, deploys): start it detached (`nohup … > /tmp/<task>.log 2>&1 &`) and poll in short calls, reporting status each time. Never feed `/dev/null` to a confirmation prompt without the script's explicit yes flag and authorization. If a call is aborted, report what did and did not happen, remote side effects included.
+Never block a tool call on anything that can exceed ~5 minutes (release cuts, CI/E2E waits, deploys): start it detached (`nohup … > /tmp/<task>.log 2>&1 &`) and hand the wait to an async subagent or the completion wake-up (see Token economy), reporting status each time. Never feed `/dev/null` to a confirmation prompt without the script's explicit yes flag and authorization. If a call is aborted, report what did and did not happen, remote side effects included.
 
 ## Writes to production systems
 

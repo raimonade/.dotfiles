@@ -69,6 +69,17 @@ When porting behavior from a donor (LobeChat, any reference repo), read its actu
 
 Before your first `Grep`/`Glob`/`rg`/`find`/`Read` in a repo, call `tracedecay_context` with the task in plain English (load deferred schemas with `ToolSearch`). Use `tracedecay_search`, `tracedecay_callers`/`callees`/`impact` for symbols and `tracedecay_grep` for literal text. Never route codebase research to `Explore` or another agent while TraceDecay is available (check `tracedecay_status`); a spawned agent uses `tracedecay_context` as its only exploration tool. On MCP errors fall back to `tracedecay tool <name> --args '<json>'`.
 
+## Token economy
+
+Every turn re-reads the whole context, so cost ≈ context size × turns. A 7-day audit (2026-10-28) found 63% of usage in sessions past 300k context; output was only 10%.
+
+- **One task per session.** When a PR merges, the user goal changes, or context passes ~200k, write a handoff (goal, state, diff/branch, next step, proof) and tell the user to start a fresh session from it. CI babysitting, rebases and conflict fixes never ride on a long design or audit context.
+- **No polling at large context.** Hand a CI/test/deploy wait to an async Haiku subagent (fresh context) that blocks on it and returns only exit code, failing names and a log path; the completion wake-up resumes you. If you must check in-thread, one call per check, `sleep` ≤ 200 s (240–300 s straddles the 5-minute cache lifetime and re-pays the whole context), no loops of many short sleeps.
+- **Small inputs into the parent.** Subagents return ≤2k tokens plus a file path; never read a child's full report or transcript, and never read the same file or image twice. Clip tool output by characters (`| cut -c1-200 | head -60`), view screenshots in a throwaway subagent, slice files with `rg -n` first.
+- **Cheapest capable model.** Opus plans, designs and reviews taste; Sonnet implements lanes, CI fixes, conflicts and data scripts; Haiku triages logs. Subagents start fresh; fork only when the brief depends on this conversation, and never fork into a different model.
+- **Run a gate once.** `check:ready` and other full gates run once; on failure rerun only the failed step.
+- **Batch edits** into one multi-edit call instead of one turn per tweak or heredoc rewrites.
+
 ## Long-running commands and production writes
 
-Never block a tool call on anything that can exceed ~5 minutes: run it detached (`nohup … > /tmp/<task>.log 2>&1 &`) and poll in short calls. Bulk writes to a live system go one at a time, never parallel fan-out: time a single write, check health, continue in small sequential batches, and stop at the first timeout (2026-10-25: parallel Payload updates hung every spotwise.ai `/api` route).
+Never block a tool call on anything that can exceed ~5 minutes: run it detached (`nohup … > /tmp/<task>.log 2>&1 &`) and hand the wait to an async subagent or the completion wake-up (see Token economy). Bulk writes to a live system go one at a time, never parallel fan-out: time a single write, check health, continue in small sequential batches, and stop at the first timeout (2026-10-25: parallel Payload updates hung every spotwise.ai `/api` route).

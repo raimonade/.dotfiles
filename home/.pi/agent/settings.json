@@ -43,12 +43,35 @@
       },
       "write-a-skill": {
         "disabled": true
+      },
+      "oracle": {
+        "model": "claude-bridge/claude-opus-5-5"
       }
-    }
+    },
+    "defaultModel": "claude-bridge/claude-sonnet-5-5"
   },
   "theme": "zenbones-ansi",
   "markdown": {
     "codeBlockIndent": ""
   },
-  "hideThinkingBlock": false
+  "hideThinkingBlock": false,
+  "compaction": {
+    "modelOverrides": {
+      "claude-bridge/claude-opus-5-5": {
+        "reserveTokens": 750000
+      },
+      "claude-bridge/claude-opus-5": {
+        "reserveTokens": 750000
+      },
+      "claude-bridge/claude-sonnet-5-5": {
+        "reserveTokens": 750000
+      },
+      "claude-bridge/claude-sonnet-5": {
+        "reserveTokens": 750000
+      },
+      "claude-bridge/claude-haiku-5-5": {
+        "reserveTokens": 750000
+      }
+    }
+  }
 }

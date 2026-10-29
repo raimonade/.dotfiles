@@ -1,7 +1,8 @@
 {
   "env": {
     "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-5-5[1m]",
-    "CLAUDE_CODE_SUBAGENT_MODEL": "opus"
+    "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet",
+    "CLAUDE_AUTOCOMPACT_PCT_OVERRIDE": "25"
   },
   "attribution": {
     "commit": "",
