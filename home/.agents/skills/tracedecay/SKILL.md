@@ -27,16 +27,12 @@ enrolling unasked. When a result's freshness line is not `fresh`, say so.
 
 ## Transport by host
 
-- **Pi:** MCP server `tracedecay` (`~/.pi/agent/mcp.json`, `tracedecay serve`).
-  Call `mcp({ tool: "tracedecay_context", args: "{\"task\":\"…\"}" })`, or the
-  `mcp__tracedecay` namespace proxy when exposed. The server binds its project to
-  Pi's launch cwd. From an enrolled repo (incl. `~/.dotfiles`), `project_selector`
-  reaches other registered projects; from an unenrolled cwd every project call
-  answers `project_not_enrolled`, selector or not (beta.92) — use the CLI form
-  with `project_selector` there. Do not run `tracedecay install --agent pi`:
-  it writes `~/.pi/agent/extensions/tracedecay` registering all ~230 tools
-  (~800 KB schemas) into every Pi session; the lazy MCP proxy is deliberate, so
-  `doctor`'s "Pi not integrated" warning is expected.
+- **Pi:** native `tracedecay_*` tools from the `tracedecay` extension
+  (`~/.pi/agent/extensions/tracedecay`, a curated subset of the catalog); routes
+  are in the `tracedecay-cli` skill. Catalog tools without a native wrapper go
+  through the `tracedecay` MCP server (`~/.pi/agent/mcp.json`):
+  `mcp({ tool: "<name>", args: {...} })`. From an unenrolled cwd every project
+  call answers `project_not_enrolled`; pass `project_selector` or use the CLI.
 - **Claude Code:** plugin `tracedecay@tracedecay`; tools are namespaced
   (`mcp__plugin_tracedecay_graph__tracedecay_context`) and often deferred — load
   schemas with `ToolSearch` first.
