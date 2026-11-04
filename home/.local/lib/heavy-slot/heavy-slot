@@ -18,8 +18,9 @@ use strict;
 use warnings;
 use Cwd qw(abs_path getcwd);
 use Fcntl qw(:flock O_RDWR O_CREAT);
-use File::Basename qw(basename);
+use File::Basename qw(basename dirname);
 use File::Path qw(make_path);
+use JSON::PP ();
 
 my $tool = basename($0);
 my $script = abs_path($0);
@@ -39,6 +40,80 @@ sub positive_number {
 
 sub is_heavy {
     return (grep { /$HEAVY_TOKEN/ } @_) && !(grep { /$LONG_RUNNING_TOKEN/ } @_);
+}
+
+# A package script that takes the project's own slot (Spotwise: scripts/lib/heavy-check-slot.mjs via
+# with-heavy-slot, check-affected or test-related) must not also queue here. Resolves the script
+# `pnpm [--filter X | --dir D | -C D] [run] NAME` would run and reads its body.
+my $REPO_SLOT_SCRIPT = qr/with-heavy-slot|heavy-check-slot|check-affected\.mjs|test-related\.mjs/;
+
+sub read_scripts {
+    my ($dir) = @_;
+    open my $handle, '<', "$dir/package.json" or return {};
+    local $/;
+    my $manifest = eval { JSON::PP::decode_json(<$handle>) };
+    return ref $manifest eq 'HASH' && ref $manifest->{scripts} eq 'HASH' ? $manifest->{scripts} : {};
+}
+
+sub nearest_package_dir {
+    my $dir = $_[0];
+    while (1) {
+        return $dir if -f "$dir/package.json";
+        my $parent = dirname($dir);
+        return undef if $parent eq $dir;
+        $dir = $parent;
+    }
+}
+
+sub workspace_root {
+    my $dir = $_[0];
+    while (1) {
+        return $dir if -f "$dir/pnpm-workspace.yaml";
+        my $parent = dirname($dir);
+        return undef if $parent eq $dir;
+        $dir = $parent;
+    }
+}
+
+sub filter_dirs {
+    my ($filter) = @_;
+    my $root = workspace_root(getcwd()) // return ();
+    my $wanted = $filter =~ s{^\./}{}r;
+    my @matches;
+    for my $dir (glob("$root/apps/* $root/packages/* $root/e2e")) {
+        next unless -f "$dir/package.json";
+        my $relative = substr($dir, length($root) + 1);
+        open my $handle, '<', "$dir/package.json" or next;
+        local $/;
+        my $manifest = eval { JSON::PP::decode_json(<$handle>) } // {};
+        push @matches, $dir if $relative eq $wanted || (($manifest->{name} // '') eq $filter);
+    }
+    return @matches;
+}
+
+sub runs_repo_slotted_script {
+    return 0 unless $tool eq 'pnpm';
+    my @args = @_;
+    my (@dirs, @filters);
+    while (@args && $args[0] =~ /^-/) {
+        my $flag = shift @args;
+        if ($flag =~ /^(?:--dir|-C)$/) { push @dirs, shift(@args) // '' }
+        elsif ($flag =~ /^--dir=(.+)$/) { push @dirs, $1 }
+        elsif ($flag =~ /^(?:--filter|-F)$/) { push @filters, shift(@args) // '' }
+        elsif ($flag =~ /^--filter=(.+)$/) { push @filters, $1 }
+        else { return 0 }
+    }
+    shift @args if @args && $args[0] eq 'run';
+    my $name = $args[0] // return 0;
+    my @packages = @filters ? map { filter_dirs($_) } @filters
+        : @dirs ? map { abs_path($_) // () } @dirs
+        : (nearest_package_dir(getcwd()) // ());
+    return 0 unless @packages;
+    for my $dir (@packages) {
+        my $body = read_scripts($dir)->{$name} // return 0;
+        return 0 unless $body =~ $REPO_SLOT_SCRIPT;
+    }
+    return 1;
 }
 
 sub real_tool {
@@ -161,7 +236,8 @@ if ($tool eq 'heavy-slot') {
 my $real = real_tool();
 # A repo-owned slot (a project's own heavy-check slot script) already bounds this run: queueing
 # here too made a pre-push lint wait minutes behind other worktrees' full checks.
-if (($ENV{HEAVY_SLOT} // '') eq 'off' || $ENV{HEAVY_SLOT_HELD} || ($ENV{SPOTWISE_HEAVY_CHECK_SLOT_HELD} // '') eq '1' || !is_heavy(@ARGV)) {
+if (($ENV{HEAVY_SLOT} // '') eq 'off' || $ENV{HEAVY_SLOT_HELD} || ($ENV{SPOTWISE_HEAVY_CHECK_SLOT_HELD} // '') eq '1'
+    || !is_heavy(@ARGV) || runs_repo_slotted_script(@ARGV)) {
     exec { $real } $tool, @ARGV or die "heavy-slot: exec $real: $!\n";
 }
 run_in_slot($real, @ARGV);
