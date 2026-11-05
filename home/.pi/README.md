@@ -35,6 +35,7 @@ Current workspace-managed extensions:
 - `agent/extensions/opencode-cloudflare`
 - `agent/extensions/save-md`
 - `agent/extensions/session-footer`
+- `agent/extensions/herdr-codemode` (vendors `@herdr/sdk`; see its README)
 - `agent/extensions/pi-ephemeral`
 - `agent/extensions/pi-skill-toggle`
 - `agent/extensions/pi-worktrees`

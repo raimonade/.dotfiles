@@ -1,6 +1,7 @@
 ---
 name: herdr
 description: "Explicit-only control of an active Herdr session. Load only when the user names Herdr or an already-invoked workflow requires Herdr; never offer it as generic agent, terminal, or background-process orchestration. Requires HERDR_ENV=1."
+disable-model-invocation: true
 ---
 
 # Herdr
@@ -133,7 +134,7 @@ Use the kind requested by the user. Run `herdr agent` to inspect the installed k
 herdr agent start reviewer --kind claude --pane <returned-pane-id> -- <agent-args...>
 ```
 
-`agent start` returns only after Herdr detects the expected agent in the same pane and considers it ready for interactive input. It defaults to a 30-second startup timeout.
+A successful `agent start` returns only after Herdr detects the expected agent in the same pane and considers it ready for interactive input. If the agent is blocked during startup, the command returns `agent_not_ready` immediately but keeps the name available for `agent read` and `agent send-keys`. Wait until the agent becomes idle before prompting it. Startup defaults to a 30-second timeout.
 
 For delegate-and-return work, submit the prompt through the agent surface:
 

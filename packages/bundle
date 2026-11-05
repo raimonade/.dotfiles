@@ -2,6 +2,7 @@
 # Note: require_sha disabled to prevent installation failures
 cask_args appdir: "/Applications"
 
+tap "abue-ammar/tinycast"
 tap "plannotator/tap"
 
 brew "ast-grep"
@@ -40,4 +41,5 @@ cask "ghostty"
 cask "orbstack"
 cask "raycast"
 # cask "spotify"
+cask "abue-ammar/tinycast/tinycast"
 cask "zed@preview"
