@@ -18,5 +18,26 @@
     "mode": "system",
     "light": "plannotator",
     "dark": "plannotator"
+  },
+  "inboxSound": {
+    "dialogShownFor": "0.28.49"
+  },
+  "inboxListIntro": {
+    "shownAt": "2026-11-05T10:33:42.412Z"
+  },
+  "inboxSnoozeIntro": {},
+  "inboxVoiceIntro": {
+    "shownAt": "2026-11-05T10:33:42.416Z"
+  },
+  "inboxTool": {
+    "pi": true
+  },
+  "inboxAgentNotes": {
+    "asked": [
+      "qwen",
+      "pi",
+      "cursor"
+    ],
+    "offered": true
   }
 }

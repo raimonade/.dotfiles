@@ -4,7 +4,7 @@
   "collapseChangelog": true,
   "showHardwareCursor": true,
   "editorPaddingX": 0,
-  "defaultProvider": "claude-bridge",
+  "defaultProvider": "pi-claude-cli",
   "defaultModel": "claude-sonnet-5-5",
   "defaultThinkingLevel": "medium",
   "packages": [
@@ -16,7 +16,7 @@
     "npm:pi-subagents",
     "npm:pi-context",
     "git:github.com/dmmulroy/pi-web-tools",
-    "npm:pi-claude-bridge"
+    "git:github.com/dmmulroy/pi-claude-cli"
   ],
   "extensions": [
     "-builtin:mcp"
@@ -45,10 +45,10 @@
         "disabled": true
       },
       "oracle": {
-        "model": "claude-bridge/claude-opus-5-5"
+        "model": "pi-claude-cli/claude-opus-5-5"
       }
     },
-    "defaultModel": "claude-bridge/claude-sonnet-5-5"
+    "defaultModel": "pi-claude-cli/claude-sonnet-5-5"
   },
   "theme": "zenbones-ansi",
   "markdown": {
@@ -57,13 +57,13 @@
   "hideThinkingBlock": false,
   "compaction": {
     "modelOverrides": {
-      "claude-bridge/claude-opus-5-5": {
+      "pi-claude-cli/claude-opus-5-5": {
         "reserveTokens": 750000
       },
-      "claude-bridge/claude-sonnet-5-5": {
+      "pi-claude-cli/claude-sonnet-5-5": {
         "reserveTokens": 750000
       },
-      "claude-bridge/claude-haiku-5-5": {
+      "pi-claude-cli/claude-haiku-5-5": {
         "reserveTokens": 750000
       }
     }

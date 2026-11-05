@@ -87,3 +87,4 @@ home/.pi/agent/extensions/tracedecay/
 # platform engines fetched by impeccable on each host
 home/.agents/skills/impeccable/scripts/bin/linux-x64/
 home/.claude/skills/impeccable/scripts/bin/linux-x64/
+home/.agents/skills/account-id-tags/
