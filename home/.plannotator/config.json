@@ -25,7 +25,9 @@
   "inboxListIntro": {
     "shownAt": "2026-11-05T10:33:42.412Z"
   },
-  "inboxSnoozeIntro": {},
+  "inboxSnoozeIntro": {
+    "firstUseAt": "2026-11-05T10:34:15.236Z"
+  },
   "inboxVoiceIntro": {
     "shownAt": "2026-11-05T10:33:42.416Z"
   },

@@ -7,7 +7,7 @@ macOS and Arch/CachyOS dev env via GNU Stow. Ghostty + Herdr + Fish + Zed + Git 
 
 ## PRIORITY CHECK — REX CONFIG API AUDIT (WEEKLY)
 
-**Last audit: 2026-10-28**
+**Last audit: 2026-11-05**
 
 At the start of every session, compare this date with today. If it is **7 or
 more days old**, do this audit **before** the user's task (tell the user you
