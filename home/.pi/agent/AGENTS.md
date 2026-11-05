@@ -45,6 +45,8 @@ Always-on subset of `~/.agents/CONDUCT.md` (read it for the full set: identity, 
 
 At the start of non-trivial work, and whenever the task changes shape, read the `SKILL.md` of every model-invoked skill whose description overlaps it, before planning or editing. Run heavy user-invoked workflows and broad scans only when asked. A relevant skill missing from this harness → say so in one line and follow local repo rules.
 
+Load the `pr-writing` skill before opening or editing any pull request description.
+
 Before handing off a behavior change (bug fix, feature, migration) as done or PR-ready, satisfy the `meaningful-contribution` proof gate; its proof scales with risk and the repo's own gates replace its generic checks. Refactors, type-only, config and docs edits need only the repo's targeted check. A test you watched fail before the fix is the counterfactual.
 
 ## TraceDecay

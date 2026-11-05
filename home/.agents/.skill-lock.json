@@ -290,6 +290,16 @@
       "skillFolderHash": "ad2925850efb8973a72d2e666f7a975f9a2d4a9b",
       "installedAt": "2026-08-05T12:37:52.127Z",
       "updatedAt": "2026-10-20T11:43:14.658Z"
+    },
+    "pr-writing": {
+      "source": "hugorcd.com",
+      "sourceType": "well-known",
+      "sourceUrl": "https://hugorcd.com/.well-known/skills/pr-writing/SKILL.md",
+      "skillFolderHash": "",
+      "sourceBaseUrl": "https://hugorcd.com",
+      "wellKnownDigest": "sha256:e601463391c7b82e8e53045c5b812616db5521e61e2bf3b9c507fbaabc5e7f85",
+      "installedAt": "2026-11-05T09:52:52.210Z",
+      "updatedAt": "2026-11-05T09:52:52.210Z"
     }
   },
   "dismissed": {
