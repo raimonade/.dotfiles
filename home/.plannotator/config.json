@@ -32,7 +32,7 @@
     "shownAt": "2026-11-05T10:33:42.416Z"
   },
   "inboxTool": {
-    "pi": true
+    "pi": false
   },
   "inboxAgentNotes": {
     "asked": [
@@ -41,5 +41,9 @@
       "cursor"
     ],
     "offered": true
+  },
+  "inboxReminder": false,
+  "inboxNotifications": {
+    "dismissed": true
   }
 }
