@@ -2,14 +2,13 @@
 
 Personal defaults; a local repo `AGENTS.md` always wins. Pi workspace layout: `~/.pi/AGENTS.md`.
 Read on demand: `~/.agents/POLICY.md` (what / how much to build), `~/.agents/CONDUCT.md`
-(how to work), `~/.agents/EXECUTOR.md` (third-party integrations via `executor`), and the
-`coding-standards` skill before non-trivial TypeScript. The two marked blocks below are their
+(how to work), `~/.agents/EXECUTOR.md` (third-party integrations via `executor`). The two marked blocks below are their
 always-on subsets, hand-synced with `~/.claude/CLAUDE.md`.
 
 <!-- BEGIN engineering-decision-policy (canonical: ~/.agents/POLICY.md) -->
 ## Engineering decision policy
 
-Smallest *correct* solution, not smallest-looking diff. Minimality applies only after correctness, safety, and existing architecture are preserved — "write less" never means "validate less". Full policy: `~/.agents/POLICY.md`. TypeScript deep dive: load the installed `coding-standards` skill before non-trivial TypeScript work.
+Smallest *correct* solution, not smallest-looking diff. Minimality applies only after correctness, safety, and existing architecture are preserved — "write less" never means "validate less". Full policy: `~/.agents/POLICY.md`.
 
 1. **YAGNI first** — don't build what isn't needed; no speculative abstraction/dependency/config/file. Over-broad ask → ship the lazy version and name what you skipped.
 2. **Never trade away** (these outrank minimality): correctness/edge cases, security + trust-boundary validation, data-loss-safe error handling, accessibility, team-relied observability, anything explicitly requested.

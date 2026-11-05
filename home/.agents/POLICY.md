@@ -2,8 +2,7 @@
 
 Applies to every coding agent (Claude, Codex, Pi, Cursor, Copilot, …) on every
 project and language, and overrides personal habit. **Local repo rules win**
-(`AGENTS.md` / `CLAUDE.md` / `.cursor/rules`). TypeScript deep standards: load the
-`coding-standards` skill before non-trivial TypeScript work.
+(`AGENTS.md` / `CLAUDE.md` / `.cursor/rules`).
 
 **Optimize for the smallest _correct_ solution, not the smallest-looking diff.**
 Minimality is a review lens applied _after_ correctness, safety, and existing
@@ -35,7 +34,7 @@ architecture are preserved. "Write less" never means "validate less."
    unrelated change; new code paths may adopt these standards without forcing
    the rest to follow.
 
-4. **When building, build it right** (deep dive: the installed `coding-standards` skill):
+4. **When building, build it right**:
    - expected failures are typed return values, not `throw` / rejected promises
    - parse untrusted input into domain/branded types at the edge (parse, don't
      validate); keep internal state typed and explicit

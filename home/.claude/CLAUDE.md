@@ -3,8 +3,7 @@
 A local repo `AGENTS.md` / `CLAUDE.md` always wins. Read on demand: `~/.agents/POLICY.md` (what /
 how much to build), `~/.agents/CONDUCT.md` (how to work), `~/.agents/EXECUTOR.md` (Mobbin, Linear,
 Axiom, PostHog, Vercel and every other integration, via `executor`), `~/.agents/CLAUDE-WORKFLOWS.md`
-(model and delegation choices, Oracle/Librarian reviews), and the `coding-standards` skill before
-non-trivial TypeScript. The two marked blocks below are their always-on subsets, hand-synced with
+(model and delegation choices, Oracle/Librarian reviews). The two marked blocks below are their always-on subsets, hand-synced with
 `~/.pi/agent/AGENTS.md`; everything else here is Claude-only.
 
 ## Deliver the actual request
@@ -18,7 +17,7 @@ non-trivial TypeScript. The two marked blocks below are their always-on subsets,
 <!-- BEGIN engineering-decision-policy (canonical: ~/.agents/POLICY.md) -->
 ## Engineering decision policy
 
-Smallest *correct* solution, not smallest-looking diff. Minimality applies only after correctness, safety, and existing architecture are preserved — "write less" never means "validate less". Full policy: `~/.agents/POLICY.md`. TypeScript deep dive: load the installed `coding-standards` skill before non-trivial TypeScript work.
+Smallest *correct* solution, not smallest-looking diff. Minimality applies only after correctness, safety, and existing architecture are preserved — "write less" never means "validate less". Full policy: `~/.agents/POLICY.md`.
 
 1. **YAGNI first** — don't build what isn't needed; no speculative abstraction/dependency/config/file. Over-broad ask → ship the lazy version and name what you skipped.
 2. **Never trade away** (these outrank minimality): correctness/edge cases, security + trust-boundary validation, data-loss-safe error handling, accessibility, team-relied observability, anything explicitly requested.

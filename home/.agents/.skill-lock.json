@@ -119,15 +119,6 @@
       "installedAt": "2026-09-08T13:06:55.301Z",
       "updatedAt": "2026-09-08T13:06:55.301Z"
     },
-    "diagnosing-bugs": {
-      "source": "mattpocock/skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/mattpocock/skills.git",
-      "skillPath": "skills/engineering/diagnosing-bugs/SKILL.md",
-      "skillFolderHash": "5fdd6cc53385395441910b026c72d71768e993d4",
-      "installedAt": "2026-07-15T16:15:09.850Z",
-      "updatedAt": "2026-10-20T11:43:04.000Z"
-    },
     "emil-design-eng": {
       "source": "emilkowalski/skills",
       "sourceType": "github",
@@ -163,15 +154,6 @@
       "skillFolderHash": "16f14dba1ab91a1f7fbcce387b6b96cdd15fc4f5",
       "installedAt": "2026-10-27T00:00:00.000Z",
       "updatedAt": "2026-10-27T01:27:19-07:00"
-    },
-    "grilling": {
-      "source": "mattpocock/skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/mattpocock/skills.git",
-      "skillPath": "skills/productivity/grilling/SKILL.md",
-      "skillFolderHash": "28aceb4c9567b985cb47f7db88cf23c9f33af8b8",
-      "installedAt": "2026-07-15T16:15:09.854Z",
-      "updatedAt": "2026-10-20T11:43:11.047Z"
     },
     "improve-animations": {
       "source": "emilkowalski/skills",
@@ -236,15 +218,6 @@
       "installedAt": "2026-08-18T09:34:54.324Z",
       "updatedAt": "2026-08-18T09:34:54.324Z"
     },
-    "prototype": {
-      "source": "emilkowalski/skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/emilkowalski/skills.git",
-      "skillPath": "skills/prototype/SKILL.md",
-      "skillFolderHash": "34cd3a303aef0a975fcce3ac906d6b293e600399",
-      "installedAt": "2026-09-27T08:27:41.144Z",
-      "updatedAt": "2026-09-27T08:27:41.144Z"
-    },
     "review-animations": {
       "source": "emilkowalski/skills",
       "sourceType": "github",
@@ -263,15 +236,6 @@
       "installedAt": "2026-10-27T00:00:00.000Z",
       "updatedAt": "2026-10-27T01:27:19-07:00"
     },
-    "tdd": {
-      "source": "mattpocock/skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/mattpocock/skills.git",
-      "skillPath": "skills/engineering/tdd/SKILL.md",
-      "skillFolderHash": "667dbdd00c09d0e2189e082986e6a4d61a67c2a6",
-      "installedAt": "2026-07-15T16:15:09.860Z",
-      "updatedAt": "2026-10-20T11:43:12.756Z"
-    },
     "write-discoverable-code": {
       "source": "modem-dev/skills",
       "sourceType": "github",
@@ -281,15 +245,6 @@
       "skillFolderHash": "209109d21718bff6da3ebd65dfee8de582ced0ab",
       "installedAt": "2026-07-25T16:29:39.293Z",
       "updatedAt": "2026-07-25T16:29:39.293Z"
-    },
-    "writing-for-agents": {
-      "source": "mattpocock/skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/mattpocock/skills.git",
-      "skillPath": "skills/productivity/writing-for-agents/SKILL.md",
-      "skillFolderHash": "ad2925850efb8973a72d2e666f7a975f9a2d4a9b",
-      "installedAt": "2026-08-05T12:37:52.127Z",
-      "updatedAt": "2026-10-20T11:43:14.658Z"
     },
     "pr-writing": {
       "source": "hugorcd.com",

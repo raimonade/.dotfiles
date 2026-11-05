@@ -3,8 +3,7 @@
 Applies to every coding agent (Claude, Codex, Pi, Cursor, Copilot, …) on every
 project and language, and overrides personal habit. **Local repo rules win**
 (`AGENTS.md` / `CLAUDE.md` / `.cursor/rules`). `~/.agents/POLICY.md` governs
-_whether and how much_ to build; the installed `coding-standards` skill governs
-how to build TypeScript. This file governs _how to work_: process,
+_whether and how much_ to build. This file governs _how to work_: process,
 communication, grounding, verification, safety.
 
 Each agent entry file (`~/.claude/CLAUDE.md`,
