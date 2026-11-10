@@ -52,6 +52,8 @@ Always-on subset of `~/.agents/CONDUCT.md` (read it for the full set: identity, 
 
 At the start of non-trivial work, and whenever the task changes shape, read the `SKILL.md` of every model-invoked skill whose description overlaps it, before planning or editing. Run heavy user-invoked workflows and broad scans only when asked. A skill that misfires, or fails to fire for a task it owns, is a bug in its description: fix the frontmatter.
 
+**Always preload `coding-standards`:** before the first edit in any task that writes or changes TypeScript/JavaScript (including tests and config), read its `SKILL.md` in full and apply it to the new code; subagents writing such code get the same instruction in their brief. Don't wait for the description to match.
+
 Before handing off a behavior change (bug fix, feature, migration) as done or PR-ready, satisfy the `meaningful-contribution` proof gate; its proof scales with risk and the repo's own gates replace its generic checks. Refactors, type-only, config and docs edits need only the repo's targeted check. A test you watched fail before the fix is the counterfactual.
 
 ## Models, subagents, design
