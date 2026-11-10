@@ -129,8 +129,7 @@
   "skillOverrides": {
     "codiff": "off",
     "plannotator-setup-goal": "off",
-    "prompt-laboratory": "off",
-    "tdd": "off"
+    "prompt-laboratory": "off"
   },
   "hooks": {
     "Notification": [
@@ -240,6 +239,5 @@
       "Bash(az webapp delete:*)",
       "Bash(tofu apply:*)"
     ]
-  },
-  "description": "Impeccable design detector: immediate-tier checks after Edit/Write on UI files, full-rule deep pass on Stop."
+  }
 }

@@ -9,11 +9,8 @@ communication, grounding, verification, safety.
 Each agent entry file (`~/.claude/CLAUDE.md`,
 `~/.pi/agent/AGENTS.md`) embeds a condensed always-on subset of this file inside
 `<!-- BEGIN/END agent-conduct-essentials -->` markers. Edit the essentials here,
-then re-sync both blocks together (hand-synced, like the policy block).
-
-## Identity
-
-- Local software engineering agent for this development environment and its repositories, optimizing for minimal, correct, maintainable changes that match existing repo conventions unless explicitly told otherwise
+then re-sync both blocks together (hand-synced, like the policy and token-economy
+blocks; `dot doctor` reports drift).
 
 ## Communication
 
@@ -51,7 +48,6 @@ bounded remaining todo with exact checks per item.
 - Switch models only when expected savings exceed cache invalidation, repeated reads, handoff, review, and quality risk. Model-tier prices and multi-session scale can change that decision; if uncertain, keep the current agent.
 - Preserve plan review when the user asks for it, ambiguity needs a decision, or work is irreversible, security-sensitive, migration-heavy, or a long-running program whose spec/tickets are durable artifacts. Read-only research, design direction, and review are also valid terminal tasks, not failed implementation handoffs.
 - A first edit proves the approach touched reality; it does not prove correctness. Keep proportionate independent review and final behavioral verification. Benchmark rules against finding a known answer do not imply banning legitimate external research in real work.
-- **Plannotator:** proactively offer its local review surface when a non-trivial plan contains user-facing choices, meaningful scope tradeoffs, or multiple implementation phases, and when a substantial diff is ready for human review. Use `plannotator annotate <file-or-dir>` for plans/specs and `plannotator review --git` for local diffs. Keep tiny, routine, or explicitly urgent work inline. Offer; do not block execution unless the user asks for approval-gated review.
 
 ## Grounding
 
@@ -109,20 +105,13 @@ Distilled from a 2026-09-14 audit of two months of sessions; each line names a m
 
 ## Frontend/design model routing
 
-- Taste-heavy frontend work takes design direction and the final visual review from Claude Opus: in-session when Opus is the session model, otherwise via a separate Opus pass. Never Fable (too expensive). Sonnet does neither direction nor review.
+- Taste-heavy frontend work takes design direction and the final visual review from Claude Opus: in-session when Opus is the session model, otherwise via a separate Opus pass. Sonnet does neither direction nor review.
 - Load applicable design context and skills first. When delegating direction to Opus, give a self-contained brief: goal, routes/files, constraints, design context, repo instructions, accessibility, exact deliverable, verification, and report shape.
 - Design skill routing: `impeccable` builds, redesigns, and sets direction; the `better-*` skills are the domain rulebooks it applies; UI reviews go to `better-interface` (whole repo) or `interface-review` (a diff); motion goes to `animate` (build), `review-animations` (review), or `improve-animations` (codebase audit).
 - Run one-shot Opus delegation directly and synchronously with foreground `claude -p`. Herdr is only for an explicitly requested interactive Herdr session; `HERDR_ENV` does not determine Claude availability. Declare Opus unavailable only from a foreground command's missing-binary, authentication, or model-access error.
 - Sonnet (or the session model) may implement after an Opus design pass, an explicit mock/spec, or a clearly established design-system pattern. Mechanical work that preserves the existing visual design does not require taste delegation.
 - If Opus is unavailable, pause instead of shipping taste-heavy UI unaided.
 - Verify meaningful UI changes in-browser and obtain an Opus review before final handoff.
-
-## Tooling & file discipline
-
-- Prefer dedicated read/search/edit tools over shell where available; batch independent reads/searches and parallelize when safe
-- Re-read a file before editing when the task is long-running, the file may have changed, or prior context may be stale; after editing, inspect the changed region or diff to confirm the edit applied as intended
-- For files above ~500 LOC, read in chunks; one read may not have captured the whole file
-- A search/tool result that looks suspiciously small may be truncated — re-run with narrower scope
 
 ## Refactors & large changes
 
@@ -172,10 +161,3 @@ Distilled from a 2026-09-14 audit of two months of sessions; each line names a m
 ## Plans
 
 - At the end of each plan, give me a list of unresolved questions to answer, if any. Make the questions extremely concise. Sacrifice grammar for the sake of concision.
-
-## Entropy reminder
-
-This codebase will outlive you. Shortcuts become someone else's burden, the
-patterns you establish get copied, and the corners you cut get cut again.
-
-**Fight entropy. Leave the codebase better than you found it.**

@@ -1,20 +1,10 @@
 # Claude workflow details
 
-The disclosed branch of `~/.claude/CLAUDE.md`: model routing, specialized subagents, TraceDecay escape hatches.
+The disclosed branch of `~/.claude/CLAUDE.md`: model routing, implementation handoff, TraceDecay escape hatches.
 
 ## Picking models for workflows and subagents
 
-Claude models only — no Codex/GPT delegation (plugin, CLI, or `codex-rescue` agent). Every subagent gets an explicit `model`; never Fable, as session model or subagent (too expensive).
-
-| model | cost | intelligence | taste | use for |
-| --- | ---: | ---: | ---: | --- |
-| haiku | 10 | 5 | 4 | trivial high-volume lookups, extraction, summaries that are easy to check |
-| sonnet | 7 | 8 | 7 | default: implementation, migrations, tests, research, browser/UI verification |
-| opus | 4 | 9 | 9 | delegated judgement: independent review, architecture/debugging second opinion, design review |
-
-Higher = better; `cost` means effective cost/availability. Rankings are defaults, not limits.
-
-How to apply:
+Which model gets what is always on in `~/.claude/CLAUDE.md` (Models, subagents, design). Beyond that:
 
 - The session model (Opus) owns orchestration, design direction, taste-heavy synthesis, and final judgment/review. Opus subagents only when that judgement must run in parallel or isolated from the main loop.
 - Output missing the bar → redo on the next model up without asking. Judge quality, not price; cost is a tie-breaker. For anything that ships, intelligence > taste > cost.
@@ -31,35 +21,6 @@ read-only plan and what the **trajectory bundle** contains. Claude-specific fact
 - Subagents don't inherit the main loop's context (forks do). For a cohesive task, either keep it in the main loop or let one subagent own discovery and implementation end-to-end.
 - Delegation still justified → prompt must be self-contained, never a plan-only postcard: goal, constraints, the trajectory bundle, ownership and acceptance criteria. Tell the receiver to inspect the diff first, verify inherited claims, and reread only edit-critical spans.
 - Require subagents to return: summary, files changed or inspected, checks run, failures/blockers, assumptions. Inspect output before presenting it as final.
-
-## Specialized Subagents
-
-### Oracle
-Invoke for: code review, architecture decisions, debugging analysis, refactor planning, second opinion.
-Prompt with: precise problem + relevant file paths. Ask for concrete outcomes.
-
-**Response format** (collapse sections for simple questions):
-1. TL;DR — 1-3 sentences, recommended simple approach
-2. Recommendation — numbered steps/checklist, minimal diffs
-3. Rationale — brief justification, why alternatives unnecessary now
-4. Risks & Guardrails — key caveats and mitigations
-5. When to Reconsider — concrete triggers for more complex design
-
-**Operating principles**: default simplest viable solution, prefer minimal incremental changes, YAGNI/KISS, one primary recommendation, calibrate depth to scope, stop when good enough.
-
-**Effort estimates**: S (<1hr), M (1-3hr), L (1-2d), XL (>2d)
-
-**Tool usage**: read-only access — read, grep, glob, WebFetch, WebSearch, and read-only `gh` (3rd-party source, public usage patterns).
-
-### Librarian
-Invoke for: understanding 3rd party libraries/packages, exploring remote repositories, discovering open source patterns. Show response in full — do not summarize.
-
-**Tool arsenal**:
-- `gh repo clone` / `gh search code` — deep exploration of specific repos, usage patterns across public GitHub
-- WebFetch — official library docs, API references, release notes
-- WebSearch — current docs, blog posts, discussions
-
-**Output**: direct answer + source links + diagrams if architecture involved. Link to GitHub source with fluent markdown links.
 
 ## TraceDecay escape hatches
 

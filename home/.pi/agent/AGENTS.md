@@ -25,7 +25,7 @@ Minimality yields when the extra code buys correctness/debuggability, not ceremo
 <!-- BEGIN agent-conduct-essentials (canonical: ~/.agents/CONDUCT.md) -->
 ## Conduct essentials
 
-Always-on subset of `~/.agents/CONDUCT.md` (read it for the full set: identity, dev style, state/intent checks, error-message design, file/refactor/rename discipline, autonomy, plans, entropy).
+Always-on subset of `~/.agents/CONDUCT.md` (read it for the full set: dev style, state/intent checks, error-message design, refactor/rename discipline, autonomy, plans).
 
 - **Communication:** extremely concise; sacrifice grammar for concision. State assumptions briefly when proceeding. Ask only when blocked, when ambiguity changes outcome, or before irreversible/shared/prod-visible actions.
 - **Grounding:** inspect code/config before claiming; never speculate about behaviour you haven't read. Retrieve missing context with tools before asking.
@@ -60,6 +60,7 @@ Claude models only: Opus, Sonnet, Haiku. Never Fable (too expensive) and never G
 
 Taste-heavy work (UI, UX, copy, visuals) takes design direction and final review from Opus. When Opus is the session model, do it in-session; otherwise run `claude -p --model 'claude-opus-5-5[1m]' --permission-mode plan "<self-contained brief>"` in the foreground, and pause if Opus is unavailable. Sonnet may implement once direction, a mock, or an established design-system pattern exists. Load `impeccable` and any `PRODUCT.md`/`DESIGN.md` first. Routing: `impeccable` builds and sets direction; the `better-*` skills are its rulebooks; UI review is `better-interface` (whole repo) or `interface-review` (a diff); motion is `animate`, `review-animations`, or `improve-animations`.
 
+<!-- BEGIN token-economy -->
 ## Token economy
 
 Every turn re-reads the whole context, so cost ≈ context size × turns. A 7-day audit (2026-10-28) found 63% of usage in sessions past 300k context; output was only 10%.
@@ -70,6 +71,7 @@ Every turn re-reads the whole context, so cost ≈ context size × turns. A 7-da
 - **Cheapest capable model.** Opus plans, designs and reviews taste; Sonnet implements lanes, CI fixes, conflicts and data scripts; Haiku triages logs. Subagents start fresh; fork only when the brief depends on this conversation, and never fork into a different model.
 - **Run a gate once.** `check:ready` and other full gates run once; on failure rerun only the failed step.
 - **Batch edits** into one multi-edit call instead of one turn per tweak or heredoc rewrites.
+<!-- END token-economy -->
 
 ## Long-running commands
 

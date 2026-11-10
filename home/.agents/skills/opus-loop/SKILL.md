@@ -1,6 +1,6 @@
 ---
 name: opus-loop
-description: Use when the user says "opus loop", "sol loop", or "review loop", or when full-send needs its review step.
+description: Use when the user says "opus loop" or "review loop", or when full-send needs its review step.
 ---
 
 # opus-loop

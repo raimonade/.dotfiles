@@ -33,6 +33,9 @@ GOOD
 
 > ✅ My "new worktree" default was ignored when starting new threads on existing worktrees. Super unintuitive. Now your preferences always apply.
 
+For the rest of the description, follow the `pr-writing` skill; where the two
+disagree, this skill's title and opening rules win.
+
 Keep the title and description about the change itself, with no model,
 harness, or AI attribution.
 

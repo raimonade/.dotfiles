@@ -36,7 +36,7 @@ are doing it, keep it short):
 ├── home/.agents/       # Shared agent policy and canonical skills
 │   └── skills/         # Skills discovered by Pi, Claude, Codex, Cursor, and other agents
 ├── home/.claude/       # Stowed to ~/.claude/
-│   ├── agents/         # Subagents: oracle, librarian, reviewer, planner, security
+│   ├── agents/         # Subagents: browser-verify, impeccable-*
 │   ├── commands/       # Harness-specific slash commands
 │   └── skills/         # Thin compatibility links to shared skills
 ├── home/.cursor/       # Folded into existing ~/.cursor/ by Stow
@@ -82,7 +82,6 @@ are doing it, keep it short):
 | Claude command | `home/.claude/commands/<name>.md` |
 | Claude agent | `home/.claude/agents/<name>.md` |
 | Claude settings | `home/.claude/settings.json` |
-| Claude MCP | `home/.claude/mcp.json` |
 | Pi extension | `home/.pi/agent/extensions/<name>/` |
 | Pi saved workflow | `home/.pi/agent/chains/<name>.chain.json` |
 | Shared agent skill | `home/.agents/skills/<name>/SKILL.md` |

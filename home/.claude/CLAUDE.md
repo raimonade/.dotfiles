@@ -3,7 +3,7 @@
 A local repo `AGENTS.md` / `CLAUDE.md` always wins. Read on demand: `~/.agents/POLICY.md` (what /
 how much to build), `~/.agents/CONDUCT.md` (how to work), `~/.agents/EXECUTOR.md` (Mobbin, Linear,
 Axiom, PostHog, Vercel and every other integration, via `executor`), `~/.agents/CLAUDE-WORKFLOWS.md`
-(model and delegation choices, Oracle/Librarian reviews). The two marked blocks below are their always-on subsets, hand-synced with
+(model and delegation choices, TraceDecay escape hatches). The two marked blocks below are their always-on subsets, hand-synced with
 `~/.pi/agent/AGENTS.md`; everything else here is Claude-only.
 
 ## Deliver the actual request
@@ -34,12 +34,13 @@ Minimality yields when the extra code buys correctness/debuggability, not ceremo
 <!-- BEGIN agent-conduct-essentials (canonical: ~/.agents/CONDUCT.md) -->
 ## Conduct essentials
 
-Always-on subset of `~/.agents/CONDUCT.md` (read it for the full set: identity, dev style, state/intent checks, error-message design, file/refactor/rename discipline, autonomy, plans, entropy).
+Always-on subset of `~/.agents/CONDUCT.md` (read it for the full set: dev style, state/intent checks, error-message design, refactor/rename discipline, autonomy, plans).
 
 - **Communication:** extremely concise; sacrifice grammar for concision. State assumptions briefly when proceeding. Ask only when blocked, when ambiguity changes outcome, or before irreversible/shared/prod-visible actions.
 - **Grounding:** inspect code/config before claiming; never speculate about behaviour you haven't read. Retrieve missing context with tools before asking.
 - **State & intent:** before non-trivial/risky changes, name facts/assumptions/invariants and verify the right state changed; encode recurring failures in types/parsers/tests/static rules, and repair the prompt/workflow that generated repeated misses instead of adding reminders.
 - **Trajectory handoffs:** avoid capable-agent read-only plan → blank-context executor. Keep cohesive work with one agent; when switching, preserve grounded evidence, current diff/first valid edit, and bounded todos with per-item checks. If context cannot transfer, let the executor own discovery or send an evidence-rich trajectory. Include cache loss, rereads, review, and quality risk in routing; retain human-reviewed plans for risky/ambiguous work.
+- **Plannotator:** proactively offer `plannotator annotate <path>` for non-trivial plans with user choices/tradeoffs/phases, and `plannotator review --git` for substantial diffs before handoff. Keep tiny/routine/urgent work inline; offer rather than block unless approval gating was requested.
 - **Verification:** a successful edit or green typecheck/lint/build is not behavioral proof. Run the smallest relevant check and report the exact command + result; for non-trivial logic, verify boundaries, edge cases, and relevant build modes. Confirm tests execute; don't change, skip, or delete them just to pass.
 - **Delivery invariants** (full list in `~/.agents/CONDUCT.md`): confirm the authoritative artifact before porting anything found on disk; a named reference means exact parity with file:line, deviations are questions; a feasibility verdict names what each missing input blocks, and a gap found mid-build goes to the user that turn; ship the visible outcome before plumbing; "done" is an observed live check or screenshot, else report unverified; resolve collective nouns (backlog, the app) to a concrete list before acting or spawning; state prod vs dev before diagnosing; narrate one line per step and never idle after a background job finishes; on "continue"/limits reset/compaction restate next item + proof + stop condition and carry standing rules forward.
 - **Parallel lanes:** only over independent tickets, one owner per lane, one worktree per branch, no shared files, max six concurrent, typecheck/CI serialized; lanes run targeted tests only, the integrator runs the affected check once, and lane briefs never prescribe whole-repo checks; coupled problems (red main, migration, design call) get one owner; check the roster so nothing runs twice.
@@ -53,6 +54,8 @@ Always-on subset of `~/.agents/CONDUCT.md` (read it for the full set: identity, 
 At the start of non-trivial work, and whenever the task changes shape, read the `SKILL.md` of every model-invoked skill whose description overlaps it, before planning or editing. Run heavy user-invoked workflows and broad scans only when asked. A skill that misfires, or fails to fire for a task it owns, is a bug in its description: fix the frontmatter.
 
 **Always preload `coding-standards`:** before the first edit in any task that writes or changes TypeScript/JavaScript (including tests and config), read its `SKILL.md` in full and apply it to the new code; subagents writing such code get the same instruction in their brief. Don't wait for the description to match.
+
+Load the `pr-writing` skill before opening or editing any pull request description.
 
 Before handing off a behavior change (bug fix, feature, migration) as done or PR-ready, satisfy the `meaningful-contribution` proof gate; its proof scales with risk and the repo's own gates replace its generic checks. Refactors, type-only, config and docs edits need only the repo's targeted check. A test you watched fail before the fix is the counterfactual.
 
@@ -70,6 +73,7 @@ When porting behavior from a donor (LobeChat, any reference repo), read its actu
 
 Before your first `Grep`/`Glob`/`rg`/`find`/`Read` in a repo, call `tracedecay_context` with the task in plain English (load deferred schemas with `ToolSearch`). Use `tracedecay_search`, `tracedecay_callers`/`callees`/`impact` for symbols and `tracedecay_grep` for literal text. Never route codebase research to `Explore` or another agent while TraceDecay is available (check `tracedecay_status`); a spawned agent uses `tracedecay_context` as its only exploration tool. On MCP errors fall back to `tracedecay tool <name> --args '<json>'`.
 
+<!-- BEGIN token-economy -->
 ## Token economy
 
 Every turn re-reads the whole context, so cost ≈ context size × turns. A 7-day audit (2026-10-28) found 63% of usage in sessions past 300k context; output was only 10%.
@@ -80,6 +84,7 @@ Every turn re-reads the whole context, so cost ≈ context size × turns. A 7-da
 - **Cheapest capable model.** Opus plans, designs and reviews taste; Sonnet implements lanes, CI fixes, conflicts and data scripts; Haiku triages logs. Subagents start fresh; fork only when the brief depends on this conversation, and never fork into a different model.
 - **Run a gate once.** `check:ready` and other full gates run once; on failure rerun only the failed step.
 - **Batch edits** into one multi-edit call instead of one turn per tweak or heredoc rewrites.
+<!-- END token-economy -->
 
 ## Long-running commands and production writes
 

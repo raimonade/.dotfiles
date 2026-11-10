@@ -32,9 +32,8 @@ rich output (Mobbin returns inline screen images / an interactive gallery).
 
 The self-hosted Spotwise tracker is registered as the official Plane MCP server
 under the canonical `spotwise-plane.org.default.*` paths. Use it for Plane,
-`WAY-*` issues, and Wayfinder maps; never raw API calls. Load the
-installed `plane` skill for fixed project context and the narrow self-hosted
-relation compatibility tool. Ignore any stale zero-tool `local_plane_*` entries.
+`WAY-*` issues, and Wayfinder maps; never raw API calls. Ignore any stale
+zero-tool `local_plane_*` entries.
 
 ## Mobbin freshness
 

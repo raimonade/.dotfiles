@@ -1530,6 +1530,24 @@ cmd_update() {
     __update_pi
 }
 
+# The always-on instruction blocks are duplicated by hand in the Claude and Pi
+# entry files. Prints the named block so the two copies can be compared.
+__agent_instruction_block() {
+    sed -n "/<!-- BEGIN $2 /,/<!-- END $2 -->/p" "$1"
+}
+
+__check_agent_instruction_blocks() {
+    local claude="${HOME_DIR}/.claude/CLAUDE.md" pi="${HOME_DIR}/.pi/agent/AGENTS.md" block
+    for block in engineering-decision-policy agent-conduct-essentials token-economy; do
+        if [[ -n "$(__agent_instruction_block "$claude" "$block")" ]] &&
+            cmp -s <(__agent_instruction_block "$claude" "$block") <(__agent_instruction_block "$pi" "$block"); then
+            __print_success "Agent instruction block in sync: ${block}"
+        else
+            __print_warning "Agent instruction block '${block}' is missing or differs between ${claude} and ${pi}"
+        fi
+    done
+}
+
 cmd_doctor() {
     __require_no_args doctor "$@" || return 1
     __print_header "Running diagnostics"
@@ -1673,6 +1691,8 @@ cmd_doctor() {
             __print_info "Add 'export PATH=\"$DOTFILES_DIR:\$PATH\"' to your shell profile"
         fi
     fi
+
+    __check_agent_instruction_blocks
 
     if [[ $issues -eq 0 ]]; then
         __print_header "All critical checks passed! ✨"
