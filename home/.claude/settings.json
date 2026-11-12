@@ -184,6 +184,16 @@
             "statusMessage": "Design deep pass"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ ! -x \"$HOME/.local/bin/coach\" ] || \"$HOME/.local/bin/coach\" hook stop",
+            "timeout": 20,
+            "statusMessage": "Checking debrief"
+          }
+        ]
       }
     ],
     "SessionStart": [
@@ -194,6 +204,29 @@
             "command": "[ ! -f \"$HOME/.claude/skills/impeccable/scripts/impeccable\" ] || \"$HOME/.claude/skills/impeccable/scripts/impeccable\" hook",
             "timeout": 5,
             "statusMessage": "Preparing build session"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ ! -x \"$HOME/.local/bin/coach\" ] || \"$HOME/.local/bin/coach\" hook sessionstart",
+            "timeout": 20,
+            "statusMessage": "Loading coaching prompts"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ ! -x \"$HOME/.local/bin/coach\" ] || \"$HOME/.local/bin/coach\" hook pretooluse",
+            "timeout": 20,
+            "statusMessage": "Checking review receipt"
           }
         ]
       }

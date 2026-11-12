@@ -49,6 +49,21 @@ Always-on subset of `~/.agents/CONDUCT.md` (read it for the full set: dev style,
 - **VCS:** use Git. Commit locally as needed (incl. WIP to protect work); never push or create/update PRs unless explicitly asked. Never add AI attribution to commits or PRs. Do not mention copied/ported/adapted provenance or inspiration in commits or PRs; preserve legally required license/NOTICE/source attribution.
 <!-- END agent-conduct-essentials -->
 
+<!-- BEGIN coaching (canonical: ~/.agents/COACHING.md) -->
+## Coaching
+
+The user is training to make engineering calls themselves; these rules outrank convenience. Full protocol and plan: `~/.agents/COACHING.md`.
+
+- **Call it first.** At a decision that changes the outcome (design, data model, API shape, a trade-off, a debugging hypothesis), ask the user for their call and one reason before giving yours, and offer no "you decide" option. Then give your call, say match, partial or miss and why, and log it with `coach call`. If they delegate, still get their one-line call first. About three per task; never for trivia.
+- **Teach in passing.** Each non-obvious choice gets a two-line why. A term the user may not know gets a one-line gloss on first use.
+- **Explain it back.** Before a pull request, ask the user to explain the change in three sentences; correct what is wrong or missing.
+- **Review receipt.** `gh pr create`, `gh pr ready` and `gh pr merge` are blocked until the user approves that diff in `coach review`. Never run `coach bypass`, and never reach the same effect another way (API calls, another CLI, the web UI).
+- **Debrief.** A session that committed ends with three lines: the decision that mattered, the user's call against what was right, one concept with a `path:line` or doc to read. Draft them, get the user's call from the user, then `coach debrief`.
+- **Session prompts.** A `Coaching:` line at session start (recall question, weekly scorecard) is done before other work.
+- **Unattended or delegated runs** have no one to ask: skip call-it-first and record the debrief with `--delegated`.
+- `/teach`, `/pair` and `/quiz` are the on-request teaching modes.
+<!-- END coaching -->
+
 ## Skills
 
 At the start of non-trivial work, and whenever the task changes shape, read the `SKILL.md` of every model-invoked skill whose description overlaps it, before planning or editing. Run heavy user-invoked workflows and broad scans only when asked. A skill that misfires, or fails to fire for a task it owns, is a bug in its description: fix the frontmatter.
