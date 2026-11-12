@@ -1128,6 +1128,22 @@ __merge_private_claude_settings() {
     fi
 }
 
+# Hand-made absolute links into the repo point at the right file but stow
+# refuses to own them, aborting the whole run. Rewrite each one that targets
+# exactly its own repo path as a relative link (which stow does own). The link
+# is replaced in place, never removed, so a later stow failure breaks nothing.
+__adopt_absolute_repo_links() {
+    local path target relative
+    while IFS= read -r path; do
+        target=$(readlink "${HOME}/${path}") || continue
+        [[ "$target" == "${HOME_DIR}/${path}" ]] || continue
+        relative=$(python3 -I -c 'import os,sys; print(os.path.relpath(sys.argv[1], sys.argv[2]))' \
+            "$target" "$(dirname "${HOME}/${path}")") || continue
+        ln -sfn "$relative" "${HOME}/${path}" && __print_info "Adopted absolute link ~/${path}"
+    done < <(stow -n -R -d "${DOTFILES_DIR}" -t "${HOME}" home 2>&1 |
+        sed -n 's/.*existing target is not owned by stow: //p')
+}
+
 __stow_dotfiles() {
 
     if ! __command_exists stow; then
@@ -1141,6 +1157,7 @@ __stow_dotfiles() {
     fi
 
     __clear_skill_overlay_collisions
+    __adopt_absolute_repo_links
 
     local real_dir
     for real_dir in "${STOW_REAL_DIRS[@]}"; do
