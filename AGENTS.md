@@ -86,7 +86,6 @@ are doing it, keep it short):
 | Pi saved workflow | `home/.pi/agent/chains/<name>.chain.json` |
 | Shared agent skill | `home/.agents/skills/<name>/SKILL.md` |
 | Pi settings | `home/.pi/agent/settings.json` |
-| Coaching guards | `home/.local/bin/coach` (hooks in Claude settings, pi `coach-gate.ts`); protocol `home/.agents/COACHING.md`; test `tests/coach.test.sh` |
 
 ## CONVENTIONS
 

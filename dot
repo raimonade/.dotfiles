@@ -1555,7 +1555,7 @@ __agent_instruction_block() {
 
 __check_agent_instruction_blocks() {
     local claude="${HOME_DIR}/.claude/CLAUDE.md" pi="${HOME_DIR}/.pi/agent/AGENTS.md" block
-    for block in engineering-decision-policy agent-conduct-essentials token-economy coaching; do
+    for block in engineering-decision-policy agent-conduct-essentials token-economy; do
         if [[ -n "$(__agent_instruction_block "$claude" "$block")" ]] &&
             cmp -s <(__agent_instruction_block "$claude" "$block") <(__agent_instruction_block "$pi" "$block"); then
             __print_success "Agent instruction block in sync: ${block}"
