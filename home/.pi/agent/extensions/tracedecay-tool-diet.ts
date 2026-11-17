@@ -7,9 +7,21 @@
  * declared on its own, still reachable through codemode, `tool_search`,
  * `tracedecay tool <name>` or the `mcp` gateway.
  */
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import { join } from "node:path";
+import { pathToFileURL } from "node:url";
 
-import tracedecayExtension from "./tracedecay/index.ts";
+import { type ExtensionAPI, getAgentDir } from "@earendil-works/pi-coding-agent";
+
+/**
+ * The installer generates its extension per machine under Pi's agent
+ * directory. Stow can link this file there from the dotfiles repo, so a
+ * relative import would resolve beside the repo file instead.
+ */
+const loadTracedecayExtension = async (): Promise<(pi: ExtensionAPI) => void> => {
+  const installed = join(getAgentDir(), "extensions", "tracedecay", "index.ts");
+  const module: { default: (pi: ExtensionAPI) => void } = await import(pathToFileURL(installed).href);
+  return module.default;
+};
 
 const DECLARED_TRACEDECAY_TOOLS = new Set([
   "tracedecay_active_project",
@@ -33,7 +45,8 @@ const DECLARED_TRACEDECAY_TOOLS = new Set([
   "tracedecay_test_map",
 ]);
 
-export default function tracedecayToolDiet(pi: ExtensionAPI) {
+export default async function tracedecayToolDiet(pi: ExtensionAPI) {
+  const tracedecayExtension = await loadTracedecayExtension();
   const registerTool: ExtensionAPI["registerTool"] = (tool) =>
     pi.registerTool(
       DECLARED_TRACEDECAY_TOOLS.has(tool.name) ? tool : { ...tool, exposure: "deferred" },
