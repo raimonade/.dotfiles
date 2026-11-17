@@ -63,6 +63,7 @@ home/.local/share/pi/mcp-auth.json
 !home/.pi/agent/cloak.json
 !home/.pi/agent/claude-bridge.json
 !home/.pi/agent/mcp.json
+!home/.pi/agent/models.json
 !home/.pi/agent/settings.json
 !home/.pi/agent/cloudflare-deployment-allowlist.json
 !home/.pi/agent/AGENTS.md

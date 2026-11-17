@@ -1,26 +1,22 @@
 {
   "mcpServers": {
     "paper": {
-      "url": "http://127.0.0.1:29979/mcp",
-      "lifecycle": "lazy"
+      "url": "http://127.0.0.1:29979/mcp"
     },
     "executor": {
-      "url": "http://127.0.0.1:4790/mcp",
-      "lifecycle": "lazy"
+      "url": "http://127.0.0.1:4790/mcp"
     },
     "computer": {
       "command": "cua-driver",
       "args": [
         "mcp"
-      ],
-      "lifecycle": "lazy"
+      ]
     },
     "tracedecay": {
       "command": "tracedecay",
       "args": [
         "serve"
-      ],
-      "lifecycle": "lazy"
+      ]
     }
   }
 }

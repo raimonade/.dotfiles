@@ -1,0 +1,7 @@
+{
+  "providers": {
+    "pi-claude-cli": {
+      "apiKey": "unused"
+    }
+  }
+}
