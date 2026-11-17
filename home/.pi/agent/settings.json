@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "1.3.0",
+  "lastChangelogVersion": "1.5.2",
   "quietStartup": true,
   "defaultProjectTrust": "always",
   "collapseChangelog": true,
@@ -20,7 +20,8 @@
     "git:github.com/dmmulroy/pi-claude-cli"
   ],
   "extensions": [
-    "-builtin:mcp"
+    "-builtin:mcp",
+    "-extensions/tracedecay/index.ts"
   ],
   "skills": [],
   "enableSkillCommands": true,
@@ -59,14 +60,18 @@
   "compaction": {
     "modelOverrides": {
       "pi-claude-cli/claude-opus-5-5": {
-        "reserveTokens": 750000
+        "reserveTokens": 600000
       },
       "pi-claude-cli/claude-sonnet-5-5": {
-        "reserveTokens": 750000
+        "reserveTokens": 600000
       },
       "pi-claude-cli/claude-haiku-5-5": {
-        "reserveTokens": 750000
+        "reserveTokens": 600000
       }
     }
+  },
+  "extensionChangelogVersions": {
+    "{\"source\":\"npm:pi-mcp-adapter\",\"scope\":\"user\"}": "7.0.1",
+    "{\"source\":\"npm:pi-subagents\",\"scope\":\"user\"}": "0.88.0"
   }
 }
