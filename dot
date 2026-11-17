@@ -783,10 +783,14 @@ __install_treg() {
 
 # Plannotator CLI + Inbox. Config (home/.plannotator/config.json) is stowed.
 # Running `plannotator inbox` once connects installed agents (Pi, Cursor, Claude app, ...); Pi needs inboxTool.pi=true (already in config).
+__run_plannotator_installer() {
+    curl -fsSL https://plannotator.ai/install.sh | bash -s -- --non-interactive
+}
+
 __install_plannotator() {
     if ! __command_exists plannotator && [[ ! -x "${HOME}/.local/bin/plannotator" ]]; then
         __print_info "Installing Plannotator..."
-        if ! curl -fsSL https://plannotator.ai/install.sh | bash -s -- --non-interactive; then
+        if ! __run_plannotator_installer; then
             __print_error "Failed to install Plannotator"
             return 1
         fi
@@ -1544,7 +1548,9 @@ cmd_update() {
 
     if __command_exists plannotator; then
         __print_info "Updating Plannotator..."
-        plannotator update || __print_warning "Plannotator update failed; continuing"
+        # Releases before the `update` subcommand are upgraded by the installer.
+        plannotator update || __run_plannotator_installer \
+            || __print_warning "Plannotator update failed; continuing"
     fi
 
     # Install missing Herdr plugins and refresh existing managed checkouts.
