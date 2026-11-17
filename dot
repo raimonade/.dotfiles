@@ -1619,10 +1619,11 @@ cmd_doctor() {
         ((++issues))
     fi
 
-    # Check symlinks
+    # Check the symlinks stow owns. Other dangling links under $HOME are not
+    # this repo's to judge: Electron apps keep dangling Singleton* locks.
     local broken_links=0
     while IFS= read -r -d '' link; do
-        if [[ ! -e "$link" ]]; then
+        if [[ ! -e "$link" && "$(readlink "$link")" == *"${DOTFILES_DIR##*/}/home/"* ]]; then
             ((++broken_links))
         fi
     done < <(find "${HOME}" -maxdepth 3 -type l -print0 2>/dev/null)
@@ -1681,9 +1682,11 @@ cmd_doctor() {
         __print_warning "Missing development tools: ${missing_tools[*]}"
     fi
 
-    # Rex: app, CLI, stowed config
+    # Rex (macOS app): app, CLI, stowed config
     local rex_bin
-    if [[ -d "$REX_APP_PATH" ]]; then
+    if __is_linux; then
+        :
+    elif [[ -d "$REX_APP_PATH" ]]; then
         __print_success "Rex is installed (build $(__rex_installed_build))"
     else
         __print_warning "Rex is not installed - run '${SCRIPT_NAME} init' or '${SCRIPT_NAME} update'"
@@ -1693,7 +1696,9 @@ cmd_doctor() {
     else
         __print_warning "~/.config/rex is not a stow symlink - run '${SCRIPT_NAME} stow'"
     fi
-    if rex_bin="$(__rex_cli)"; then
+    if __is_linux; then
+        :
+    elif rex_bin="$(__rex_cli)"; then
         if "$rex_bin" config check >/dev/null 2>&1; then
             __print_success "Rex config loads without errors"
         else
