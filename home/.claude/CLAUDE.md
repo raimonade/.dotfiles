@@ -40,9 +40,9 @@ A skill that misfires, or doesn't fire for a task it owns, has a bad description
 
 ## Models, subagents, design
 
-Claude models only; never Fable (too expensive). Give every subagent an explicit `model` (forks inherit): `sonnet` by default, `opus` for judgement that must run parallel or isolated (independent or design review), `haiku` for trivial checkable lookups. Output below the bar → redo one model up without asking.
+Claude models only. Give every subagent an explicit `model` (forks inherit): `sonnet` by default, `opus` for judgement that must run parallel or isolated (independent or design review), `haiku` for trivial checkable lookups. Output below the bar → redo one model up without asking.
 
-Taste-heavy work (UI, UX, copy, visuals): the Opus main loop sets direction and does final review; a Sonnet subagent may implement after. Session model not Opus → pause. `impeccable` builds and sets direction; `better-*` skills are its rulebooks; review with `better-interface` (repo) or `interface-review` (diff); motion with `animate`, `review-animations`, `improve-animations`.
+Design work: load `impeccable` and any `PRODUCT.md`/`DESIGN.md` first. `impeccable` builds and sets direction; `better-*` skills are its rulebooks; review with `better-interface` (repo) or `interface-review` (diff); motion with `animate`, `review-animations`, `improve-animations`.
 
 ## TraceDecay
 
@@ -56,7 +56,7 @@ Cost ≈ context size × turns (2026-10-28 audit: 63% of usage came from session
 - **One task per session.** When a PR merges, the goal changes, or context passes ~200k, write a handoff (goal, state, branch, next step, proof) and suggest a fresh session.
 - **Don't poll at large context.** Hand CI/test/deploy waits to an async Haiku subagent that returns exit code, failing names and a log path. In-thread checks: `sleep` ≤ 200 s each (longer straddles the 5-minute cache).
 - **Small inputs.** Subagents return ≤2k tokens plus a file path. Clip tool output (`| cut -c1-200 | head -60`), slice files with `rg -n`, don't reread unchanged files.
-- **Cheapest capable model.** Opus plans, designs and reviews taste; Sonnet implements; Haiku triages logs.
+- **Cheapest capable model.** Opus plans and reviews; Sonnet implements; Haiku triages logs.
 - **Run a full gate once**; on failure rerun only the failed step.
 <!-- END token-economy -->
 

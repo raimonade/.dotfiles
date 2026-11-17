@@ -239,5 +239,6 @@
       "Bash(az webapp delete:*)",
       "Bash(tofu apply:*)"
     ]
-  }
+  },
+  "advisorModel": "opus"
 }

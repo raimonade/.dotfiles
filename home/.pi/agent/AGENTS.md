@@ -54,7 +54,7 @@ Cost ≈ context size × turns (2026-10-28 audit: 63% of usage came from session
 - **One task per session.** When a PR merges, the goal changes, or context passes ~200k, write a handoff (goal, state, branch, next step, proof) and suggest a fresh session.
 - **Don't poll at large context.** Hand CI/test/deploy waits to an async Haiku subagent that returns exit code, failing names and a log path. In-thread checks: `sleep` ≤ 200 s each (longer straddles the 5-minute cache).
 - **Small inputs.** Subagents return ≤2k tokens plus a file path. Clip tool output (`| cut -c1-200 | head -60`), slice files with `rg -n`, don't reread unchanged files.
-- **Cheapest capable model.** Opus plans, designs and reviews taste; Sonnet implements; Haiku triages logs.
+- **Cheapest capable model.** Opus plans and reviews; Sonnet implements; Haiku triages logs.
 - **Run a full gate once**; on failure rerun only the failed step.
 <!-- END token-economy -->
 
