@@ -90,3 +90,6 @@ home/.pi/agent/extensions/tracedecay/
 home/.agents/skills/impeccable/scripts/bin/linux-x64/
 home/.claude/skills/impeccable/scripts/bin/linux-x64/
 home/.agents/skills/account-id-tags/
+
+# Codex metadata the Plannotator installer regenerates on every update
+home/.agents/skills/plannotator*/agents/
