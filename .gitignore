@@ -49,6 +49,7 @@ home/.pi/todos/*
 home/.pi/.pi/
 home/.pi/pi-acp/
 home/.pi/ephemeral/
+home/.pi/plans/
 .pi/todos/*
 
 # pi MCP adapter runtime/secrets
