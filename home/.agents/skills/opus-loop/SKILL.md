@@ -45,8 +45,8 @@ missing or pre-failing checks in the brief.
 
 ## 2. Start the reviewer
 
-The reviewer is the latest Claude Opus at high effort, unless the user named a
-version. Only Claude Opus reviews: never Fable, Sonnet, Haiku, or another
+The reviewer is the latest Claude Opus at high effort, unless the user named
+another Claude model or version. Do not substitute Sonnet, Haiku, or another
 provider's model.
 
 In T3, call `orchestrator_capabilities` and pick the latest Opus. Do not

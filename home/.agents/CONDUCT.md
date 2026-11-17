@@ -29,8 +29,8 @@ The always-on subset lives between `<!-- BEGIN/END agent-conduct-essentials -->`
 
 ## Design work
 
-- Opus sets direction and gives the final visual review; Sonnet implements after an Opus pass, a mock, or an established design-system pattern. Mechanical work that keeps the existing design needs no taste pass.
-- A delegated Opus brief is self-contained: goal, routes/files, constraints, design context, accessibility, deliverable, verification, report shape. Run it with foreground `claude -p`; call Opus unavailable only on a missing-binary, auth or model-access error, and then pause.
+- The session model sets direction and gives the final visual review. A Sonnet subagent implements once there is direction, a mock, or an established design-system pattern. Mechanical work that keeps the existing design needs no taste pass.
+- A delegated design brief is self-contained: goal, routes/files, constraints, design context, accessibility, deliverable, verification, report shape.
 - Verify meaningful UI changes in a browser before handoff.
 
 ## Error messages
