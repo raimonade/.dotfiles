@@ -21,8 +21,8 @@ const plainPalette: FooterPalette = {
 const state: FooterState = {
   cwd: "/Users/raimonds/Code/earendil/.dotfiles",
   home: "/Users/raimonds",
-  provider: "openai-codex",
-  model: "gpt-5.6-sol",
+  provider: "anthropic",
+  model: "claude-opus",
   thinking: "high",
   contextPercent: 42.4,
   contextWindow: 272_000,
@@ -39,7 +39,7 @@ test("roomy footer renders complete identity and telemetry in two bounded lines"
 
   assert.equal(lines.length, 2);
   assert.match(lines[0] ?? "", /~\/…\/earendil\/\.dotfiles/);
-  assert.match(lines[0] ?? "", /openai-codex\/gpt-5\.6-sol · high/);
+  assert.match(lines[0] ?? "", /anthropic\/claude-opus · high/);
   assert.match(lines[1] ?? "", /ctx 42%\/272k · \$0\.341 · ↑12k · ↓2\.3k · fast · subagents 2/);
   assert.match(lines[1] ?? "", /main · dirty 3$/);
   assert.ok(lines.every((line) => visibleWidth(line) <= 120));
@@ -49,16 +49,16 @@ test("medium footer keeps high-value fields and drops low-priority telemetry", (
   const lines = renderFooter(state, 80, plainPalette);
 
   assert.equal(lines.length, 2);
-  assert.match(lines[0] ?? "", /^\.dotfiles\s+gpt-5\.6-sol · high$/);
+  assert.match(lines[0] ?? "", /^\.dotfiles\s+claude-opus · high$/);
   assert.match(lines[1] ?? "", /^ctx 42% · \$0\.341\s+main · dirty 3$/);
-  assert.doesNotMatch(lines.join("\n"), /openai-codex|↑|↓|subagents/);
+  assert.doesNotMatch(lines.join("\n"), /anthropic|↑|↓|subagents/);
   assert.ok(lines.every((line) => visibleWidth(line) <= 80));
 });
 
 test("narrow footer collapses to one essential line", () => {
   const lines = renderFooter(state, 50, plainPalette);
 
-  assert.deepEqual(lines, [".dotfiles · gpt-5.6-sol · ctx 42% · main"]);
+  assert.deepEqual(lines, [".dotfiles · claude-opus · ctx 42% · main"]);
   assert.ok(visibleWidth(lines[0] ?? "") <= 50);
 });
 

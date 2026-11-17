@@ -34,7 +34,7 @@ are doing it, keep it short):
 .dotfiles/
 ├── dot                 # CLI: init/update/doctor/stow/package (bash)
 ├── home/.agents/       # Shared agent policy and canonical skills
-│   └── skills/         # Skills discovered by Pi, Claude, Codex, Cursor, and other agents
+│   └── skills/         # Skills discovered by Pi, Claude, Cursor, and other agents
 ├── home/.claude/       # Stowed to ~/.claude/
 │   ├── agents/         # Subagents: browser-verify, impeccable-*
 │   ├── commands/       # Harness-specific slash commands
@@ -98,7 +98,7 @@ are doing it, keep it short):
 - Private helpers: prefix `__` (e.g., `__git.default_branch`)
 - VCS: Git worktrees for normal project flow
 - Pi extensions: TypeScript, npm workspaces under `home/.pi/`
-- Shared skills: canonical under `home/.agents/skills/`; Pi and Codex discover that tree directly; Claude and Cursor get thin symlinks under `home/.claude/skills/` and `home/.cursor/skills/`
+- Shared skills: canonical under `home/.agents/skills/`; Pi discovers that tree directly; Claude and Cursor get thin symlinks under `home/.claude/skills/` and `home/.cursor/skills/`
 
 ## ANTI-PATTERNS
 

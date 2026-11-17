@@ -1,6 +1,6 @@
 # Engineering decision policy
 
-Applies to every coding agent (Claude, Codex, Pi, Cursor, Copilot, …) on every
+Applies to every coding agent (Claude, Pi, Cursor, …) on every
 project and language, and overrides personal habit. **Local repo rules win**
 (`AGENTS.md` / `CLAUDE.md` / `.cursor/rules`).
 

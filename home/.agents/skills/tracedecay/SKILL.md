@@ -1,6 +1,6 @@
 ---
 name: tracedecay
-description: Local setup for TraceDecay — availability check and how each host (Pi, Claude Code, Codex) calls its tools. Load alongside the upstream TraceDecay skills (routing-tracedecay, exploring-code, tracing-functions, …) before the first TraceDecay call; skip while the daemon is down.
+description: Local setup for TraceDecay — availability check and how each host (Pi, Claude Code, shell) calls its tools. Load alongside the upstream TraceDecay skills (routing-tracedecay, exploring-code, tracing-functions, …) before the first TraceDecay call; skip while the daemon is down.
 ---
 
 # TraceDecay (local setup)
@@ -36,7 +36,7 @@ enrolling unasked. When a result's freshness line is not `fresh`, say so.
 - **Claude Code:** plugin `tracedecay@tracedecay`; tools are namespaced
   (`mcp__plugin_tracedecay_graph__tracedecay_context`) and often deferred — load
   schemas with `ToolSearch` first.
-- **Codex / shell:** `tracedecay tool <name> --args '<json>'` (`--args -` for a
+- **Shell:** `tracedecay tool <name> --args '<json>'` (`--args -` for a
   heredoc). `tracedecay tool` lists tools; `tracedecay tool <name> --help` shows
   parameters.
 
