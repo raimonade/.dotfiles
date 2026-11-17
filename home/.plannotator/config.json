@@ -1,7 +1,9 @@
 {
   "diffOptions": {
     "defaultDiffType": "since-base",
-    "diffStyle": "unified"
+    "diffStyle": "unified",
+    "expandUnchanged": false,
+    "lineBgIntensity": "subtle"
   },
   "conventionalComments": true,
   "displayName": "raimonds",
@@ -23,7 +25,11 @@
     "dialogShownFor": "0.28.49"
   },
   "inboxListIntro": {
-    "shownAt": "2026-11-05T10:33:42.412Z"
+    "dueAt": "2026-11-13T14:14:15.251Z",
+    "version": 2,
+    "before": {
+      "shownAt": "2026-11-05T10:33:42.412Z"
+    }
   },
   "inboxSnoozeIntro": {
     "firstUseAt": "2026-11-05T10:34:15.236Z"
@@ -45,5 +51,25 @@
   "inboxReminder": false,
   "inboxNotifications": {
     "dismissed": true
+  },
+  "inboxReveals": {
+    "waitingSince": {
+      "snooze": "2026-11-10T11:08:38.801Z"
+    },
+    "tab_icon": {
+      "dueAt": "2026-11-13T14:14:15.255Z"
+    },
+    "priority": {
+      "dueAt": "2026-11-16T10:02:08.907Z"
+    }
+  },
+  "starAsk": {
+    "canStar": true,
+    "checkedAt": "2026-11-11T10:20:55.466Z",
+    "shownAt": "2026-11-15T12:03:38.721Z",
+    "surface": "annotate"
+  },
+  "inboxThemeChooser": {
+    "dueAt": "2026-11-13T14:14:15.257Z"
   }
 }

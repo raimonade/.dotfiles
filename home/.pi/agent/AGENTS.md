@@ -42,9 +42,9 @@ In an indexed repo, explore with `tracedecay_*` before `rg` or whole-file reads:
 
 ## Models and design
 
-Claude models only: Opus, Sonnet, Haiku. Never Fable (too expensive).
+Claude models only.
 
-Taste-heavy work (UI, UX, copy, visuals) takes direction and final review from Opus: in-session if Opus is the session model, else `claude -p --model 'claude-opus-5-5[1m]' --permission-mode plan "<self-contained brief>"` in the foreground; pause if Opus is unavailable. Sonnet may implement once direction or a mock exists. Load `impeccable` and any `PRODUCT.md`/`DESIGN.md` first; `better-*` skills are its rulebooks; review with `better-interface` (repo) or `interface-review` (diff); motion with `animate`, `review-animations`, `improve-animations`.
+Design work: load `impeccable` and any `PRODUCT.md`/`DESIGN.md` first; `better-*` skills are its rulebooks; review with `better-interface` (repo) or `interface-review` (diff); motion with `animate`, `review-animations`, `improve-animations`.
 
 <!-- BEGIN token-economy -->
 ## Token economy
