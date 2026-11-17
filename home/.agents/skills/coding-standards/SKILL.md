@@ -646,7 +646,9 @@ No arbitrary file-size limits. Prefer cohesion and discoverability over small fi
 
 Comments should explain invariants, trade-offs, non-obvious domain rules, and safety justifications. Avoid comments that narrate obvious code.
 
-Every exported symbol from a JavaScript or TypeScript module requires JSDoc. Public methods and properties of an exported class also require JSDoc. Private and otherwise internal code requires documentation only when its complexity warrants it. Put documentation on the original declaration; re-exports do not need duplicate documentation.
+Before writing a comment, try to make it unnecessary: a name carrying the unit, scope or audience (`timeoutMs`, `operatorDetail`), an `is`/`has` boolean, a named constant for a literal, an extracted function for a labelled block, or a type for the invariant (literal union, non-empty tuple, discriminated union, branded id). A comment that says what a symbol is, its unit, or what its boolean means is a naming defect. Rename the existing symbol rather than annotating it, even if it widens the diff.
+
+Document an exported symbol (and public members of an exported class) when the doc adds something its name and type cannot: purpose in plain search words, a constraint, an external behaviour, the why. Never write JSDoc that restates the name. Private and internal code is documented only when its complexity warrants it. Put documentation on the original declaration; re-exports do not need duplicate documentation.
 
 Do not use `@inheritDoc`, `@inherit`, or similar inheritance tags. Write the required documentation explicitly on each symbol or member.
 
@@ -721,5 +723,5 @@ Before coding:
 - Preserve existing observability/error mechanics.
 - Test through public interfaces and real seams.
 - Use `fast-check` arbitraries for generated test data when practical.
-- Add JSDoc for exported symbols.
+- Let names and types say what a symbol is; add JSDoc to exports only for what they cannot say.
 - Add an ADR only for a lasting architectural boundary, shared pattern, provider strategy, or deliberate exception discovered through the Adapter/Application Service reuse audit.

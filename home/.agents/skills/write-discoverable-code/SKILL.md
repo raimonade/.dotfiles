@@ -23,7 +23,9 @@ rules make code resolvable in one search instead of five.
   `diffUserObjects`, not `diff`. `queueEventForDispatch`, not `queue`.
   Measured on a ~700k-line monorepo: 1-word exported names are globally unique 61% of
   the time; 3-word names 96%; 4+ words 98%. Three words is the knee of the curve.
-  Use the shortest name that greps uniquely; put the rest in the doc comment.
+  Use the shortest name that greps uniquely *and* states unit, scope and audience
+  (`timeoutMs`, `operatorDetail`, `isTrialOrg`). Four words is a guide, not a cap: a
+  qualifier moved into a doc comment is lost at every use site, where readers never see it.
 - **Give generic verbs their object.** `sanitizeEmailHtml`, not `sanitize`;
   `validateSmtpConfig`, not `validateConfig`. Qualify only as far as uniqueness
   requires, then stop.
@@ -63,10 +65,15 @@ rules make code resolvable in one search instead of five.
 
 ## 3. Say it where the search lands
 
-- **One-line doc comment on every export**, stating the sharpest constraint the code
-  itself can't show (units, timezone, "source time, not insert time", ownership).
-  The definition is where a name search lands; that line is your whole message.
-- **Write the plain-words phrase in the doc comment.** Searches arrive as natural language
+- **Name and type first, doc comment second.** Units, scale, owner, audience and boolean
+  meaning go in the name (`delayMs`, `shareFraction`, `hasOverflow`); closed value sets,
+  non-emptiness and "both or neither" go in the type. A doc comment that says what a
+  symbol is, its unit, or what `true` means is a naming defect: rename instead.
+- **Doc comment on an export only when it adds a fact the name and type can't carry**:
+  the why, a constraint ("source time, not insert time"), ownership, an external
+  system's behaviour. Never one that restates the name. The definition is where a name
+  search lands; that line is your whole message.
+- **When you do write the doc comment, include the plain-words phrase.** Searches arrive as natural language
   ("rate limit", "retry delay"), and camelCase identifiers don't match phrase greps —
   `RateLimiter` is invisible to a search for "rate limit". The doc comment above each
   export should contain, in ordinary spaced-out words, the phrase someone would search
