@@ -8,7 +8,7 @@ Which model gets what is always on in `~/.claude/CLAUDE.md` (Models, subagents, 
 
 - The session model (Opus) owns orchestration, design direction, taste-heavy synthesis, and final judgment/review. Opus subagents only when that judgement must run in parallel or isolated from the main loop.
 - Output missing the bar → redo on the next model up without asking. Judge quality, not price; cost is a tie-breaker. For anything that ships, intelligence > taste > cost.
-- Effort: **high** by default; escalate to xhigh/max only after a high-value task failed at high.
+- Effort: sessions run at **medium** (`effortLevel` in `~/.claude/settings.json`). Raise to high for hard debugging, research or long unattended runs; xhigh/max only after a high-value task failed at high. A "don't overthink" line in a prompt does not reduce thinking; lower the effort instead.
 - Discovery-heavy implementation → let the Sonnet subagent own discovery through verification instead of the main loop reading the same surface first.
 - Browser/UI verification → `browser-verify` agent (Sonnet); final judgment back in the main loop.
 

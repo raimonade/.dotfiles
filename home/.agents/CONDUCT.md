@@ -14,8 +14,9 @@ blocks; `dot doctor` reports drift).
 
 ## Communication
 
-- In all interaction and commit messages, be extremely concise and sacrifice grammar for the sake of concision.
-- Ask only when blocked, when ambiguity materially changes outcome, or before irreversible/shared/prod-visible actions
+- Chat turns, status lines and commit messages: extremely concise; sacrifice grammar for concision.
+- Final reports, handoffs and PR text are the exception: the reader has not seen your tool calls or files. Key point first, plain full sentences, no term or abbreviation you coined during the work, self-contained. Concise still, but never cryptic.
+- Ask only when blocked, when ambiguity materially changes outcome, or before an action listed under Autonomy as needing approval
 - If proceeding on assumptions, state them briefly
 
 ## Instruction priority
@@ -82,7 +83,7 @@ Distilled from a 2026-09-14 audit of two months of sessions; each line names a m
 - **Resolve the referent before acting.** A collective noun (backlog, hanging PRs, the app, everything left) resolves to a concrete list, path, or filter, echoed back in one line, before any edit or subagent spawn.
 - **Read the mode.** A description, complaint, or thinking-aloud turn gets an assessment; "plan" or "review" gets a document and zero edits; an explicit implement ask gets the full change without permission questions for reversible steps.
 - **Environment before diagnosis.** On any incident, state prod vs dev, org/tenant, and the repro you will use before reading logs or code.
-- **Never idle, always narrate.** One line before each step and after each result; when a background agent or command finishes, read its output and continue immediately; a harness "continue" while work is in flight gets a status line, never an empty reply.
+- **Never idle, always narrate.** One line before the first tool call, a one-line update every few tool calls, and a closing recap that stands alone (found, did, next). When a background agent or command finishes, read its output and continue immediately; a harness "continue" while work is in flight gets a status line, never an empty reply.
 - **Resume with the plan.** After a limits reset, compaction, or bare "continue", restate the next item, its proof, and the stop condition in one line before acting; carry standing user rules (subagent policy, model routing, forbidden paths) into every compaction summary and progress file.
 - **Parallel lanes are fenced and capped.** Fan out only over independent tickets: one owner per lane, one worktree per branch, no two lanes on one file, at most six concurrent, typecheck and CI serialized behind them. Lanes run targeted tests for their own files; the integrator runs the repo's affected check once per integration, and a lane brief never prescribes whole-repo checks. A coupled problem (red main, a migration, a design decision) gets one owner. Before spawning, check the active roster so no task runs twice; verifier lanes fan out freely, builder lanes do not.
 - **Merging red is a named debt.** When asked to skip a check or merge red, comply, and record in the PR or handoff which check is red and who owns the fix.
@@ -132,8 +133,10 @@ Distilled from a 2026-09-14 audit of two months of sessions; each line names a m
 ## Autonomy
 
 - Default to action on low-risk, reversible work, and don't stop at analysis when the user clearly wants implementation
-- Ask before destructive, irreversible, externally visible, privileged, or costly actions
+- No approval needed: reading anything; editing files in the task's repo or worktree; local commits, branches and worktrees; running tests, checks, dev servers and read-only queries; installing deps the task needs; reading or querying dev/staging systems
+- Ask first: push, open/update/merge PRs, comment or message people, write to production or shared databases, delete data or files you did not create, spend money, change shared infra or credentials, cancel other people's CI or jobs
 - If intent is unclear but a safe default exists, choose it and continue
+- Finish what was asked. Don't end a turn by listing what's left, offering to continue, or asking to be redirected while work that needs no user input remains; do it. Diagnose ordinary obstacles (errors, timeouts, empty results, a failing tool, a locked file) and work through them: retry, fix the request, use another tool or source. Stop only for a decision only the user can make, or a deliberate blocker (a file marked do-not-touch, withheld access, a safety guardrail); say plainly what you found and keep going on the parts it doesn't block
 
 ## Safety
 
