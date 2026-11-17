@@ -66,10 +66,26 @@ cat > "$sandbox/bin/pgrep" <<'STUB'
 exit 1
 STUB
 
+# Logged stand-ins for tools the update flow would otherwise run for real
+# (Node downloads, Rex config reload, Plannotator self-update).
+for tool in vp rex plannotator; do
+    cat > "$sandbox/bin/$tool" <<STUB
+#!/usr/bin/env bash
+printf '$tool %s\n' "\$*" >> "\$DOT_SMOKE_LOG"
+STUB
+done
+
+# No network: the Rex appcast read fails, so the Rex app update is skipped.
+cat > "$sandbox/bin/curl" <<'STUB'
+#!/usr/bin/env bash
+exit 1
+STUB
+
 chmod +x "$sandbox/bin/"*
 export DOT_SMOKE_LOG="$log"
 # This test drives the Homebrew flow; Linux has its own test (dot-linux.test.sh).
 export DOT_OS=Darwin
+export REX_BIN_DIR="$sandbox/bin"
 export HOME="$sandbox/home"
 export PATH="$sandbox/bin:$PATH"
 
@@ -85,7 +101,16 @@ git -C $sandbox/repo pull
 brew update
 brew outdated
 brew upgrade --yes
+stow -n -R -d $sandbox/repo -t $sandbox/home home
 stow -R -v -d $sandbox/repo -t $sandbox/home --ignore=^\.config/fish/completions/(docker|kubectl|orbctl)\.fish$ home
+vp env install lts
+vp env install latest
+vp env default lts
+vp list -g
+rex config check
+rex --autostart=false server status
+rex --autostart=false config reload
+plannotator update
 herdr plugin install plannotator/herdr-annotate --yes
 herdr status server
 pi update --extensions

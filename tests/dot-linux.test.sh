@@ -73,7 +73,7 @@ fail() {
 # shellcheck source=/dev/null
 source "$sandbox/repo/dot"
 
-[[ "$(__read_package_manifest "$sandbox/repo/packages/bundle.pacman" | paste -sd' ')" == "present-pkg missing-one missing-two" ]] \
+[[ "$(__read_package_manifest "$sandbox/repo/packages/bundle.pacman" | paste -sd' ' -)" == "present-pkg missing-one missing-two" ]] \
     || fail "manifest parser kept comments or blanks"
 
 SUDO_OK=1 __install_system_packages >/dev/null

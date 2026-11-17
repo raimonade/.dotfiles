@@ -523,6 +523,7 @@ __link_pi_node_modules() {
 
     ln -s "$repo_modules" "${live}/node_modules"
     __print_success "Linked ~/.pi/node_modules to the dotfiles pi install"
+}
 
 __rex_cli() {
     if [[ -n "${REX_BIN_DIR:-}" && -x "${REX_BIN_DIR}/rex" ]]; then
@@ -723,8 +724,6 @@ __setup_rex_agents() {
     else
         __print_warning "rex skill setup failed; run it by hand to see why"
     fi
-}
-
 }
 
 __install_pi() {
@@ -1521,11 +1520,6 @@ cmd_update() {
         __print_info "Installing latest Node.js LTS and current releases..."
         if vp env install lts && vp env install latest && vp env default lts >/dev/null; then
             __print_success "Node.js runtimes up to date"
-    # Update Rex (not in Homebrew) and reload its re-stowed config.
-    __update_rex_app || __print_warning "Rex update failed; continuing"
-    __reload_rex_config || __print_warning "Rex config reload failed; continuing"
-    __apply_rex_app_settings || __print_warning "Rex app settings failed; continuing"
-    __import_rex_theme
         else
             __print_warning "Failed to update Node.js runtimes"
         fi
@@ -1538,6 +1532,19 @@ cmd_update() {
                 __print_warning "Failed to update OpenCode"
             fi
         fi
+    fi
+
+    # Update Rex (macOS app, not in Homebrew) and reload its re-stowed config.
+    if ! __is_linux; then
+        __update_rex_app || __print_warning "Rex update failed; continuing"
+        __reload_rex_config || __print_warning "Rex config reload failed; continuing"
+        __apply_rex_app_settings || __print_warning "Rex app settings failed; continuing"
+        __import_rex_theme
+    fi
+
+    if __command_exists plannotator; then
+        __print_info "Updating Plannotator..."
+        plannotator update || __print_warning "Plannotator update failed; continuing"
     fi
 
     # Install missing Herdr plugins and refresh existing managed checkouts.
