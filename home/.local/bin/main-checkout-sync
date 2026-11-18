@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# main-checkout-sync - fast-forward main checkouts so code indexes that serve
+# their linked worktrees stay current. Skips a checkout that is off its default
+# branch or has tracked changes; never merges, rebases or stashes.
+set -uo pipefail
+
+[ $# -gt 0 ] || { echo "usage: main-checkout-sync <repo>..." >&2; exit 2; }
+status=0
+for repo in "$@"; do
+    if ! git -C "$repo" rev-parse --git-dir >/dev/null 2>&1; then
+        echo "skip $repo: not a git checkout"; continue
+    fi
+    default=$(git -C "$repo" symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null | sed 's#^origin/##')
+    default=${default:-main}
+    branch=$(git -C "$repo" branch --show-current)
+    if [ "$branch" != "$default" ]; then echo "skip $repo: on '$branch', not '$default'"; continue; fi
+    if [ -n "$(git -C "$repo" status --porcelain --untracked-files=no)" ]; then echo "skip $repo: tracked changes"; continue; fi
+    if ! git -C "$repo" fetch --quiet origin "$default"; then echo "fail $repo: fetch"; status=1; continue; fi
+    before=$(git -C "$repo" rev-parse HEAD)
+    if git -C "$repo" merge --ff-only --quiet "origin/$default"; then
+        after=$(git -C "$repo" rev-parse HEAD)
+        [ "$before" = "$after" ] && echo "current $repo" || echo "advanced $repo ${before:0:10}..${after:0:10}"
+    else
+        echo "fail $repo: not a fast-forward"; status=1
+    fi
+done
+exit $status

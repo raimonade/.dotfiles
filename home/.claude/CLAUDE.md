@@ -46,7 +46,7 @@ Design work: load `impeccable` and any `PRODUCT.md`/`DESIGN.md` first. `impeccab
 
 ## TraceDecay
 
-For code exploration in an indexed repo, start with `tracedecay_context` (load schemas via `ToolSearch`), then `tracedecay_search`, `callers`/`impact` and `tracedecay_grep`. A file you can already name needs no TraceDecay call. Don't hand codebase research to `Explore` while TraceDecay is up. MCP errors → `tracedecay tool <name> --args '<json>'`. A T3 worktree indexes itself on first open (30+ min); until then tools answer `authority_unavailable`/`served_generation=none`: use plain tools, or run that CLI from the main checkout (`git worktree list | head -1`), which reflects its branch, not yours.
+For code exploration in an indexed repo, start with `tracedecay_context` (load schemas via `ToolSearch`), then `tracedecay_search`, `callers`/`impact` and `tracedecay_grep`. A file you can already name needs no TraceDecay call. Don't hand codebase research to `Explore` while TraceDecay is up. MCP errors → `tracedecay tool <name> --args '<json>'`. Linked worktrees (T3) are not indexed: run that CLI from the main checkout (`git worktree list | head -1`), which reflects `main`, not your branch; confirm code your branch changed with `read`.
 
 <!-- BEGIN token-economy -->
 ## Token economy

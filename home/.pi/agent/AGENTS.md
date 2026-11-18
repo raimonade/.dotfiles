@@ -38,7 +38,7 @@ Read the `SKILL.md` of every model-invoked skill that overlaps the task before p
 
 ## TraceDecay
 
-In an indexed repo, explore with `tracedecay_*` before `rg` or whole-file reads: `context` (concepts), `search`/`find_exact_symbol` (symbols), `grep` (literal text, returns the enclosing symbol), `source_outline` → `source_body`, `callers`/`impact` before changing a shared symbol, `affected`/`test_map` for tests. A file you can already name, prose and unindexed files: plain tools. Daemon down → plain tools; don't restart it unasked. A T3 worktree indexes itself on first open (30+ min); until then tools answer `authority_unavailable`/`served_generation=none`: use plain tools, or for graph questions run the CLI from the main checkout (`cd "$(git worktree list --porcelain | sed -n '1s/^worktree //p')" && tracedecay tool <name> --args '<json>'`), which reflects that checkout's branch, not yours. Details: `tracedecay` skill.
+In an indexed repo, explore with `tracedecay_*` before `rg` or whole-file reads: `context` (concepts), `search`/`find_exact_symbol` (symbols), `grep` (literal text, returns the enclosing symbol), `source_outline` → `source_body`, `callers`/`impact` before changing a shared symbol, `affected`/`test_map` for tests. A file you can already name, prose and unindexed files: plain tools. Daemon down → plain tools; don't restart it unasked. In a linked worktree (T3) the tools answer from the main checkout's index (`index: main checkout`): that is `main`, not your branch, so confirm code your branch changed with `read`. Details: `tracedecay` skill.
 
 ## Models and design
 

@@ -1,0 +1,6 @@
+[Unit]
+Description=Fast-forward main checkouts that serve worktree code indexes
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/main-checkout-sync %h/Documents/Repos/spotwise-ui %h/Documents/Repos/spotwise-self-serve-web
