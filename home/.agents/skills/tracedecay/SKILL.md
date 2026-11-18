@@ -22,14 +22,18 @@ non-zero exit use normal code tools, and do not start, restart, update, or
 reinstall the daemon unless the user asks. Do not retry failed calls in a loop.
 
 A repository is enrolled once with `tracedecay init`; linked worktrees share the
-enrollment but are not indexed (`sync.watch_linked_worktrees.v1` is off on
-purpose: spotwise-ui has hundreds of T3 worktrees, and one index is ~20 min and
-several GB). In a linked worktree every code tool answers
-`linked_worktree_disabled`, and `project_selector` does not reroute it. Use plain
-tools there, or for graph questions (callers, impact, tests) run the CLI from the
-main checkout: `cd "$(git worktree list --porcelain | sed -n '1s/^worktree //p')"
-&& tracedecay tool <name> --args '<json>'`. Results reflect the main checkout's
-branch, so confirm anything branch-specific with `read`.
+enrollment. spotwise-ui and spotwise-self-serve-web set
+`sync.watch_linked_worktrees.v1=true` (project layer), so a T3 worktree builds its
+own index the first time a session opens it. That first build takes 30+ minutes;
+until it is served, code tools answer `authority_unavailable`, `graph_warming` or
+`served_generation=none` (and `linked_worktree_disabled` in repos without the
+setting). `project_selector` does not reroute to another checkout. While a
+worktree warms, use plain tools, or for graph questions (callers, impact, tests)
+run the CLI from the main checkout:
+`cd "$(git worktree list --porcelain | sed -n '1s/^worktree //p')" && tracedecay tool <name> --args '<json>'`.
+Those results reflect the main checkout's branch, so confirm anything
+branch-specific with `read`. Do not run `tracedecay sync` to hurry a worktree: it
+reconciles the main project, not the worktree.
 An unenrolled repo answers `project_not_enrolled` — tell the user rather than
 enrolling unasked. When a result's freshness line is not `fresh`, say so.
 
