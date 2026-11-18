@@ -97,20 +97,39 @@ export function mapMainCheckoutPaths(text: string, route: WorktreeIndexRoute): s
 
 type TracedecayTool = Parameters<ExtensionAPI["registerTool"]>[0];
 
+function withCwd<Context extends { cwd: string }>(ctx: Context, cwd: string): Context {
+  return new Proxy(ctx, {
+    get(target, property) {
+      if (property === "cwd") return cwd;
+      const value: unknown = Reflect.get(target, property);
+      return typeof value === "function" ? value.bind(target) : value;
+    },
+  });
+}
+
+/**
+ * Every daemon call made from a linked worktree (lifecycle hooks, post-edit
+ * sync, slash commands) opens a project server for that worktree, and the
+ * daemon's code-index slots then run out before the main checkout mounts.
+ */
+async function inMainCheckout<Context extends { cwd: string }>(ctx: Context): Promise<Context> {
+  const route = await resolveWorktreeIndexRoute(ctx.cwd);
+  return route === undefined ? ctx : withCwd(ctx, route.mainCheckoutRoot);
+}
+
 export function routeToMainCheckoutIndex(tool: TracedecayTool): TracedecayTool {
   return {
     ...tool,
     async execute(toolCallId, params, signal, onUpdate, ctx) {
       const route = await resolveWorktreeIndexRoute(ctx.cwd);
       if (route === undefined) return tool.execute(toolCallId, params, signal, onUpdate, ctx);
-      const mainCheckoutCtx = new Proxy(ctx, {
-        get(target, property) {
-          if (property === "cwd") return route.mainCheckoutRoot;
-          const value: unknown = Reflect.get(target, property);
-          return typeof value === "function" ? value.bind(target) : value;
-        },
-      });
-      const result = await tool.execute(toolCallId, params, signal, onUpdate, mainCheckoutCtx);
+      const result = await tool.execute(
+        toolCallId,
+        params,
+        signal,
+        onUpdate,
+        withCwd(ctx, route.mainCheckoutRoot),
+      );
       const notice = `index: main checkout (this worktree is not indexed); confirm code your branch changed with read\n`;
       return {
         ...result,
@@ -124,23 +143,36 @@ export function routeToMainCheckoutIndex(tool: TracedecayTool): TracedecayTool {
   };
 }
 
-export default async function tracedecayToolDiet(pi: ExtensionAPI) {
-  const tracedecayExtension = await loadTracedecayExtension();
+/** The API the installer's extension sees: dieted tools, main-checkout routing. */
+export function routeTracedecayApi(pi: ExtensionAPI): ExtensionAPI {
   const registerTool: ExtensionAPI["registerTool"] = (tool) =>
     pi.registerTool(
       DECLARED_TRACEDECAY_TOOLS.has(tool.name)
         ? routeToMainCheckoutIndex(tool)
         : { ...tool, exposure: "deferred" },
     );
-  tracedecayExtension(
-    new Proxy(pi, {
-      get(target, property) {
-        if (property === "registerTool") return registerTool;
-        const value: unknown = Reflect.get(target, property);
-        return typeof value === "function" ? value.bind(target) : value;
-      },
-    }),
-  );
+  const on = ((event: string, handler: (payload: unknown, ctx: { cwd: string }) => unknown) =>
+    pi.on(event as never, (async (payload: unknown, ctx: { cwd: string }) =>
+      handler(payload, await inMainCheckout(ctx))) as never)) as ExtensionAPI["on"];
+  const registerCommand: ExtensionAPI["registerCommand"] = (name, command) =>
+    pi.registerCommand(name, {
+      ...command,
+      handler: async (args, ctx) => command.handler(args, await inMainCheckout(ctx)),
+    });
+  return new Proxy(pi, {
+    get(target, property) {
+      if (property === "registerTool") return registerTool;
+      if (property === "on") return on;
+      if (property === "registerCommand") return registerCommand;
+      const value: unknown = Reflect.get(target, property);
+      return typeof value === "function" ? value.bind(target) : value;
+    },
+  });
+}
+
+export default async function tracedecayToolDiet(pi: ExtensionAPI) {
+  const tracedecayExtension = await loadTracedecayExtension();
+  tracedecayExtension(routeTracedecayApi(pi));
 
   // Sessions recorded before the catalog was deferred still list it as active.
   const dropRecordedCatalog = () => {

@@ -83,3 +83,23 @@ test("a routed tool runs from the main checkout and answers with worktree paths"
 	assert.ok(text.includes(`project_root: ${worktree}\n${worktree}/src/a.ts ${main}-other/b.ts`));
 	assert.equal((unrouted.content[0] as { text: string }).text, `project_root: ${main}\n${main}/src/a.ts ${main}-other/b.ts`);
 });
+
+test("lifecycle hooks and commands from a linked worktree reach the daemon from the main checkout", async () => {
+	const { routeTracedecayApi } = await import("../tracedecay-tool-diet.ts");
+	const { main, worktree } = await makeCheckoutWithWorktree();
+	const hooks: ((payload: unknown, ctx: { cwd: string }) => Promise<unknown>)[] = [];
+	const commands: ((args: string, ctx: { cwd: string }) => Promise<unknown>)[] = [];
+	const api = routeTracedecayApi({
+		on: (_event: string, handler: never) => hooks.push(handler),
+		registerCommand: (_name: string, command: { handler: never }) => commands.push(command.handler),
+	} as never);
+	const seen: string[] = [];
+
+	api.on("session_start", ((_payload: unknown, ctx: { cwd: string }) => seen.push(ctx.cwd)) as never);
+	api.registerCommand("tracedecay-sync", { handler: (async (_args: string, ctx: { cwd: string }) => seen.push(ctx.cwd)) as never });
+	await hooks[0]({}, { cwd: worktree });
+	await hooks[0]({}, { cwd: main });
+	await commands[0]("", { cwd: worktree });
+
+	assert.deepEqual(seen, [main, main, main]);
+});
