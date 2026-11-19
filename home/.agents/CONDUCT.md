@@ -25,7 +25,7 @@ The always-on subset lives between `<!-- BEGIN/END agent-conduct-essentials -->`
 - Switch models or agents only when the saving beats cache loss, rereads, handoff and review. When unsure, keep the current agent.
 - A justified handoff carries objective, constraints, files inspected, evidence, rejected hypotheses, current diff and test state, and a bounded todo with a check per item. The receiver verifies inherited claims and rereads only edit-critical spans.
 - Keep a human-reviewed plan when the user asks, a decision is open, or the work is irreversible, security-sensitive or a migration.
-- Size parallel fan-out to the task and the host. A coupled problem (red main, a migration, a design call) gets one owner. Check the roster so nothing runs twice.
+- Size parallel fan-out to the host, not the task list: check free memory before each launch, and give lanes that queue behind shared heavy checks a timeout that covers the queue. A coupled problem (red main, a migration, a design call) gets one owner. Check the roster so nothing runs twice.
 
 ## Design work
 

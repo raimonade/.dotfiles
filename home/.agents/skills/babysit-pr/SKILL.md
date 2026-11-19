@@ -16,6 +16,12 @@ both on the same PR. Every watcher on a GitHub account shares one rate limit.
 
 ### In T3 Code: `watch_pull_request`
 
+You are in T3 Code when the working directory is under `~/.t3/` or a `t3-code`
+tool server is connected. The tool is often deferred, so it is missing from
+your tool list: load it with `tool_search` (`watch_pull_request`) before you
+decide you are somewhere else. Falling back to `pr-wait` and polling its log
+with `sleep` is the failure this section exists to prevent.
+
 Handle the existing checks and comments first. Then call
 `watch_pull_request` and end your turn. T3 Code wakes you with a message when
 a check fails, the required checks pass, someone comments or reviews, or the
