@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# claude-tracedecay-routing - point Claude Code's generated TraceDecay plugin
+# (MCP server and hooks) at tracedecay-main-checkout, so sessions in linked
+# worktrees use the main checkout's index. Idempotent; `tracedecay upgrade`
+# regenerates the plugin, so the Claude SessionStart hook reruns this.
+set -euo pipefail
+python3 - "$HOME" <<'PY'
+import json, pathlib, sys
+home = pathlib.Path(sys.argv[1])
+binary = str(home / ".local/bin/tracedecay")
+wrapper = str(home / ".local/bin/tracedecay-main-checkout")
+plugins = home / ".claude/plugins"
+roots = [plugins / "marketplaces/tracedecay"]
+try:
+    installed = json.loads((plugins / "installed_plugins.json").read_text())
+    roots += [pathlib.Path(e["installPath"]) for e in installed.get("plugins", {}).get("tracedecay@tracedecay", [])]
+except (OSError, ValueError, KeyError):
+    pass
+
+def repoint(node):
+    changed = False
+    if isinstance(node, dict):
+        if node.get("command") == binary:
+            node["command"] = wrapper; changed = True
+        for value in node.values():
+            changed |= repoint(value)
+    elif isinstance(node, list):
+        for value in node:
+            changed |= repoint(value)
+    return changed
+
+for root in roots:
+    for name in (".mcp.json", "hooks/hooks.json"):
+        path = root / name
+        if not path.is_file():
+            continue
+        data = json.loads(path.read_text())
+        if repoint(data):
+            path.write_text(json.dumps(data, indent=2) + "\n")
+            print(f"routed {path}")
+PY

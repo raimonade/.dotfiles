@@ -31,7 +31,11 @@ In Pi, the 19 declared `tracedecay_*` tools called from a linked worktree run
 against the main checkout's index automatically (`tracedecay-tool-diet.ts`); the
 answer starts with `index: main checkout` and paths are mapped onto the worktree.
 It reflects `main`, not your branch: confirm code your branch changed with `read`.
-Elsewhere (Claude Code, the shell), run the CLI from the main checkout:
+Claude Code does the same: `claude-tracedecay-routing` points the generated plugin's
+MCP server and hooks at `~/.local/bin/tracedecay-main-checkout`, which runs
+TraceDecay from the main checkout and maps paths both ways; a Claude SessionStart
+hook reapplies it after `tracedecay upgrade` regenerates the plugin (so the first
+session after an upgrade is unrouted). From a shell, run the CLI from the main checkout:
 `cd "$(git worktree list --porcelain | sed -n '1s/^worktree //p')" && tracedecay tool <name> --args '<json>'`.
 `project_selector` does not reroute to another checkout.
 An unenrolled repo answers `project_not_enrolled` — tell the user rather than

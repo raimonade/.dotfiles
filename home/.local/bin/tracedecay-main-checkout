@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# tracedecay-main-checkout - run tracedecay against the main checkout's index
+# when started from a linked git worktree (T3/Pi worktrees are not indexed).
+# Paths are mapped both ways: worktree -> main on stdin, main -> worktree on
+# stdout, so answers name files where the session works. Elsewhere it is a
+# plain exec. Claude Code's TraceDecay plugin is pointed here by
+# claude-tracedecay-routing.
+set -uo pipefail
+bin="$HOME/.local/bin/tracedecay"
+
+main=""; worktree=""
+if paths=$(git rev-parse --path-format=absolute --git-dir --git-common-dir --show-toplevel 2>/dev/null); then
+    { read -r git_dir; read -r common_dir; read -r worktree; } <<<"$paths"
+    if [ "$git_dir" != "$common_dir" ] && [ "$(basename "$common_dir")" = ".git" ]; then
+        main=$(dirname "$common_dir")
+    fi
+fi
+[ -n "$main" ] || exec "$bin" "$@"
+
+map() { # map <from> <to>: replace whole path prefixes, flushing every line
+    FROM="$1" TO="$2" exec perl -pe 'BEGIN { $| = 1 } s/\Q$ENV{FROM}\E(?![\w.-])/$ENV{TO}/g'
+}
+cd "$main" || exit 1
+map "$worktree" "$main" | "$bin" "$@" | map "$main" "$worktree"
+exit "${PIPESTATUS[1]}"

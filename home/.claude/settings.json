@@ -196,6 +196,15 @@
             "statusMessage": "Preparing build session"
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ ! -x \"$HOME/.local/bin/claude-tracedecay-routing\" ] || \"$HOME/.local/bin/claude-tracedecay-routing\" >/dev/null 2>&1; true",
+            "timeout": 10
+          }
+        ]
       }
     ]
   },
