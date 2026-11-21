@@ -14,8 +14,6 @@ set -gx MANPAGER 'less -R'
 # Add dotfiles directory to PATH for 'dot' command
 fish_add_path ~/.dotfiles
 
-# opencode
-test -d ~/.opencode/bin; and fish_add_path ~/.opencode/bin
 # Rex puts its server's rex CLI first on PATH, but startup files reorder PATH.
 # Keep it first so rex matches the running server (must stay last).
 if set -q REX_BIN_DIR

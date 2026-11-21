@@ -13,7 +13,8 @@ fish/
 ├── conf.d/             # Auto-sourced config fragments
 │   ├── aliases.fish    # Shell aliases (c, pn, wr); code is a lazy function
 │   ├── paths.fish      # PATH modifications (.dotfiles, .local/bin, ghostty)
-│   ├── git.fish        # Git abbreviations init
+│   ├── git.fish        # plugin-git init (Fisher-installed, gitignored)
+│   ├── git_abbreviations.fish # personal git abbrs on top of plugin-git
 │   ├── brew.fish       # Homebrew setup
 │   ├── zed.fish        # VISUAL=Zed when its CLI is installed
 │   ├── vite-plus.fish  # Sources Vite+ env
@@ -21,7 +22,7 @@ fish/
 │   ├── secrets.fish    # Env tokens (GITIGNORED)
 │   └── ...             # Tool-specific (fnm, bun, zoxide, rustup, orbstack)
 ├── functions/          # Lazy-loaded functions
-│   ├── __git.*.fish    # Internal git helpers
+│   ├── __git.*.fish    # plugin-git helpers (Fisher-installed, gitignored)
 │   ├── gwip.fish       # WIP commit
 │   └── ...             # Utilities (uuid, ulid, timer, notify, nato, rn)
 └── completions/        # Command completions (dot, bun, wrangler, kubectl, vp)
@@ -34,7 +35,7 @@ fish/
 | Add alias | `conf.d/aliases.fish` |
 | Add PATH | `conf.d/paths.fish` |
 | Add function | `functions/<name>.fish` (1 function per file) |
-| Git abbr | `functions/__git.init.fish` (180+ abbrs) |
+| Git abbr | `conf.d/git_abbreviations.fish` (plugin-git supplies the 180+ stock ones; never edit its files) |
 | Tool setup | `conf.d/<tool>.fish` |
 | Completions | `completions/<cmd>.fish` |
 | Env secrets | `conf.d/secrets.fish` (gitignored) |
