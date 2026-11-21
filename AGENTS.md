@@ -7,7 +7,7 @@ macOS and Arch/CachyOS dev env via GNU Stow. Ghostty + Herdr + Fish + Zed + Git 
 
 ## PRIORITY CHECK — REX CONFIG API AUDIT (WEEKLY)
 
-**Last audit: 2026-11-19**
+**Last audit: 2026-11-21**
 
 At the start of every session, compare this date with today. If it is **7 or
 more days old**, do this audit **before** the user's task (tell the user you
@@ -45,7 +45,7 @@ are doing it, keep it short):
 │   ├── fish/           # Shell (AGENTS.md)
 │   ├── zed/            # Primary editor; includes blocking CLI adapter
 │   ├── herdr/          # Primary workspace/tab/pane manager
-│   ├── rex/            # Rex multiplexer (init.lua, ported from herdr)
+│   ├── rex/            # Rex multiplexer (init.lua -> raimonade/, ported from herdr; AGENTS.md)
 │   ├── git/            # Git config
 │   ├── ghostty/        # Terminal; launch Herdr explicitly per upstream
 │   └── starship.toml   # Prompt
@@ -72,7 +72,7 @@ are doing it, keep it short):
 | Git alias | `home/.config/git/config` `[alias]` section |
 | Zed settings | `home/.config/zed/settings.json` |
 | Herdr workspace/binding | `home/.config/herdr/config.toml` |
-| Rex config | `home/.config/rex/init.lua` (then `rex config check && rex config reload`) |
+| Rex config | `home/.config/rex/raimonade/` (`init.lua` bootstraps; keys in `keymaps.lua`; then `rex config check && rex config reload`) |
 | Rex app settings | `home/.config/rex/macos-defaults.conf` (`dot update` writes defaults; relaunch Rex) |
 | Upstream worktree helpers | `home/.config/fish/functions/{wt,wtd,wtcd,wtl,wtp,wtr}.fish` |
 | Starship prompt | `home/.config/starship.toml` |
@@ -94,7 +94,7 @@ are doing it, keep it short):
 - Zed substitutes for upstream Neovim: `$EDITOR`, `$VISUAL`, Git editing, and shell editor commands
 - Git worktree helpers stay byte-for-byte aligned with `dmmulroy/.dotfiles` upstream
 - Upstream helpers use `WT_DIR`, a `.bare` root, or sibling directories; Herdr's native worktrees are separate
-- Git abbrs: ~180 oh-my-zsh style via `__git.init.fish`
+- Git abbrs: ~180 oh-my-zsh style from jhillyerd/plugin-git. Fisher installs it from `fish_plugins` (`dot init`/`dot update` run `fisher update`); its files are gitignored. Personal abbrs go in `conf.d/git_abbreviations.fish`
 - Private helpers: prefix `__` (e.g., `__git.default_branch`)
 - VCS: Git worktrees for normal project flow
 - Pi extensions: TypeScript, npm workspaces under `home/.pi/`
