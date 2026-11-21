@@ -1426,6 +1426,10 @@ __sync_fish_plugins() {
         __print_warning "Fisher not installed; skipping Fish plugins"
         return 0
     fi
+    # Stow links left from when the plugin files were tracked now dangle, and
+    # Fisher cannot write through them.
+    find "${HOME}/.config/fish" -maxdepth 2 -type l -lname '*/home/.config/fish/*' \
+        ! -exec test -e {} \; -delete 2>/dev/null || true
     __print_info "Syncing Fish plugins from fish_plugins..."
     if fish -c "fisher update" >/dev/null; then
         __print_success "Fish plugins up to date"
