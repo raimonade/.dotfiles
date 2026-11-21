@@ -20,6 +20,7 @@ Global Pi config, synced through dotfiles and stowed into `~/.pi`. npm workspace
     ├── extensions/       # local TypeScript extensions and workspace packages
     │   ├── pi-cloak/           # secret cloaking extension
     │   ├── session-footer/     # responsive session telemetry footer
+    │   ├── mpl/                # codemode tool mpl_render: matplotlib-style charts (github:ivarvong/mpl)
     │   ├── todos/              # file-backed todo tool
     │   └── *.ts                # standalone extensions and deployment guards
     └── skills/           # unique Pi-owned links only; ignored by git
